@@ -2165,7 +2165,8 @@ function PM(s){return parseFloat(String(s).replace(/[\s ]/g,'').replace(',','.')
 function FM(n){return n.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
 // ══ STATE ════════════════════════════════════════════════════
-let DB=[...BASE],RV=[],rvL=false,SEL=null,acI=-1,acR=[],LIG=[],ECR=[],editC=null;
+window.LIG=[];
+let DB=[...BASE],RV=[],rvL=false,SEL=null,acI=-1,acR=[],LIG=window.LIG,ECR=[],editC=null;
 let TYP='411',TOT=0;
 const MAX=15;
 const TC={"411":"#38bdf8","165":"#f59e0b","181":"#a78bfa"};
@@ -2515,7 +2516,10 @@ function VAL(){
   document.getElementById('itot').value='';
   document.getElementById('tot-v').innerHTML='';
   document.getElementById('ilib-h').value='';
-  renderECC();renderECR();INC();US();
+  renderECC();renderECR();
+  // Sync Firebase — LIG validée (pièce complète)
+  if(typeof window._fbSyncLIG==="function") window._fbSyncLIG([...LIG]);
+  INC();US();
   MSG('ok','✅ Pièce '+p+' validée — '+FM(totGlobal)+' DA');
   setTimeout(()=>{if(TYP==='V')document.getElementById('itot').focus();else document.getElementById('isrc').focus();},60);
 }
@@ -5044,8 +5048,7 @@ const FB_CONFIG = {
   projectId:         "fwt-s-d597d",
   storageBucket:     "fwt-s-d597d.firebasestorage.app",
   messagingSenderId: "962680820863",
-  appId:             "1:962680820863:web:860cd299eaa343e5dadb4a",
-  measurementId:     "G-CQX4G6LS6J"
+  appId:             "1:962680820863:web:860cd299eaa343e5dadb4a"
 };
 
 // ── NODE Realtime DB où LIG est synchronisé ────────────────────
