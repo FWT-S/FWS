@@ -2352,36 +2352,43 @@ function onTotChange(v){
 }
 
 // ══ AJOUT LIGNE ══════════════════════════════════════════════
-function AL(){
-  if(!SEL){MSG('err','⚠️ Sélectionnez un client.');return;}
-  const m=PM(document.getElementById('imt').value);
-  if(!m||m<=0){MSG('err','⚠️ Montant invalide.');return;}
-  if(LIG.length>=MAX){MSG('err','⚠️ Max '+MAX+' lignes par pièce.');return;}
-  // Mode VENTILÉ : vérif dépassement
-  if(TYP==='V'&&TOT>0){
-    const deja=LIG.filter(l=>l.ventile).reduce((a,l)=>a+l.montant,0);
-    // Accepter valeurs négatives (avoirs déduits du paiement)
-    if(m>0&&deja+m>TOT+0.01){MSG('err','❌ Dépassement ! Reste : '+FM(TOT-deja)+' DA');return;}
+function AL() {
+  if(!SEL) return;
+  const m = PM(document.getElementById('imt').value);
+  if(!m) return;
+
+  // --- ENVOI VERS FIREBASE ---
+  if (window.sauvegarderVersFirebase) {
+    window.sauvegarderVersFirebase({
+      date: document.getElementById('idat').value,
+      piece: GP(),
+      ref: document.getElementById('iref').value,
+      libelle: document.getElementById('ilib-h').value || SEL.label,
+      compte: getCOM(SEL),
+      auxiliaire: getAUX(SEL),
+      montant: m,
+      type: TYP
+    });
   }
-  // Modes 411/165 : vérif relevé
-  if(TYP!=='V'&&rvL&&!RV.some(r=>Math.abs(r.credit-m)<0.01)){
-    if(!confirm('⚠️ '+FM(m)+' DA absent du relevé.\nImputer quand même ?'))return;
-  }
-  // Stocker le type de la ligne au moment de l'ajout
-  LIG.push({id:Date.now(),client:{...SEL},montant:m,lib:SEL.label,ventile:TYP==='V',typ:TYP});
-  // Reset champs
-  document.getElementById('isrc').value='';
-  document.getElementById('selinfo').innerHTML='';
-  document.getElementById('imt').value='';
-  document.getElementById('imt').style.borderColor='';
-  document.getElementById('vst').innerHTML='';
-  SEL=null;acR=[];acI=-1;
+
+  // Ton code habituel pour l'affichage local
+  const e = {
+    id: Date.now(),
+    p: GP(),
+    d: document.getElementById('idat').value,
+    r: document.getElementById('iref').value,
+    l: document.getElementById('ilib-h').value || SEL.label,
+    c: getCOM(SEL),
+    a: getAUX(SEL),
+    mt: m,
+    t: TYP
+  };
+  LIG.push(e);
   renderECC();
-  // Auto-validation à 15 lignes
-  if(LIG.length>=MAX){
-    setTimeout(()=>{VAL();MSG('ok','✅ 15 lignes — pièce validée auto.');},150);
-    return;
-  }
+  INC();
+  document.getElementById('imt').value = '';
+  document.getElementById('idat').focus();
+}
   // Ventilé soldé → PAS de validation auto → même pièce
   // Nouvelle pièce UNIQUEMENT si 15 lignes D 512214 atteintes
   if(TYP==='V'&&TOT>0){
@@ -5029,5 +5036,53 @@ function ndcfFacMK(e){
 
 </script>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDCSvhm-430aQ4NARtSbk9leYIdf4OHSOs",
+    authDomain: "fwt-s-d597d.firebaseapp.com",
+    projectId: "fwt-s-d597d",
+    storageBucket: "fwt-s-d597d.firebasestorage.app",
+    messagingSenderId: "962680820863",
+    appId: "1:962680820863:web:860cd299eaa343e5dadb4a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const dbRef = ref(db, 'journal');
+
+  // Cette fonction permet à ton bouton AL() d'envoyer les données
+  window.sauvegarderVersFirebase = function(donnees) {
+    push(dbRef, donnees);
+  };
+
+  // Cette fonction ÉCOUTE les changements et met à jour le tableau sur TOUS les PC
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      // On transforme le format Firebase en format compatible avec ton tableau LIG
+      const listeSynchronisee = Object.values(data).map(item => ({
+        id: Date.now() + Math.random(),
+        p: item.piece,
+        d: item.date,
+        r: item.ref,
+        l: item.libelle,
+        c: item.compte,
+        a: item.auxiliaire,
+        mt: item.montant,
+        t: item.type
+      }));
+
+      // On remplace tes lignes locales par celles de Firebase et on rafraîchit l'affichage
+      window.LIG = listeSynchronisee;
+      if (typeof renderECC === "function") {
+        renderECC();
+      }
+    }
+  });
+</script>
+</script>
 </body>
 </html>
