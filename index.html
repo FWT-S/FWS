@@ -2352,43 +2352,38 @@ function onTotChange(v){
 }
 
 // ══ AJOUT LIGNE ══════════════════════════════════════════════
-function AL() {
-  if(!SEL) return;
-  const m = PM(document.getElementById('imt').value);
-  if(!m) return;
-
-  // --- ENVOI VERS FIREBASE ---
-  if (window.sauvegarderVersFirebase) {
-    window.sauvegarderVersFirebase({
-      date: document.getElementById('idat').value,
-      piece: GP(),
-      ref: document.getElementById('iref').value,
-      libelle: document.getElementById('ilib-h').value || SEL.label,
-      compte: getCOM(SEL),
-      auxiliaire: getAUX(SEL),
-      montant: m,
-      type: TYP
-    });
+function AL(){
+  if(!SEL){MSG('err','⚠️ Sélectionnez un client.');return;}
+  const m=PM(document.getElementById('imt').value);
+  if(!m||m<=0){MSG('err','⚠️ Montant invalide.');return;}
+  if(LIG.length>=MAX){MSG('err','⚠️ Max '+MAX+' lignes par pièce.');return;}
+  // Mode VENTILÉ : vérif dépassement
+  if(TYP==='V'&&TOT>0){
+    const deja=LIG.filter(l=>l.ventile).reduce((a,l)=>a+l.montant,0);
+    // Accepter valeurs négatives (avoirs déduits du paiement)
+    if(m>0&&deja+m>TOT+0.01){MSG('err','❌ Dépassement ! Reste : '+FM(TOT-deja)+' DA');return;}
   }
-
-  // Ton code habituel pour l'affichage local
-  const e = {
-    id: Date.now(),
-    p: GP(),
-    d: document.getElementById('idat').value,
-    r: document.getElementById('iref').value,
-    l: document.getElementById('ilib-h').value || SEL.label,
-    c: getCOM(SEL),
-    a: getAUX(SEL),
-    mt: m,
-    t: TYP
-  };
-  LIG.push(e);
+  // Modes 411/165 : vérif relevé
+  if(TYP!=='V'&&rvL&&!RV.some(r=>Math.abs(r.credit-m)<0.01)){
+    if(!confirm('⚠️ '+FM(m)+' DA absent du relevé.\nImputer quand même ?'))return;
+  }
+  // Stocker le type de la ligne au moment de l'ajout
+  LIG.push({id:Date.now(),client:{...SEL},montant:m,lib:SEL.label,ventile:TYP==='V',typ:TYP});
+  // Sync Firebase — envoyer LIG mis à jour
+  if(typeof window._fbSyncLIG === 'function') window._fbSyncLIG([...LIG]);
+  // Reset champs
+  document.getElementById('isrc').value='';
+  document.getElementById('selinfo').innerHTML='';
+  document.getElementById('imt').value='';
+  document.getElementById('imt').style.borderColor='';
+  document.getElementById('vst').innerHTML='';
+  SEL=null;acR=[];acI=-1;
   renderECC();
-  INC();
-  document.getElementById('imt').value = '';
-  document.getElementById('idat').focus();
-}
+  // Auto-validation à 15 lignes
+  if(LIG.length>=MAX){
+    setTimeout(()=>{VAL();MSG('ok','✅ 15 lignes — pièce validée auto.');},150);
+    return;
+  }
   // Ventilé soldé → PAS de validation auto → même pièce
   // Nouvelle pièce UNIQUEMENT si 15 lignes D 512214 atteintes
   if(TYP==='V'&&TOT>0){
@@ -5036,53 +5031,76 @@ function ndcfFacMK(e){
 
 </script>
 
+<!-- ═══════════════════════════════════════════════════════
+     FIREBASE REALTIME DATABASE — SYNC LIG (JBR)
+     Remplacer les valeurs ci-dessous par vos clés Firebase
+═══════════════════════════════════════════════════════ -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+// ── CONFIG Firebase — À PERSONNALISER ─────────────────────────
+const FB_CONFIG = {
+  apiKey:            "AIzaSyDCSvhm-430aQ4NARtSbk9leYIdf4OHSOs",
+  authDomain:        "fwt-s-d597d.firebaseapp.com",
+  databaseURL:       "https://fwt-s-d597d-default-rtdb.firebaseio.com",
+  projectId:         "fwt-s-d597d",
+  storageBucket:     "fwt-s-d597d.firebasestorage.app",
+  messagingSenderId: "962680820863",
+  appId:             "1:962680820863:web:860cd299eaa343e5dadb4a",
+  measurementId:     "G-CQX4G6LS6J"
+};
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDCSvhm-430aQ4NARtSbk9leYIdf4OHSOs",
-    authDomain: "fwt-s-d597d.firebaseapp.com",
-    projectId: "fwt-s-d597d",
-    storageBucket: "fwt-s-d597d.firebasestorage.app",
-    messagingSenderId: "962680820863",
-    appId: "1:962680820863:web:860cd299eaa343e5dadb4a"
+// ── NODE Realtime DB où LIG est synchronisé ────────────────────
+const FB_NODE = "fwt/jbr/LIG";
+
+// ── Import Firebase SDK (v10 modulaire) ───────────────────────
+import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── Init ──────────────────────────────────────────────────────
+const app = initializeApp(FB_CONFIG);
+const db  = getDatabase(app);
+const ligRef = ref(db, FB_NODE);
+
+// ── Identifiant unique de cette instance (pour éviter boucle) ─
+const MY_ID = 'pc_' + Math.random().toString(36).slice(2,8);
+let  _lastSent = null; // dernier JSON envoyé par CE PC
+
+// ══ ENVOI : appelé depuis AL() via window._fbSyncLIG ══════════
+window._fbSyncLIG = function(ligSnapshot) {
+  const payload = {
+    lig:       ligSnapshot,
+    updatedBy: MY_ID,
+    ts:        Date.now()
   };
+  _lastSent = JSON.stringify(ligSnapshot);
+  set(ligRef, payload).catch(e => console.warn('[Firebase] Envoi échoué:', e));
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const dbRef = ref(db, 'journal');
+// ══ RÉCEPTION : écouter les changements de l'autre PC ══════════
+onValue(ligRef, (snapshot) => {
+  const data = snapshot.val();
+  if (!data || !data.lig) return;
+  // Ignorer si c'est nous-mêmes qui avons envoyé
+  if (data.updatedBy === MY_ID) return;
+  const incoming = JSON.stringify(data.lig);
+  if (incoming === _lastSent) return; // pas de changement réel
 
-  // Cette fonction permet à ton bouton AL() d'envoyer les données
-  window.sauvegarderVersFirebase = function(donnees) {
-    push(dbRef, donnees);
-  };
+  // Injecter dans LIG global sans toucher à l'interface
+  window.LIG = data.lig;
+  _lastSent = incoming;
 
-  // Cette fonction ÉCOUTE les changements et met à jour le tableau sur TOUS les PC
-  onValue(dbRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      // On transforme le format Firebase en format compatible avec ton tableau LIG
-      const listeSynchronisee = Object.values(data).map(item => ({
-        id: Date.now() + Math.random(),
-        p: item.piece,
-        d: item.date,
-        r: item.ref,
-        l: item.libelle,
-        c: item.compte,
-        a: item.auxiliaire,
-        mt: item.montant,
-        t: item.type
-      }));
+  // Rafraîchir l'affichage si renderECC est disponible
+  if (typeof window.renderECC === 'function') {
+    window.renderECC();
+  }
+  // Toast discret de notification
+  if (typeof window.MSG === 'function') {
+    window.MSG('ok', '🔄 Sync PC distant — ' + data.lig.length + ' ligne(s)', 2500);
+  }
+});
 
-      // On remplace tes lignes locales par celles de Firebase et on rafraîchit l'affichage
-      window.LIG = listeSynchronisee;
-      if (typeof renderECC === "function") {
-        renderECC();
-      }
-    }
-  });
+// ── Exposer MY_ID pour debug ──────────────────────────────────
+console.log('[Firebase] FWT JBR connecté — ID:', MY_ID);
 </script>
-</script>
+
 </body>
 </html>
