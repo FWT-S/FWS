@@ -2166,7 +2166,8 @@ function FM(n){return n.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumF
 
 // ══ STATE ════════════════════════════════════════════════════
 window.LIG=[];
-let DB=[...BASE],RV=[],rvL=false,SEL=null,acI=-1,acR=[],LIG=window.LIG,ECR=[],editC=null;
+window.ECR=[];window.RV=[];window.rvL=false;
+let DB=[...BASE],RV=window.RV,rvL=window.rvL,SEL=null,acI=-1,acR=[],LIG=window.LIG,ECR=window.ECR,editC=null;
 let TYP='411',TOT=0;
 const MAX=15;
 const TC={"411":"#38bdf8","165":"#f59e0b","181":"#a78bfa"};
@@ -2201,7 +2202,19 @@ function MSG(t,x,d=5000){const b=document.getElementById('msgbar');b.className=t
 function updPC(){const n=parseInt(document.getElementById('ipc').value)||0;document.getElementById('pc-fmt').textContent='→'+String(n).padStart(6,'0');}
 function updFolio(){const d=document.getElementById('idat').value;document.getElementById('folio-b').textContent='F:'+getFOLIO(d);}
 function GP(){return String(parseInt(document.getElementById('ipc').value)||0).padStart(6,'0');}
-function INC(){const i=document.getElementById('ipc');i.value=(parseInt(i.value)||0)+1;updPC();}
+function INC(){
+  const i=document.getElementById('ipc');
+  i.value=(parseInt(i.value)||0)+1;
+  updPC();
+  if(typeof fbSend==='function'){
+    fbSend('fwt/jbr/META',{
+      ipc:i.value,
+      idat:(document.getElementById('idat')||{}).value||'',
+      iref:(document.getElementById('iref')||{}).value||'',
+      ilib:(document.getElementById('ilib-h')||{}).value||''
+    });
+  }
+}
 
 // ══ TYPE ÉCRITURE ════════════════════════════════════════════
 function setType(t){
@@ -2370,8 +2383,7 @@ function AL(){
   }
   // Stocker le type de la ligne au moment de l'ajout
   LIG.push({id:Date.now(),client:{...SEL},montant:m,lib:SEL.label,ventile:TYP==='V',typ:TYP});
-  // Sync Firebase — envoyer LIG mis à jour
-  if(typeof window._fbSyncLIG === 'function') window._fbSyncLIG([...LIG]);
+  if(typeof fbSend==='function') fbSend('fwt/jbr/LIG', [...LIG]);
   // Reset champs
   document.getElementById('isrc').value='';
   document.getElementById('selinfo').innerHTML='';
@@ -2401,7 +2413,7 @@ function AL(){
   }
   setTimeout(()=>document.getElementById('imt').focus(),40);
 }
-function DEL(id){LIG=LIG.filter(l=>l.id!==id);renderECC();}
+function DEL(id){LIG=LIG.filter(l=>l.id!==id);window.LIG=LIG;renderECC();if(typeof fbSend==='function')fbSend('fwt/jbr/LIG',[...LIG]);}
 
 // ══ RENDER PIÈCE EN COURS (col gauche) ═══════════════════════
 function renderECC(){
@@ -2517,8 +2529,7 @@ function VAL(){
   document.getElementById('tot-v').innerHTML='';
   document.getElementById('ilib-h').value='';
   renderECC();renderECR();
-  // Sync Firebase — LIG validée (pièce complète)
-  if(typeof window._fbSyncLIG==="function") window._fbSyncLIG([...LIG]);
+  if(typeof fbSend==='function'){fbSend('fwt/jbr/LIG',[...LIG]);fbSend('fwt/jbr/ECR',[...ECR]);}
   INC();US();
   MSG('ok','✅ Pièce '+p+' validée — '+FM(totGlobal)+' DA');
   setTimeout(()=>{if(TYP==='V')document.getElementById('itot').focus();else document.getElementById('isrc').focus();},60);
@@ -2656,6 +2667,7 @@ function resetTout(){
   document.getElementById('vst').innerHTML='';
   SEL=null;
   renderECC();renderECR();US();
+  if(typeof fbSend==='function'){fbSend('fwt/jbr/LIG',[]);fbSend('fwt/jbr/ECR',[]);}
   MSG('ok','✅ Remise à zéro effectuée.');
 }
 
@@ -2675,6 +2687,7 @@ function nouvellePiece(){
   document.getElementById('acd').classList.remove('on');
   renderECC();
   MSG('ok','🆕 Nouvelle pièce — '+GP());
+  if(typeof fbSend==='function')fbSend('fwt/jbr/LIG',[...LIG]);
   setTimeout(()=>{if(TYP==='V')document.getElementById('itot').focus();else document.getElementById('isrc').focus();},60);
 }
 
@@ -2778,6 +2791,7 @@ function SRV(ops,fn){
   document.getElementById('rvtb').innerHTML=ops.map(r=>`<tr><td>${r.code}</td><td style="color:#64748b">${r.dateOp}</td><td style="color:#cbd5e1">${r.libelle}</td><td class="tcc">${FM(r.credit)}</td></tr>`).join('');
   document.getElementById('rvcnt').textContent=ops.length+' opérations';
   document.getElementById('rvtcard').style.display='block';
+  if(typeof fbSend==='function')fbSend('fwt/jbr/RV',{ops:[...RV]});
   updRVB();MSG('ok','✅ Relevé chargé : '+ops.length+' opérations');
 }
 function updRVB(){
@@ -2927,12 +2941,14 @@ function SC(){
   if(editC){const i=DB.findIndex(c=>c.code===editC);if(i>=0)DB[i]={code,label,type};}
   else{if(DB.find(c=>c.code===code)){MSG('err','⚠️ Code déjà existant.');return;}DB.push({code,label,type});}
   CM();RC(DB);document.getElementById('ccnt').textContent=DB.length;
+  if(typeof fbSend==='function')fbSend('fwt/jbr/DB',[...DB]);
   MSG('ok',editC?'✅ Modifié.':'✅ Ajouté.');
 }
 function DC(code){
   if(!confirm('Supprimer ?'))return;
-  DB=DB.filter(c=>c.code!==code);RC(DB);
+  DB=DB.filter(c=>c.code!==code);window.DB=DB;RC(DB);
   document.getElementById('ccnt').textContent=DB.length;
+  if(typeof fbSend==='function')fbSend('fwt/jbr/DB',[...DB]);
   MSG('ok','✅ Supprimé.');
 }
 
@@ -3207,7 +3223,7 @@ NDCF_CLIENTS.forEach(c=>{ NDCF_IDX[c.ndc.toUpperCase()] = c; });
 // ══ STATE NDC-F ══════════════════════════════════════════════
 let NDCF_DATA = [];      // données du fichier commercial chargé
 let NDCF_MODE = false;   // mode NDC-F actif
-let NDCF_PIECES = [];    // pièces NDC-F validées
+window.NDCF_PIECES=[];let NDCF_PIECES=window.NDCF_PIECES; // pièces NDC-F validées
 let ndcfSugList = [];
 let ndcfSugIdx = -1;
 let ndcfLastNum = 0;     // dernier numéro de série utilisé
@@ -3576,11 +3592,11 @@ const COMPANY_ACCOUNTS = {
 const BUILTIN_DB = {"TK":[{"client":"ABIMOU VOYAGE","montant":5622216,"quinzaine":"1/15"},{"client":"AL AWALI TOURS","montant":3051823,"quinzaine":"1/15"},{"client":"AL NADER TOURS","montant":1573744,"quinzaine":"1/15"},{"client":"ANAPIA TRAVEL SERVICES","montant":-220243,"quinzaine":"1/15"},{"client":"ALL WAYS TRAVEL","montant":2467424,"quinzaine":"1/15"},{"client":"AMAZONE ALGERIE","montant":599901,"quinzaine":"2/15"},{"client":"ANISSA VOYAGES","montant":1160372,"quinzaine":"1/15"},{"client":"ANOUAR EL SABAH","montant":1755049,"quinzaine":"1/15"},{"client":"ARAK TOURISME ET VOYAGES","montant":1900934,"quinzaine":"1/15"},{"client":"ATLAS VOYAGES ORAN","montant":435325,"quinzaine":"1/15"},{"client":"AURES TOURS BEN AKNOUN","montant":286336,"quinzaine":"1/15"},{"client":"AZHARI TOURISME ET V.","montant":573299,"quinzaine":"1/15"},{"client":"AZUR VOYAGES ORAN","montant":2305648,"quinzaine":"1/15"},{"client":"BA TOURS","montant":152616,"quinzaine":"1/15"},{"client":"BARAKA TOURS","montant":653595,"quinzaine":"1/15"},{"client":"BENFRRIHA TOURS","montant":547806,"quinzaine":"1/15"},{"client":"BENSMAIL TOURISME ET V.","montant":90430,"quinzaine":"1/15"},{"client":"BRIDGE TRAVEL","montant":7165698,"quinzaine":"1/15"},{"client":"CHOUROUK VOYAGES","montant":96505,"quinzaine":"1/15"},{"client":"CINQ S VOYAGES","montant":803737,"quinzaine":"1/15"},{"client":"DBK  VOYAGES","montant":978533,"quinzaine":"1/15"},{"client":"DEUX M H VOYAGE","montant":43896,"quinzaine":"1/15"},{"client":"DIPLOMATE TRAVEL","montant":37464,"quinzaine":"1/15"},{"client":"DIRECTOURS","montant":107104,"quinzaine":"2/15"},{"client":"DJED TOURS","montant":230775,"quinzaine":"1/15"},{"client":"DJENA TOURS","montant":504390,"quinzaine":"1/15"},{"client":"DOUNIA ES SAFAR EURL","montant":558724,"quinzaine":"1/15"},{"client":"DRARIA TOURS","montant":813120,"quinzaine":"1/15"},{"client":"DUNE VOYAGES","montant":87800,"quinzaine":"1/15"},{"client":"EL IHCENE VOYAGE","montant":3492152,"quinzaine":"1/15"},{"client":"EL INNAB TOURS","montant":1849658,"quinzaine":"1/15"},{"client":"EL KAFIL TRAVEL","montant":563355,"quinzaine":"2/15"},{"client":"EL KANTARA TOURISME","montant":12045641,"quinzaine":"1/15"},{"client":"EL ZAIM VOYAGES","montant":392813,"quinzaine":"2/15"},{"client":"EMERAUDE","montant":816378,"quinzaine":"1/15"},{"client":"EVASION","montant":353847,"quinzaine":"1/15"},{"client":"FELLAOUCEN TOURS EURL","montant":667543,"quinzaine":"2/15"},{"client":"FERFACHE TOURISME","montant":1827206,"quinzaine":"1/15"},{"client":"FERHAT TOURS","montant":778254,"quinzaine":"1/15"},{"client":"FODIL VOYAGES","montant":467453,"quinzaine":"1/15"},{"client":"FUN VOYAGES EURL","montant":358758,"quinzaine":"1/15"},{"client":"FWT  ABANE RAMDANE","montant":220948,"quinzaine":"2/15"},{"client":"FWT  PASTEUR","montant":985717,"quinzaine":"2/15"},{"client":"GELNAR TRAVEL","montant":2570174,"quinzaine":"1/15"},{"client":"GET TOURS","montant":7833787,"quinzaine":"1/15"},{"client":"GHARB TOURS","montant":67307,"quinzaine":"2/15"},{"client":"GOURAYA TOURS","montant":22331508,"quinzaine":"1/15"},{"client":"HABIBAS","montant":2944350,"quinzaine":"1/15"},{"client":"HABOUB VOYAGES","montant":99194,"quinzaine":"1/15"},{"client":"HOSTELRIS MARKETING","montant":43149808,"quinzaine":"1/15"},{"client":"IDHOURAR TOURS","montant":237818,"quinzaine":"1/15"},{"client":"IFRIQUIA TOURISME","montant":869719,"quinzaine":"1/15"},{"client":"JUST EASY TRAVEL","montant":494583,"quinzaine":"1/15"},{"client":"KADI TOURS","montant":734844,"quinzaine":"1/15"},{"client":"KERROUB TRAVEL","montant":97311,"quinzaine":"1/15"},{"client":"LA VAGUE BLEUE","montant":528341,"quinzaine":"1/15"},{"client":"LALAHOUM  TOURS","montant":681905,"quinzaine":"1/15"},{"client":"LAYA TRAVELS","montant":394310,"quinzaine":"2/15"},{"client":"LE BON VOYAGE","montant":19456,"quinzaine":"1/15"},{"client":"LEADER  TOURS","montant":1585880,"quinzaine":"2/15"},{"client":"LOTUS TRAVEL","montant":5428217,"quinzaine":"2/15"},{"client":"MAATKAS","montant":98034,"quinzaine":"1/15"},{"client":"MARIMED VOYAGE","montant":638151,"quinzaine":"1/15"},{"client":"MAXI TRAVEL","montant":77143,"quinzaine":"1/15"},{"client":"MECHOUAR TOURISME ET V.","montant":443097,"quinzaine":"1/15"},{"client":"MEKKERA VOYAGES","montant":779528,"quinzaine":"1/15"},{"client":"MELAKHESSOU VOYAGES","montant":1012382,"quinzaine":"1/15"},{"client":"MENANI TOURS","montant":72700,"quinzaine":"1/15"},{"client":"MERCURE VOYAGES EURL","montant":462626,"quinzaine":"1/15"},{"client":"NADJIB TOURS","montant":465400,"quinzaine":"1/15"},{"client":"NIADINE TRAVEL SERVICES","montant":2476435,"quinzaine":"1/15"},{"client":"NOUBA TRAVEL","montant":29636177,"quinzaine":"1/15"},{"client":"NOUI TOURISME","montant":8971673,"quinzaine":"1/15"},{"client":"NUMIDIA TRAVEL SERVICES","montant":13200602,"quinzaine":"1/15"},{"client":"OK VOYAGE","montant":1948112,"quinzaine":"1/15"},{"client":"ONAT  DIDOUCHE MOURAD","montant":1194993,"quinzaine":"1/15"},{"client":"PIVOINE TOURS","montant":27348968,"quinzaine":"1/15"},{"client":"PORTES DU MONDE","montant":159677,"quinzaine":"1/15"},{"client":"PRIVILEGE TOURS","montant":7128337,"quinzaine":"2/15"},{"client":"RAHIL TOURISME","montant":135492,"quinzaine":"1/15"},{"client":"REBIB TRAVEL","montant":1042990,"quinzaine":"1/15"},{"client":"REZZAG HABLA","montant":1569597,"quinzaine":"1/15"},{"client":"ROSTOM TOURS","montant":64769,"quinzaine":"1/15"},{"client":"RYLOU VOYAGES","montant":1265380,"quinzaine":"2/15"},{"client":"RYTEL TRAVEL","montant":40446,"quinzaine":"1/15"},{"client":"S TO S","montant":489526,"quinzaine":"1/15"},{"client":"SAAPY  FLOTTES","montant":-142912,"quinzaine":"1/15"},{"client":"SAHOUA VOYAGES","montant":1403819,"quinzaine":"1/15"},{"client":"SAJAIA TOURS","montant":120651,"quinzaine":"1/15"},{"client":"SANS VISA VOYAGES","montant":4288990,"quinzaine":"1/15"},{"client":"SAPHIR TOURS","montant":347554,"quinzaine":"1/15"},{"client":"SATGURU TRAVEL","montant":19779033,"quinzaine":"1/15"},{"client":"SEGHIRI VOYAGES","montant":108139,"quinzaine":"1/15"},{"client":"SIDI EL HOUARI","montant":964610,"quinzaine":"1/15"},{"client":"SILVI TOURS","montant":452947,"quinzaine":"2/15"},{"client":"SMILE TOURISME","montant":242862,"quinzaine":"1/15"},{"client":"SOLEIL VOYAGES REF","montant":2189212,"quinzaine":"1/15"},{"client":"SOUTH STREET TRAVEL","montant":12922591,"quinzaine":"2/15"},{"client":"SULTAN GROUP","montant":3986158,"quinzaine":"1/15"},{"client":"SUNRISE","montant":101878,"quinzaine":"1/15"},{"client":"TAZMALT","montant":168272,"quinzaine":"1/15"},{"client":"TELL VOYAGES","montant":525569,"quinzaine":"1/15"},{"client":"TEMOULGA TOURISME","montant":2971111,"quinzaine":"1/15"},{"client":"TIDIKELT TOURS","montant":8033211,"quinzaine":"2/15"},{"client":"TIFRIT","montant":7427022,"quinzaine":"1/15"},{"client":"TIMGAD VOYAGES BATNA","montant":4501806,"quinzaine":"1/15"},{"client":"TIPAZA TOURS","montant":7010094,"quinzaine":"1/15"},{"client":"TLEMSANI TOURS ORAN","montant":27119,"quinzaine":"1/15"},{"client":"TOURAF AGENCY","montant":401335,"quinzaine":"1/15"},{"client":"TREFLE  TOURS","montant":1329108,"quinzaine":"2/15"},{"client":"TVA LES VERGERS","montant":5336772,"quinzaine":"2/15"},{"client":"TVA MASCARA","montant":341407,"quinzaine":"1/15"},{"client":"TVA MEDEA","montant":916595,"quinzaine":"1/15"},{"client":"TVA ROUIBA","montant":87848,"quinzaine":"2/15"},{"client":"TVA SKIKDA","montant":45334,"quinzaine":"1/15"},{"client":"TVA ZIROUT","montant":1015977,"quinzaine":"2/15"},{"client":"UZMAN VOYAGES","montant":1976421,"quinzaine":"1/15"},{"client":"WHEREVER TRAVEL AGENCY","montant":227864,"quinzaine":"1/15"},{"client":"YARA TOURISME","montant":2876217,"quinzaine":"1/15"},{"client":"YASSA TOURISME","montant":121338,"quinzaine":"2/15"},{"client":"YOUCEF TOURISME","montant":5930124,"quinzaine":"1/15"},{"client":"YOUMID TOUR","montant":55475,"quinzaine":"1/15"},{"client":"ZAATCHA VOYAGES","montant":74743,"quinzaine":"1/15"},{"client":"ZAHIA VOYAGE","montant":600662,"quinzaine":"1/15"},{"client":"ZEMZEM VOYAGES","montant":759074,"quinzaine":"1/15"},{"client":"ZENATA VOYAGES ORAN","montant":2766503,"quinzaine":"1/15"},{"client":"ZENITH","montant":176099,"quinzaine":"1/15"},{"client":"ZIDOUN VOYAGES","montant":17402,"quinzaine":"1/15"},{"client":"ZYRIAB VOYAGES","montant":3990836,"quinzaine":"1/15"}],"V7":[{"client":"ABIMOU VOYAGE","montant":320143,"quinzaine":"1/15"},{"client":"ANAPIA TRAVEL SERVICES","montant":37945,"quinzaine":"1/15"},{"client":"ANOUAR EL SABAH","montant":34127,"quinzaine":"1/15"},{"client":"AZHARI TOURISME ET V.","montant":41760,"quinzaine":"1/15"},{"client":"BARAKA TOURS","montant":101961,"quinzaine":"1/15"},{"client":"BRIDGE TRAVEL","montant":173750,"quinzaine":"1/15"},{"client":"CINQ S VOYAGES","montant":20555,"quinzaine":"1/15"},{"client":"DJEMILA VOYAGES EL EULMA","montant":107882,"quinzaine":"1/15"},{"client":"EL MOUHSSINOUNE TOURS","montant":100247,"quinzaine":"1/15"},{"client":"FWT  ORAN","montant":352620,"quinzaine":"2/15"},{"client":"FWT  PASTEUR","montant":591012,"quinzaine":"2/15"},{"client":"GELNAR TRAVEL","montant":56556,"quinzaine":"1/15"},{"client":"GET TOURS","montant":68278,"quinzaine":"1/15"},{"client":"GHARB TOURS","montant":53725,"quinzaine":"2/15"},{"client":"GOURAYA TOURS","montant":193065,"quinzaine":"1/15"},{"client":"HABIBAS","montant":83488,"quinzaine":"1/15"},{"client":"HOSTELRIS MARKETING","montant":323546,"quinzaine":"1/15"},{"client":"IFRIQUIA TOURISME","montant":16895,"quinzaine":"1/15"},{"client":"JUST EASY TRAVEL","montant":108521,"quinzaine":"1/15"},{"client":"KADI TOURS","montant":40911,"quinzaine":"1/15"},{"client":"MAXI TRAVEL","montant":89583,"quinzaine":"1/15"},{"client":"MELAKHESSOU VOYAGES","montant":80187,"quinzaine":"1/15"},{"client":"MOURIA","montant":42954,"quinzaine":"2/15"},{"client":"NIADINE TRAVEL SERVICES","montant":18469,"quinzaine":"1/15"},{"client":"NOUBA TRAVEL","montant":366976,"quinzaine":"1/15"},{"client":"NOUI TOURISME","montant":83488,"quinzaine":"1/15"},{"client":"NUMIDIA TRAVEL SERVICES","montant":22889,"quinzaine":"1/15"},{"client":"PRIVILEGE TOURS","montant":64971,"quinzaine":"2/15"},{"client":"RAHIL TOURISME","montant":16897,"quinzaine":"1/15"},{"client":"REBIB TRAVEL","montant":54975,"quinzaine":"1/15"},{"client":"SAJAIA TOURS","montant":18427,"quinzaine":"1/15"},{"client":"SATGURU TRAVEL","montant":489461,"quinzaine":"1/15"},{"client":"SOLEIL VOYAGES REF","montant":152219,"quinzaine":"1/15"},{"client":"SOUTH STREET TRAVEL","montant":247579,"quinzaine":"2/15"},{"client":"TAZMALT","montant":20595,"quinzaine":"1/15"},{"client":"TIDIKELT TOURS","montant":2280,"quinzaine":"2/15"},{"client":"TVA  ANNABA","montant":34717,"quinzaine":"1/15"},{"client":"TVA BBA","montant":186013,"quinzaine":"2/15"},{"client":"TVA DJELFA","montant":25935,"quinzaine":"1/15"},{"client":"TVA JIJEL","montant":156264,"quinzaine":"1/15"},{"client":"TVA SKIKDA","montant":51962,"quinzaine":"1/15"},{"client":"TVA TEBINET  SETIF","montant":90789,"quinzaine":"1/15"},{"client":"YOUCEF TOURISME","montant":87242,"quinzaine":"1/15"},{"client":"YOUMID TOUR","montant":83632,"quinzaine":"1/15"},{"client":"ZAATCHA VOYAGES","montant":200619,"quinzaine":"1/15"},{"client":"ZENATA VOYAGES ORAN","montant":161158,"quinzaine":"1/15"}],"IB":[{"client":"ABIMOU VOYAGE","montant":100618,"quinzaine":"1/15"},{"client":"AFRICAN TRAVEL SERVICE","montant":74557,"quinzaine":"2/15"},{"client":"AL NADER TOURS","montant":9260,"quinzaine":"1/15"},{"client":"ANAPIA TRAVEL SERVICES","montant":48014,"quinzaine":"1/15"},{"client":"ALL WAYS TRAVEL","montant":607405,"quinzaine":"1/15"},{"client":"ANOUAR EL SABAH","montant":40704,"quinzaine":"1/15"},{"client":"ARAK TOURISME ET VOYAGES","montant":103734,"quinzaine":"1/15"},{"client":"ATLAS VOYAGES ORAN","montant":68899,"quinzaine":"1/15"},{"client":"AURES TOURS BEN AKNOUN","montant":68187,"quinzaine":"1/15"},{"client":"AZHARI TOURISME ET V.","montant":32041,"quinzaine":"1/15"},{"client":"BA TOURS","montant":122690,"quinzaine":"1/15"},{"client":"BENFRRIHA TOURS","montant":54162,"quinzaine":"1/15"},{"client":"EL IHCENE VOYAGE","montant":300284,"quinzaine":"1/15"},{"client":"EL MOUHSSINOUNE TOURS","montant":20391,"quinzaine":"1/15"},{"client":"EL ZAIM VOYAGES","montant":34089,"quinzaine":"2/15"},{"client":"FELLAOUCEN TOURS EURL","montant":20900,"quinzaine":"2/15"},{"client":"FERFACHE TOURISME","montant":36568,"quinzaine":"1/15"},{"client":"FWT  ORAN","montant":25115,"quinzaine":"2/15"},{"client":"FWT  PASTEUR","montant":861354,"quinzaine":"2/15"},{"client":"GELNAR TRAVEL","montant":57360,"quinzaine":"1/15"},{"client":"GET TOURS","montant":38724,"quinzaine":"1/15"},{"client":"GOURAYA TOURS","montant":873937,"quinzaine":"1/15"},{"client":"HOSTELRIS MARKETING","montant":673108,"quinzaine":"1/15"},{"client":"IDHOURAR TOURS","montant":66274,"quinzaine":"1/15"},{"client":"JDIOUIA TOURS","montant":42264,"quinzaine":"1/15"},{"client":"JUST EASY TRAVEL","montant":18430,"quinzaine":"1/15"},{"client":"KERROUB TRAVEL","montant":51251,"quinzaine":"1/15"},{"client":"MEKKERA VOYAGES","montant":36490,"quinzaine":"1/15"},{"client":"MELAKHESSOU VOYAGES","montant":28948,"quinzaine":"1/15"},{"client":"NIADINE TRAVEL SERVICES","montant":30358,"quinzaine":"1/15"},{"client":"NOUBA TRAVEL","montant":740057,"quinzaine":"1/15"},{"client":"NOUI TOURISME","montant":121882,"quinzaine":"1/15"},{"client":"NUMIDIA TRAVEL SERVICES","montant":456334,"quinzaine":"1/15"},{"client":"OK VOYAGE","montant":85988,"quinzaine":"1/15"},{"client":"RELIANCE TRAVEL","montant":35053,"quinzaine":"1/15"},{"client":"RYLOU VOYAGES","montant":226175,"quinzaine":"2/15"},{"client":"SATGURU TRAVEL","montant":164658,"quinzaine":"1/15"},{"client":"SMILE TOURISME","montant":273688,"quinzaine":"1/15"},{"client":"SOUTH STREET TRAVEL","montant":3019136,"quinzaine":"2/15"},{"client":"TEMOULGA TOURISME","montant":17876,"quinzaine":"1/15"},{"client":"TOURAF AGENCY","montant":13940,"quinzaine":"1/15"},{"client":"TVA CHLEF","montant":71151,"quinzaine":"1/15"},{"client":"TVA LES VERGERS","montant":345204,"quinzaine":"2/15"},{"client":"TVA MEDEA","montant":48354,"quinzaine":"1/15"},{"client":"TVA SETIF","montant":24550,"quinzaine":"2/15"},{"client":"TVA SKIKDA","montant":68474,"quinzaine":"1/15"},{"client":"YARA TOURISME","montant":223780,"quinzaine":"1/15"},{"client":"YOUMID TOUR","montant":117019,"quinzaine":"1/15"},{"client":"ZAATCHA VOYAGES","montant":226040,"quinzaine":"1/15"},{"client":"ZAHIA VOYAGE","montant":15092,"quinzaine":"1/15"},{"client":"ZYRIAB VOYAGES","montant":345567,"quinzaine":"1/15"}],"TO":[{"client":"ZYRIAB VOYAGES","montant":171141,"quinzaine":"1/15"}],"AC":[{"client":"ABIMOU VOYAGE","montant":401820,"quinzaine":"1/15"},{"client":"AL AWALI TOURS","montant":183134,"quinzaine":"1/15"},{"client":"ALL WAYS TRAVEL","montant":298963,"quinzaine":"1/15"},{"client":"BA TOURS","montant":180380,"quinzaine":"1/15"},{"client":"CINQ S VOYAGES","montant":143595,"quinzaine":"1/15"},{"client":"CORRECTE TOURISME","montant":106779,"quinzaine":"1/15"},{"client":"FELLAOUCEN TOURS EURL","montant":142462,"quinzaine":"2/15"},{"client":"GET TOURS","montant":231150,"quinzaine":"1/15"},{"client":"GOURAYA TOURS","montant":835058,"quinzaine":"1/15"},{"client":"HOSTELRIS MARKETING","montant":2273723,"quinzaine":"1/15"},{"client":"IDHOURAR TOURS","montant":262707,"quinzaine":"1/15"},{"client":"NIADINE TRAVEL SERVICES","montant":338817,"quinzaine":"1/15"},{"client":"NOUBA TRAVEL","montant":691026,"quinzaine":"1/15"},{"client":"NUMIDIA TRAVEL SERVICES","montant":240318,"quinzaine":"1/15"},{"client":"OK VOYAGE","montant":240292,"quinzaine":"1/15"},{"client":"PRIVILEGE TOURS","montant":431262,"quinzaine":"2/15"},{"client":"RYLOU VOYAGES","montant":659535,"quinzaine":"2/15"},{"client":"SMILE TOURISME","montant":87566,"quinzaine":"1/15"},{"client":"SOLEIL VOYAGES REF","montant":628752,"quinzaine":"1/15"},{"client":"SOUTH STREET TRAVEL","montant":317863,"quinzaine":"2/15"},{"client":"TAZMALT","montant":620614,"quinzaine":"1/15"},{"client":"WHEREVER TRAVEL AGENCY","montant":597651,"quinzaine":"1/15"},{"client":"YOUCEF TOURISME","montant":263124,"quinzaine":"1/15"}],"VY":[{"client":"ABIMOU VOYAGE","montant":1278206,"quinzaine":"1/15"},{"client":"AL AWALI TOURS","montant":182260,"quinzaine":"1/15"},{"client":"AL NADER TOURS","montant":134236,"quinzaine":"1/15"},{"client":"ANAPIA TRAVEL SERVICES","montant":120656,"quinzaine":"1/15"},{"client":"ALL WAYS TRAVEL","montant":279020,"quinzaine":"1/15"},{"client":"ANOUAR EL SABAH","montant":247790,"quinzaine":"1/15"},{"client":"ATG","montant":25293,"quinzaine":"1/15"},{"client":"ATLAS VOYAGES ORAN","montant":218894,"quinzaine":"1/15"},{"client":"AURES TOURS BEN AKNOUN","montant":160376,"quinzaine":"1/15"},{"client":"AZUR VOYAGES ORAN","montant":353982,"quinzaine":"1/15"},{"client":"BA TOURS","montant":337114,"quinzaine":"1/15"},{"client":"BAL TRAVEL","montant":7362,"quinzaine":"1/15"},{"client":"BARAKA TOURS","montant":257084,"quinzaine":"1/15"},{"client":"BENFRRIHA TOURS","montant":549153,"quinzaine":"1/15"},{"client":"BENSMAIL TOURISME ET V.","montant":182332,"quinzaine":"1/15"},{"client":"BRIDGE TRAVEL","montant":712354,"quinzaine":"1/15"},{"client":"CINQ S VOYAGES","montant":723890,"quinzaine":"1/15"},{"client":"CORRECTE TOURISME","montant":41244,"quinzaine":"1/15"},{"client":"DBK  VOYAGES","montant":320696,"quinzaine":"1/15"},{"client":"DEUX M H VOYAGE","montant":164644,"quinzaine":"1/15"},{"client":"DIPLOMATE TRAVEL","montant":12750,"quinzaine":"1/15"},{"client":"DJEMILA VOYAGES EL EULMA","montant":40094,"quinzaine":"1/15"},{"client":"DRARIA TOURS","montant":173787,"quinzaine":"1/15"},{"client":"DUNE VOYAGES","montant":31610,"quinzaine":"1/15"},{"client":"EGENCYA TRAVEL","montant":68260,"quinzaine":"2/15"},{"client":"EL IHCENE VOYAGE","montant":488186,"quinzaine":"1/15"},{"client":"EL INNAB TOURS","montant":149249,"quinzaine":"1/15"},{"client":"EL KAFIL TRAVEL","montant":40226,"quinzaine":"2/15"},{"client":"EL KANTARA TOURISME","montant":150274,"quinzaine":"1/15"},{"client":"EL MOUHSSINOUNE TOURS","montant":146535,"quinzaine":"1/15"},{"client":"EMERAUDE","montant":42725,"quinzaine":"1/15"},{"client":"EVASION","montant":23506,"quinzaine":"1/15"},{"client":"FELLAOUCEN TOURS EURL","montant":16084,"quinzaine":"2/15"},{"client":"FERFACHE TOURISME","montant":440284,"quinzaine":"1/15"},{"client":"FERHAT TOURS","montant":20178,"quinzaine":"1/15"},{"client":"FUN VOYAGES EURL","montant":121674,"quinzaine":"1/15"},{"client":"FWT  MENNANI","montant":56755,"quinzaine":"2/15"},{"client":"FWT  ORAN","montant":1771872,"quinzaine":"2/15"},{"client":"FWT  PASTEUR","montant":2300002,"quinzaine":"2/15"},{"client":"GELNAR TRAVEL","montant":302122,"quinzaine":"1/15"},{"client":"GET TOURS","montant":576602,"quinzaine":"1/15"},{"client":"GOURAYA TOURS","montant":875852,"quinzaine":"1/15"},{"client":"HABIBAS","montant":51710,"quinzaine":"1/15"},{"client":"HABOUB VOYAGES","montant":115326,"quinzaine":"1/15"},{"client":"HOSTELRIS MARKETING","montant":6082201,"quinzaine":"1/15"},{"client":"IDHOURAR TOURS","montant":102292,"quinzaine":"1/15"},{"client":"IFRIQUIA TOURISME","montant":150130,"quinzaine":"1/15"},{"client":"JDIOUIA TOURS","montant":93390,"quinzaine":"1/15"},{"client":"JUST EASY TRAVEL","montant":94886,"quinzaine":"1/15"},{"client":"KADI TOURS","montant":33042,"quinzaine":"1/15"},{"client":"KERROUB TRAVEL","montant":114925,"quinzaine":"1/15"},{"client":"LAHCENE VOYAGES","montant":48708,"quinzaine":"1/15"},{"client":"LALAHOUM  TOURS","montant":24457,"quinzaine":"1/15"},{"client":"LE BON VOYAGE","montant":25190,"quinzaine":"1/15"},{"client":"LE TEMPS D'UN VOYAGE","montant":193950,"quinzaine":"1/15"},{"client":"LOUAFI TOURISME","montant":186771,"quinzaine":"1/15"},{"client":"MAATKAS","montant":43248,"quinzaine":"1/15"},{"client":"MAXI TRAVEL","montant":72403,"quinzaine":"1/15"},{"client":"MEKKERA VOYAGES","montant":51196,"quinzaine":"1/15"},{"client":"MELAKHESSOU VOYAGES","montant":27336,"quinzaine":"1/15"},{"client":"NIADINE TRAVEL SERVICES","montant":756645,"quinzaine":"1/15"},{"client":"NOUBA TRAVEL","montant":2355329,"quinzaine":"1/15"},{"client":"NOUI TOURISME","montant":126188,"quinzaine":"1/15"},{"client":"NUMIDIA TRAVEL SERVICES","montant":340388,"quinzaine":"1/15"},{"client":"OK VOYAGE","montant":68425,"quinzaine":"1/15"},{"client":"ONAT  DIDOUCHE MOURAD","montant":53544,"quinzaine":"1/15"},{"client":"ORANGE TRAVEL","montant":132218,"quinzaine":"1/15"},{"client":"PORTES DU MONDE","montant":78447,"quinzaine":"1/15"},{"client":"PRIVILEGE TOURS","montant":755798,"quinzaine":"2/15"},{"client":"RELIANCE TRAVEL","montant":49306,"quinzaine":"1/15"},{"client":"ROSTOM TOURS","montant":44274,"quinzaine":"1/15"},{"client":"RYLOU VOYAGES","montant":61443,"quinzaine":"2/15"},{"client":"RYTEL TRAVEL","montant":157834,"quinzaine":"1/15"},{"client":"SAHOUA VOYAGES","montant":213896,"quinzaine":"1/15"},{"client":"SAJAIA TOURS","montant":203588,"quinzaine":"1/15"},{"client":"SATGURU TRAVEL","montant":2835426,"quinzaine":"1/15"},{"client":"SELECT TRAVEL","montant":31950,"quinzaine":"1/15"},{"client":"SILVI TOURS","montant":252603,"quinzaine":"2/15"},{"client":"SMILE TOURISME","montant":176970,"quinzaine":"1/15"},{"client":"SOLEIL VOYAGES REF","montant":267276,"quinzaine":"1/15"},{"client":"SOUTH STREET TRAVEL","montant":3301533,"quinzaine":"2/15"},{"client":"TAFSUT TRAVEL AND TOURISM","montant":11354,"quinzaine":"1/15"},{"client":"TAZMALT","montant":133222,"quinzaine":"1/15"},{"client":"TEMOULGA TOURISME","montant":302919,"quinzaine":"1/15"},{"client":"TIDIKELT TOURS","montant":67646,"quinzaine":"2/15"},{"client":"TIMGAD VOYAGES BATNA","montant":136276,"quinzaine":"1/15"},{"client":"TLEMSANI TOURS ORAN","montant":62890,"quinzaine":"1/15"},{"client":"TOURAF AGENCY","montant":28394,"quinzaine":"1/15"},{"client":"TREFLE  TOURS","montant":70224,"quinzaine":"2/15"},{"client":"TVA DJELFA","montant":26848,"quinzaine":"1/15"},{"client":"TVA LES VERGERS","montant":284666,"quinzaine":"2/15"},{"client":"TVA MASCARA","montant":49879,"quinzaine":"1/15"},{"client":"TVA MEDEA","montant":106066,"quinzaine":"1/15"},{"client":"TVA ORAN  / S","montant":178880,"quinzaine":"1/15"},{"client":"TVA ROUIBA","montant":46040,"quinzaine":"2/15"},{"client":"TVA SETIF","montant":22972,"quinzaine":"2/15"},{"client":"TVA SKIKDA","montant":90620,"quinzaine":"1/15"},{"client":"TVA ZIROUT","montant":94830,"quinzaine":"2/15"},{"client":"UZMAN VOYAGES","montant":171008,"quinzaine":"1/15"},{"client":"WHEREVER TRAVEL AGENCY","montant":137642,"quinzaine":"1/15"},{"client":"YOUCEF TOURISME","montant":35522,"quinzaine":"1/15"},{"client":"YOUMID TOUR","montant":84774,"quinzaine":"1/15"},{"client":"ZAATCHA VOYAGES","montant":1618194,"quinzaine":"1/15"},{"client":"ZAHIA VOYAGE","montant":123086,"quinzaine":"1/15"},{"client":"ZEMZEM VOYAGES","montant":94276,"quinzaine":"1/15"},{"client":"ZENATA VOYAGES ORAN","montant":964050,"quinzaine":"1/15"}],"BJ":[{"client":"ABIMOU VOYAGE","montant":-85870,"quinzaine":"1/15"},{"client":"AL NADER TOURS","montant":-14856,"quinzaine":"1/15"},{"client":"ANOUAR EL SABAH","montant":39996,"quinzaine":"1/15"},{"client":"AZUR VOYAGES ORAN","montant":29044,"quinzaine":"1/15"},{"client":"BRIDGE TRAVEL","montant":20661,"quinzaine":"1/15"},{"client":"DBK  VOYAGES","montant":-17792,"quinzaine":"1/15"},{"client":"DUNE VOYAGES","montant":18456,"quinzaine":"1/15"},{"client":"EL IHCENE VOYAGE","montant":40041,"quinzaine":"1/15"},{"client":"FUN VOYAGES EURL","montant":19922,"quinzaine":"1/15"},{"client":"FWT  ORAN","montant":-12022,"quinzaine":"2/15"},{"client":"GELNAR TRAVEL","montant":49552,"quinzaine":"1/15"},{"client":"GET TOURS","montant":-6765,"quinzaine":"1/15"},{"client":"GOURAYA TOURS","montant":24064,"quinzaine":"1/15"},{"client":"HOSTELRIS MARKETING","montant":391610,"quinzaine":"1/15"},{"client":"NIADINE TRAVEL SERVICES","montant":47690,"quinzaine":"1/15"},{"client":"NOUBA TRAVEL","montant":274898,"quinzaine":"1/15"},{"client":"NUMIDIA TRAVEL SERVICES","montant":18121,"quinzaine":"1/15"},{"client":"OKBANE VOYAGES","montant":41552,"quinzaine":"1/15"},{"client":"SATGURU TRAVEL","montant":488418,"quinzaine":"1/15"},{"client":"SMILE TOURISME","montant":23865,"quinzaine":"1/15"},{"client":"SOLEIL VOYAGES REF","montant":113718,"quinzaine":"1/15"},{"client":"SOUTH STREET TRAVEL","montant":145043,"quinzaine":"2/15"},{"client":"TEMOULGA TOURISME","montant":22223,"quinzaine":"1/15"},{"client":"TOURAF AGENCY","montant":59914,"quinzaine":"1/15"},{"client":"TVA MASCARA","montant":111374,"quinzaine":"1/15"},{"client":"TVA MEDEA","montant":40863,"quinzaine":"1/15"},{"client":"WHEREVER TRAVEL AGENCY","montant":-2434,"quinzaine":"1/15"},{"client":"ZEMZEM VOYAGES","montant":-18504,"quinzaine":"1/15"},{"client":"ZENATA VOYAGES ORAN","montant":384,"quinzaine":"1/15"},{"client":"ZIDOUN VOYAGES","montant":41384,"quinzaine":"1/15"}],"NDC TK":[{"client":"AL NADER TOURS","montant":47711,"quinzaine":"1/15"},{"client":"ANAPIA TRAVEL SERVICES","montant":1058036,"quinzaine":"1/15"},{"client":"EL IHCENE VOYAGE","montant":6012677,"quinzaine":"1/15"},{"client":"EL KANTARA TOURISME","montant":8584400,"quinzaine":"1/15"},{"client":"FERFACHE TOURISME","montant":125966,"quinzaine":"1/15"},{"client":"FERHAT TOURS","montant":118919,"quinzaine":"1/15"},{"client":"GELNAR TRAVEL","montant":2166561,"quinzaine":"1/15"},{"client":"HABOUB VOYAGES","montant":446697,"quinzaine":"1/15"},{"client":"KERROUB TRAVEL","montant":63852,"quinzaine":"1/15"},{"client":"MAXI TRAVEL","montant":354648,"quinzaine":"1/15"},{"client":"MEKKERA VOYAGES","montant":76393,"quinzaine":"1/15"},{"client":"NOUI TOURISME","montant":237594,"quinzaine":"1/15"},{"client":"ORANGE TRAVEL","montant":126085,"quinzaine":"1/15"},{"client":"RELIANCE TRAVEL","montant":221809,"quinzaine":"1/15"},{"client":"RYTEL TRAVEL","montant":649379,"quinzaine":"1/15"},{"client":"SATGURU TRAVEL","montant":3345335,"quinzaine":"1/15"},{"client":"SULTAN GROUP","montant":44989,"quinzaine":"1/15"},{"client":"TAFSUT TRAVEL AND TOURISM","montant":183151,"quinzaine":"1/15"},{"client":"TIFRIT","montant":323186,"quinzaine":"1/15"},{"client":"UZMAN VOYAGES","montant":507970,"quinzaine":"1/15"},{"client":"ZEMZEM VOYAGES","montant":300274,"quinzaine":"1/15"},{"client":"ZENATA VOYAGES ORAN","montant":831493,"quinzaine":"1/15"}],"BA":[{"client":"SATGURU TRAVEL","montant":91298,"quinzaine":"1/15"},{"client":"TVA TEBINET  SETIF","montant":67577,"quinzaine":"1/15"},{"client":"ZYRIAB VOYAGES","montant":1204992,"quinzaine":"1/15"}]};
 
 // ─── STATE ─────────────────────────────────────────────────────────────────
-let FAC_DB = null;
+window.FAC_DB=null;let FAC_DB=window.FAC_DB;
 let selectedComp = null;
 let searchMode = 'iata';
 let currentMatch = null;
-let entries = [];
+window.entries=[];let entries=window.entries;
 let nextId = 1;
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
@@ -3879,73 +3895,49 @@ function isDuplicate(match, comp){
 
 // ─── ADD ENTRY ─────────────────────────────────────────────────────────────
 function addEntry(){
-  // ── Garde-fous : currentMatch et selectedComp obligatoires ─────────────
-  if(!currentMatch || !selectedComp) return;
-
-  // FIX #1 — Lire et sauvegarder les données du match AVANT tout resetResult()
-  // (resetResult() met currentMatch = null, donc toute lecture après plante)
-  const clientKey   = currentMatch.client || null;
-  const matchMontant = currentMatch.montant || 0;
-
-  if(!clientKey){
+  // Sécurité : vérifier que currentMatch et client existent
+  if(!currentMatch||!selectedComp)return;
+  if(!currentMatch.client){
     showToast('⚠ Client introuvable — réessayez','warn');
     resetResult();
     return;
   }
-
-  // FIX #2 — Résoudre nom/aux AVANT le reset, avec valeurs par défaut sûres
-  const nomComptaResolu = getNomCompta(clientKey) || 'CLIENT INCONNU';
-  const fwtFlag = isFWT(clientKey);
-  let codeAux = getCodeAux(clientKey) || '';
-
-  // DUPLICATE CHECK (utilise les variables déjà sauvegardées)
-  if(isDuplicate(currentMatch, selectedComp)){
-    showToast('⚠ DOUBLON — '+nomComptaResolu+' déjà saisi !','warn');
-    if(!confirm('DOUBLON : '+nomComptaResolu+' deja saisi pour '+selectedComp+'. Ajouter quand meme ?')) return;
+  // DUPLICATE CHECK
+  if(isDuplicate(currentMatch,selectedComp)){
+    showToast('⚠ DOUBLON — '+getNomCompta(currentMatch.client)+' déjà saisi !','warn');
+    // Still allow adding with confirmation
+    if(!confirm('DOUBLON : '+getNomCompta(currentMatch.client)+' deja saisi pour '+selectedComp+'. Ajouter quand meme ?')) return;
   }
-
-  // CODE_AUX manquant (411 seulement)
-  if(!fwtFlag && (!codeAux || codeAux==='???' || codeAux==='#N/A')){
-    const saisi=prompt('⚠ CODE AUXILIAIRE manquant pour :\n'+nomComptaResolu+'\n\nSaisissez le code (ex: 41100XXX)\nou Annuler pour continuer sans code :');
+  // AMÉLIORATION 5 — Vérifier CODE_AUX manquant (411 seulement)
+  let codeAux=getCodeAux(currentMatch.client);
+  const fwtFlag=isFWT(currentMatch.client);
+  if(!fwtFlag && (!codeAux||codeAux==='???'||codeAux==='#N/A'||codeAux==='')){
+    const saisi=prompt('⚠ CODE AUXILIAIRE manquant pour :\n'+getNomCompta(currentMatch.client)+'\n\nSaisissez le code (ex: 41100XXX)\nou Annuler pour continuer sans code :');
     if(saisi===null){
       if(!confirm('Continuer SANS code auxiliaire ?')) return;
     } else if(saisi.trim()){
       codeAux=saisi.trim();
-      if(CORR[clientKey]) CORR[clientKey].aux=codeAux;
+      if(CORR[currentMatch.client]) CORR[currentMatch.client].aux=codeAux;
     }
   }
-
-  const ref = getRef(selectedComp);
-  const newEntry = {
-    id:nextId++, comp:selectedComp, client:clientKey,
-    nomCompta: nomComptaResolu,
-    codeAux:   codeAux,
-    isFWT:     fwtFlag,
-    montant:   matchMontant,
-    periode:   currentPeriode, mois:currentMois, ref, isNew:false
-  };
-  entries.push(newEntry);
-
-  // FIX #3 — _fbSyncLIG APRÈS le push, en utilisant uniquement les variables
-  // sauvegardées (plus aucun accès à currentMatch après ce point)
-  try {
-    if(typeof window._fbSyncLIG === 'function') window._fbSyncLIG([...entries]);
-  } catch(fbErr){
-    console.warn('[Firebase] addEntry sync échoué:', fbErr);
-  }
-
-  // Reset UI — currentMatch devient null ici, c'est OK car on n'y accède plus
+  const ref=getRef(selectedComp);
+  entries.push({
+    id:nextId++, comp:selectedComp, client:currentMatch.client,
+    nomCompta:getNomCompta(currentMatch.client),
+    codeAux:codeAux,
+    isFWT:fwtFlag,
+    montant:currentMatch.montant,
+    periode:currentPeriode, mois:currentMois, ref, isNew:false
+  });
+  if(typeof fbSend==='function')fbSend('fwt/fac/entries',[...entries]);
   resetResult();
+  // Forcer vidage du champ montant (double sécurité)
   const mti=document.getElementById('montant-input');
   if(mti){mti.value='';mti.className='big-input';}
   hideMtSuggestFAC();
   document.getElementById(searchMode==='iata'?'iata-input':'montant-input').focus();
-  updateStats();
-  renderTable();
-
-  // Toast avec la variable sauvegardée (pas currentMatch)
-  showToast('✓ '+nomComptaResolu, 'success');
-
+  updateStats();renderTable();
+  showToast('✓ '+getNomCompta(currentMatch.client),'success');
   setTimeout(()=>{
     const rows=document.querySelectorAll('#entries-container tr[data-id]');
     if(rows.length) rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -4031,6 +4023,7 @@ function handleFile(file){
       FAC_DB=newDB;
       document.getElementById('period-label').textContent=file.name.replace(/\.xlsx?/i,'')+' — importé';
       renderCompanyGrid();
+      if(typeof fbSend==='function')fbSend('fwt/fac/FAC_DB',FAC_DB);
       status.innerHTML=`✅ ${total} entrées depuis <b>${file.name}</b>`;
       showToast('✅ '+total+' entrées importées','success');
       switchMainTab('saisie',document.getElementById('main-tab-saisie'));
@@ -4042,14 +4035,15 @@ function loadBuiltinDB(){
   FAC_DB=JSON.parse(JSON.stringify(BUILTIN_DB));
   document.getElementById('period-label').textContent='Base intégrée — Février 2026';
   renderCompanyGrid();
+  if(typeof fbSend==='function')fbSend('fwt/fac/FAC_DB',FAC_DB);
   const total=Object.values(FAC_DB).reduce((s,a)=>s+a.length,0);
   showToast('✅ Base Fév 2026 : '+total+' entrées','success');
   switchMainTab('saisie',document.getElementById('main-tab-saisie'));
 }
 
 // ─── DELETE / CLEAR ────────────────────────────────────────────────────────
-function deleteEntry(id){entries=entries.filter(e=>e.id!==id);updateStats();renderTable();}
-function clearAll(){if(confirm('Effacer toutes les écritures ?')){entries=[];updateStats();renderTable();}}
+function deleteEntry(id){entries=entries.filter(e=>e.id!==id);if(typeof fbSend==='function')fbSend('fwt/fac/entries',[...entries]);updateStats();renderTable();}
+function clearAll(){if(confirm('Effacer toutes les écritures ?')){entries=[];if(typeof fbSend==='function')fbSend('fwt/fac/entries',[]);updateStats();renderTable();}}
 
 // ─── PIECES (35 lignes max, equilibre D=C) ─────────────────────────────────
 function buildPieces(rows, startNum){
@@ -4580,6 +4574,7 @@ function validerNDCF(){
   document.getElementById('ndcf-btn-val').style.opacity='0.5';
   hideNDCFSuggest();
   hideNDCFFacSuggest();
+  if(typeof fbSend==='function')fbSend('fwt/ndcf/pieces',[...NDCF_PIECES]);
   // Rafraîchir liste
   renderNDCFPieces();
   // Curseur revient sur N° facture
@@ -4647,6 +4642,7 @@ function renderNDCFPieces(){
 
 function delNDCFPiece(i){
   NDCF_PIECES.splice(i,1);
+  if(typeof fbSend==='function')fbSend('fwt/ndcf/pieces',[...NDCF_PIECES]);
   renderNDCFPieces();
 }
 
@@ -5074,12 +5070,15 @@ function ndcfFacMK(e){
 
 </script>
 
-<!-- ═══════════════════════════════════════════════════════
-     FIREBASE REALTIME DATABASE — SYNC LIG (JBR)
-     Remplacer les valeurs ci-dessous par vos clés Firebase
-═══════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════
+     FIREBASE REALTIME DATABASE — SYNC MULTI-PC FWT
+     Projet : fwt-s-d597d
+═══════════════════════════════════════════════════ -->
 <script type="module">
-// ── CONFIG Firebase — À PERSONNALISER ─────────────────────────
+import { initializeApp }                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, get }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── Config ────────────────────────────────────────────────────
 const FB_CONFIG = {
   apiKey:            "AIzaSyDCSvhm-430aQ4NARtSbk9leYIdf4OHSOs",
   authDomain:        "fwt-s-d597d.firebaseapp.com",
@@ -5089,59 +5088,177 @@ const FB_CONFIG = {
   messagingSenderId: "962680820863",
   appId:             "1:962680820863:web:860cd299eaa343e5dadb4a"
 };
-
-// ── NODE Realtime DB où LIG est synchronisé ────────────────────
-const FB_NODE = "fwt/jbr/LIG";
-
-// ── Import Firebase SDK (v10 modulaire) ───────────────────────
-import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-// ── Init ──────────────────────────────────────────────────────
 const app = initializeApp(FB_CONFIG);
 const db  = getDatabase(app);
-const ligRef = ref(db, FB_NODE);
 
-// ── Identifiant unique de cette instance (pour éviter boucle) ─
+// ── ID unique de cette session (anti-boucle) ──────────────────
 const MY_ID = 'pc_' + Math.random().toString(36).slice(2,8);
-let  _lastSent = null; // dernier JSON envoyé par CE PC
+window._fbMyID = MY_ID;
 
-// ══ ENVOI : appelé depuis AL() via window._fbSyncLIG ══════════
-window._fbSyncLIG = function(ligSnapshot) {
-  const payload = {
-    lig:       ligSnapshot,
-    updatedBy: MY_ID,
-    ts:        Date.now()
-  };
-  _lastSent = JSON.stringify(ligSnapshot);
-  set(ligRef, payload).catch(e => console.warn('[Firebase] Envoi échoué:', e));
+// ── Noeuds Firebase ───────────────────────────────────────────
+const NODES = {
+  LIG:         'fwt/jbr/LIG',
+  ECR:         'fwt/jbr/ECR',
+  DB:          'fwt/jbr/DB',
+  RV:          'fwt/jbr/RV',
+  entries:     'fwt/fac/entries',
+  NDCF_PIECES: 'fwt/ndcf/pieces',
+  FAC_DB:      'fwt/fac/FAC_DB',
+  META:        'fwt/jbr/META',
+  PRESENCE:    'fwt/presence'
 };
 
-// ══ RÉCEPTION : écouter les changements de l'autre PC ══════════
-onValue(ligRef, (snapshot) => {
-  const data = snapshot.val();
-  if (!data || !data.lig) return;
-  // Ignorer si c'est nous-mêmes qui avons envoyé
-  if (data.updatedBy === MY_ID) return;
-  const incoming = JSON.stringify(data.lig);
-  if (incoming === _lastSent) return; // pas de changement réel
+// ── Envoi générique ───────────────────────────────────────────
+window.fbSend = function(node, data){
+  set(ref(db, node), { data, by: MY_ID, ts: Date.now() })
+    .catch(e => console.warn('[FB] Envoi échoué:', node, e.message));
+};
 
-  // Injecter dans LIG global sans toucher à l'interface
-  window.LIG = data.lig;
-  _lastSent = incoming;
+// ── Helpers de refresh UI ─────────────────────────────────────
+function refreshJBR(){
+  try{ if(typeof renderECC==='function') renderECC(); }catch(e){}
+  try{ if(typeof renderECR==='function') renderECR(); }catch(e){}
+  try{ if(typeof updRVB==='function')    updRVB();    }catch(e){}
+  try{ if(typeof US==='function')        US();         }catch(e){}
+}
+function refreshFAC(){
+  try{ if(typeof renderTable==='function')        renderTable();        }catch(e){}
+  try{ if(typeof renderCompanyGrid==='function')  renderCompanyGrid();  }catch(e){}
+  try{ if(typeof updateStats==='function')        updateStats();        }catch(e){}
+}
+function refreshNDCF(){
+  try{ if(typeof renderNDCFPieces==='function') renderNDCFPieces(); }catch(e){}
+}
+function refreshDB(){
+  try{
+    if(typeof RC==='function') RC(window.DB||[]);
+    const el=document.getElementById('ccnt');
+    if(el) el.textContent=(window.DB||[]).length;
+  }catch(e){}
+}
 
-  // Rafraîchir l'affichage si renderECC est disponible
-  if (typeof window.renderECC === 'function') {
-    window.renderECC();
-  }
-  // Toast discret de notification
-  if (typeof window.MSG === 'function') {
-    window.MSG('ok', '🔄 Sync PC distant — ' + data.lig.length + ' ligne(s)', 2500);
+// ── Écoute de chaque noeud ────────────────────────────────────
+function listen(node, onReceive){
+  onValue(ref(db, node), snap => {
+    const val = snap.val();
+    if(!val || val.by === MY_ID) return; // ignorer ses propres envois
+    onReceive(val.data);
+  });
+}
+
+// LIG
+listen(NODES.LIG, data => {
+  window.LIG.length = 0;
+  if(Array.isArray(data)) data.forEach(x => window.LIG.push(x));
+  refreshJBR();
+  showMsg('🔄 LIG sync — '+window.LIG.length+' ligne(s)');
+});
+
+// ECR
+listen(NODES.ECR, data => {
+  window.ECR = Array.isArray(data) ? data : [];
+  try{ if(typeof renderECR==='function') renderECR(); }catch(e){}
+  showMsg('🔄 ECR sync — '+window.ECR.length+' écriture(s)');
+});
+
+// DB clients
+listen(NODES.DB, data => {
+  window.DB = Array.isArray(data) ? data : [];
+  refreshDB();
+  showMsg('🔄 Base clients sync — '+window.DB.length);
+});
+
+// RV relevé
+listen(NODES.RV, data => {
+  if(data && Array.isArray(data.ops)){
+    window.RV = data.ops; window.rvL = true;
+    try{ if(typeof updRVB==='function') updRVB(); }catch(e){}
+    showMsg('🔄 Relevé BNA sync — '+data.ops.length+' op.');
   }
 });
 
-// ── Exposer MY_ID pour debug ──────────────────────────────────
-console.log('[Firebase] FWT JBR connecté — ID:', MY_ID);
+// entries (factures)
+listen(NODES.entries, data => {
+  window.entries = Array.isArray(data) ? data : [];
+  refreshFAC();
+  showMsg('🔄 Entries sync — '+window.entries.length);
+});
+
+// NDCF_PIECES
+listen(NODES.NDCF_PIECES, data => {
+  window.NDCF_PIECES = Array.isArray(data) ? data : [];
+  refreshNDCF();
+  showMsg('🔄 NDC-F sync — '+window.NDCF_PIECES.length+' pièce(s)');
+});
+
+// FAC_DB
+listen(NODES.FAC_DB, data => {
+  if(data && typeof data === 'object'){
+    window.FAC_DB = data;
+    refreshFAC();
+    showMsg('🔄 Planning factures sync');
+  }
+});
+
+// META JBR (n° pièce, date, ref, libellé)
+listen(NODES.META, data => {
+  if(!data) return;
+  try{
+    if(data.ipc)  document.getElementById('ipc').textContent  = data.ipc;
+    if(data.idat) document.getElementById('idat').value       = data.idat;
+    if(data.iref) document.getElementById('iref').value       = data.iref;
+    if(data.ilib) document.getElementById('ilib-h').value     = data.ilib;
+  }catch(e){}
+});
+
+// ── Présence multi-PC (badge connectés) ──────────────────────
+const presenceRef = ref(db, NODES.PRESENCE + '/' + MY_ID);
+set(presenceRef, { id: MY_ID, ts: Date.now(), active: true });
+
+onValue(ref(db, NODES.PRESENCE), snap => {
+  const all = snap.val() || {};
+  const now = Date.now();
+  // PC actif = vu dans les 5 dernières minutes
+  const active = Object.values(all).filter(p => p.active && (now - p.ts) < 300000);
+  updateBadge(active.length);
+});
+
+// Rafraîchir notre présence toutes les 60s
+setInterval(() => set(presenceRef, { id: MY_ID, ts: Date.now(), active: true }), 60000);
+
+// ── Badge visuel ──────────────────────────────────────────────
+function updateBadge(n){
+  let badge = document.getElementById('fb-badge');
+  if(!badge){
+    badge = document.createElement('div');
+    badge.id = 'fb-badge';
+    badge.style.cssText = [
+      'position:fixed','bottom:12px','left:12px','z-index:9999',
+      'background:rgba(10,22,40,.92)','border:1px solid rgba(16,185,129,.4)',
+      'border-radius:20px','padding:5px 12px','font-size:11px',
+      'color:#10b981','font-family:Inter,sans-serif','cursor:default',
+      'box-shadow:0 2px 12px rgba(0,0,0,.5)','backdrop-filter:blur(8px)',
+      'display:flex','align-items:center','gap:6px'
+    ].join(';');
+    document.body.appendChild(badge);
+  }
+  const dot = n > 1
+    ? '<span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;animation:fbPulse 1.5s infinite;"></span>'
+    : '<span style="width:8px;height:8px;border-radius:50%;background:#64748b;display:inline-block;"></span>';
+  badge.innerHTML = dot + ' <strong>' + n + '</strong> PC connecté' + (n>1?'s':'');
+}
+
+// ── Toast de sync ─────────────────────────────────────────────
+function showMsg(txt){
+  try{ if(typeof MSG==='function') MSG('ok', txt, 2000); }catch(e){}
+}
+
+// ── Style animation pulse ─────────────────────────────────────
+const style = document.createElement('style');
+style.textContent = '@keyframes fbPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}';
+document.head.appendChild(style);
+
+console.log('[Firebase] FWT connecté — ID:', MY_ID);
 </script>
 
 </body>
