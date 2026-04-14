@@ -3639,14 +3639,7 @@ function switchMainTab(name, el){
   if(name==='clients') renderClientsList();
 }
 
-function switchSearch(mode, el){
-  searchMode = mode;
-  document.getElementById('tab-iata-btn').classList.toggle('active',mode==='iata');
-  document.getElementById('tab-montant-btn').classList.toggle('active',mode==='montant');
-  document.getElementById('search-iata').style.display = mode==='iata'?'':'none';
-  document.getElementById('search-montant').style.display = mode==='montant'?'':'none';
-  resetResult();
-}
+// switchSearch v1 — remplacée par version NDC-F ci-dessous
 
 function selectComp(comp){
   selectedComp = comp;
@@ -3886,7 +3879,13 @@ function isDuplicate(match, comp){
 
 // ─── ADD ENTRY ─────────────────────────────────────────────────────────────
 function addEntry(){
+  // Sécurité : vérifier que currentMatch et client existent
   if(!currentMatch||!selectedComp)return;
+  if(!currentMatch.client){
+    showToast('⚠ Client introuvable — réessayez','warn');
+    resetResult();
+    return;
+  }
   // DUPLICATE CHECK
   if(isDuplicate(currentMatch,selectedComp)){
     showToast('⚠ DOUBLON — '+getNomCompta(currentMatch.client)+' déjà saisi !','warn');
@@ -4694,11 +4693,11 @@ function ndcfMK(e){
   }
 }
 
-// switchSearch étendu pour NDC-F
-const _origSwitchSearch = typeof switchSearch !== 'undefined' ? switchSearch : null;
+// switchSearch — version unifiée (IATA + Montant + NDC-F)
 function switchSearch(mode, el){
   NDCF_MODE = (mode==='ndcf');
-  // Cacher tous les panneaux
+  searchMode = mode;
+  // Cacher tous les panneaux et désactiver tous les onglets
   ['iata','montant','ndcf'].forEach(m=>{
     const p=document.getElementById('search-'+m);
     if(p)p.style.display='none';
@@ -4709,12 +4708,27 @@ function switchSearch(mode, el){
   const panel=document.getElementById('search-'+mode);
   if(panel)panel.style.display='block';
   if(el)el.classList.add('active');
-  // Init
+  // Réinitialiser le résultat
+  resetResult();
+  // Init spécifique selon mode
   if(mode==='ndcf'){
     updNDCFRef();
-    setTimeout(()=>{ const fn=document.getElementById('ndcf-fac-num'); if(fn)fn.focus(); else document.getElementById('ndcf-num').focus(); },100);
+    setTimeout(()=>{
+      const fn=document.getElementById('ndcf-fac-num');
+      if(fn)fn.focus();
+      else document.getElementById('ndcf-num').focus();
+    },100);
+  } else if(mode==='iata'){
+    setTimeout(()=>{
+      const inp=document.getElementById('iata-input');
+      if(inp)inp.focus();
+    },60);
+  } else if(mode==='montant'){
+    setTimeout(()=>{
+      const inp=document.getElementById('montant-input');
+      if(inp)inp.focus();
+    },60);
   }
-  if(_origSwitchSearch && mode!=='ndcf') _origSwitchSearch(mode, el);
 }
 
 // F1 dans NDC-F
