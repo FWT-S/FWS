@@ -3879,48 +3879,73 @@ function isDuplicate(match, comp){
 
 // ─── ADD ENTRY ─────────────────────────────────────────────────────────────
 function addEntry(){
-  // Sécurité : vérifier que currentMatch et client existent
-  if(!currentMatch||!selectedComp)return;
-  if(!currentMatch.client){
+  // ── Garde-fous : currentMatch et selectedComp obligatoires ─────────────
+  if(!currentMatch || !selectedComp) return;
+
+  // FIX #1 — Lire et sauvegarder les données du match AVANT tout resetResult()
+  // (resetResult() met currentMatch = null, donc toute lecture après plante)
+  const clientKey   = currentMatch.client || null;
+  const matchMontant = currentMatch.montant || 0;
+
+  if(!clientKey){
     showToast('⚠ Client introuvable — réessayez','warn');
     resetResult();
     return;
   }
-  // DUPLICATE CHECK
-  if(isDuplicate(currentMatch,selectedComp)){
-    showToast('⚠ DOUBLON — '+getNomCompta(currentMatch.client)+' déjà saisi !','warn');
-    // Still allow adding with confirmation
-    if(!confirm('DOUBLON : '+getNomCompta(currentMatch.client)+' deja saisi pour '+selectedComp+'. Ajouter quand meme ?')) return;
+
+  // FIX #2 — Résoudre nom/aux AVANT le reset, avec valeurs par défaut sûres
+  const nomComptaResolu = getNomCompta(clientKey) || 'CLIENT INCONNU';
+  const fwtFlag = isFWT(clientKey);
+  let codeAux = getCodeAux(clientKey) || '';
+
+  // DUPLICATE CHECK (utilise les variables déjà sauvegardées)
+  if(isDuplicate(currentMatch, selectedComp)){
+    showToast('⚠ DOUBLON — '+nomComptaResolu+' déjà saisi !','warn');
+    if(!confirm('DOUBLON : '+nomComptaResolu+' deja saisi pour '+selectedComp+'. Ajouter quand meme ?')) return;
   }
-  // AMÉLIORATION 5 — Vérifier CODE_AUX manquant (411 seulement)
-  let codeAux=getCodeAux(currentMatch.client);
-  const fwtFlag=isFWT(currentMatch.client);
-  if(!fwtFlag && (!codeAux||codeAux==='???'||codeAux==='#N/A'||codeAux==='')){
-    const saisi=prompt('⚠ CODE AUXILIAIRE manquant pour :\n'+getNomCompta(currentMatch.client)+'\n\nSaisissez le code (ex: 41100XXX)\nou Annuler pour continuer sans code :');
+
+  // CODE_AUX manquant (411 seulement)
+  if(!fwtFlag && (!codeAux || codeAux==='???' || codeAux==='#N/A')){
+    const saisi=prompt('⚠ CODE AUXILIAIRE manquant pour :\n'+nomComptaResolu+'\n\nSaisissez le code (ex: 41100XXX)\nou Annuler pour continuer sans code :');
     if(saisi===null){
       if(!confirm('Continuer SANS code auxiliaire ?')) return;
     } else if(saisi.trim()){
       codeAux=saisi.trim();
-      if(CORR[currentMatch.client]) CORR[currentMatch.client].aux=codeAux;
+      if(CORR[clientKey]) CORR[clientKey].aux=codeAux;
     }
   }
-  const ref=getRef(selectedComp);
-  entries.push({
-    id:nextId++, comp:selectedComp, client:currentMatch.client,
-    nomCompta:getNomCompta(currentMatch.client),
-    codeAux:codeAux,
-    isFWT:fwtFlag,
-    montant:currentMatch.montant,
-    periode:currentPeriode, mois:currentMois, ref, isNew:false
-  });
+
+  const ref = getRef(selectedComp);
+  const newEntry = {
+    id:nextId++, comp:selectedComp, client:clientKey,
+    nomCompta: nomComptaResolu,
+    codeAux:   codeAux,
+    isFWT:     fwtFlag,
+    montant:   matchMontant,
+    periode:   currentPeriode, mois:currentMois, ref, isNew:false
+  };
+  entries.push(newEntry);
+
+  // FIX #3 — _fbSyncLIG APRÈS le push, en utilisant uniquement les variables
+  // sauvegardées (plus aucun accès à currentMatch après ce point)
+  try {
+    if(typeof window._fbSyncLIG === 'function') window._fbSyncLIG([...entries]);
+  } catch(fbErr){
+    console.warn('[Firebase] addEntry sync échoué:', fbErr);
+  }
+
+  // Reset UI — currentMatch devient null ici, c'est OK car on n'y accède plus
   resetResult();
-  // Forcer vidage du champ montant (double sécurité)
   const mti=document.getElementById('montant-input');
   if(mti){mti.value='';mti.className='big-input';}
   hideMtSuggestFAC();
   document.getElementById(searchMode==='iata'?'iata-input':'montant-input').focus();
-  updateStats();renderTable();
-  showToast('✓ '+getNomCompta(currentMatch.client),'success');
+  updateStats();
+  renderTable();
+
+  // Toast avec la variable sauvegardée (pas currentMatch)
+  showToast('✓ '+nomComptaResolu, 'success');
+
   setTimeout(()=>{
     const rows=document.querySelectorAll('#entries-container tr[data-id]');
     if(rows.length) rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'nearest'});
