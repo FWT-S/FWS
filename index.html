@@ -1268,8 +1268,8 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
   <div class="mod-choices">
     <div class="mod-btn" onclick="openModule('fac')">
       <div class="mod-ico">🧾</div>
-      <div class="mod-lbl">FACTURES</div>
-      <div class="mod-sub">Saisie factures<br>compagnies aériennes</div>
+      <div class="mod-lbl">EBV</div>
+      <div class="mod-sub">Saisie EBV<br>compagnies aériennes</div>
     </div>
     <div class="mod-btn" onclick="openModule('jbr')">
       <div class="mod-ico">📑</div>
@@ -2369,8 +2369,6 @@ function AL(){
   }
   // Stocker le type de la ligne au moment de l'ajout
   LIG.push({id:Date.now(),client:{...SEL},montant:m,lib:SEL.label,ventile:TYP==='V',typ:TYP});
-  renderECC(); // affichage local immédiat
-  _fbSyncLIG(LIG); // sync Firebase en arrière-plan
   // Reset champs
   document.getElementById('isrc').value='';
   document.getElementById('selinfo').innerHTML='';
@@ -3040,17 +3038,21 @@ function showMtSuggest(digits){
   if(!rvL||!RV.length){hideMtSuggest();return;}
   const box=document.getElementById('mt-suggest');
   if(!box)return;
+  // Clé = montant + libellé bancaire → même montant mais clients différents = entrées distinctes
   const seen=new Set();
   mtSugList=[];
   RV.forEach(r=>{
     const mt=String(Math.round(r.credit));
-    if(mt.startsWith(digits)&&!seen.has(mt)){
-      seen.add(mt);
-      mtSugList.push({mt:parseInt(mt), lib:r.libelle||r.lib_orig||''});
+    if(!mt.startsWith(digits))return;
+    const lib=(r.libelle||r.lib_orig||'').trim();
+    const key=mt+'|'+lib;
+    if(!seen.has(key)){
+      seen.add(key);
+      mtSugList.push({mt:parseInt(mt), lib});
     }
   });
-  mtSugList.sort((a,b)=>a.mt-b.mt);
-  mtSugList=mtSugList.slice(0,10);
+  mtSugList.sort((a,b)=>a.mt-b.mt||a.lib.localeCompare(b.lib));
+  mtSugList=mtSugList.slice(0,15);
   if(!mtSugList.length){hideMtSuggest();return;}
   mtSugIdx=-1;
   renderMtSug();
@@ -4542,8 +4544,6 @@ function validerNDCF(){
     total_reg, frais, tva, ttc,
     isFWT: isFWTclient
   });
-  renderNDCFPieces(); // affichage local immédiat
-  _fbSyncNDCF(NDCF_PIECES); // sync Firebase en arrière-plan
   ndcfLastNum=refNum;
   // PAS d'incrémentation auto — date et pièce restent
   // Reset champs saisie
@@ -5030,124 +5030,6 @@ function ndcfFacMK(e){
     setTimeout(()=>s.style.display='none',1000);
   },5000);
 })();
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ██  FIREBASE REALTIME SYNC — injection non-intrusive                    ██
-// ██  Règles :                                                             ██
-// ██   • Zéro modification du HTML/CSS existant                           ██
-// ██   • renderECC() / renderNDCFPieces() sont appelées AVANT ce bloc     ██
-// ██   • _fbSyncLIG et _fbSyncNDCF exposées sur window pour les appels    ██
-// ═══════════════════════════════════════════════════════════════════════════
-
-(async function initFirebase() {
-  // ── Config ──────────────────────────────────────────────────────────────
-  const FB_CONFIG = {
-    apiKey:            "AIzaSyDCSvhm-430aQ4NARtSbk9leYIdf4OHSOs",
-    authDomain:        "fwt-s-d597d.firebaseapp.com",
-    databaseURL:       "https://fwt-s-d597d-default-rtdb.firebaseio.com",
-    projectId:         "fwt-s-d597d",
-    storageBucket:     "fwt-s-d597d.firebasestorage.app",
-    messagingSenderId: "962680820863",
-    appId:             "1:962680820863:web:860cd299eaa343e5dadb4a"
-  };
-
-  // ── ID de session unique (lecture seule, sert à identifier la source) ──
-  const MY_ID = Math.random().toString(36).slice(2, 8).toUpperCase();
-  console.log('[Firebase] FWS connecté — session ID :', MY_ID);
-
-  // ── Import SDK Firebase v10 modulaire ───────────────────────────────────
-  let _set, _onValue, _dbRef;
-  try {
-    const { initializeApp }              = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-
-    const app = initializeApp(FB_CONFIG);
-    const db  = getDatabase(app);
-
-    _set     = set;
-    _onValue = onValue;
-    _dbRef   = (path) => ref(db, path);
-
-    // ── Références des nœuds ─────────────────────────────────────────────
-    const ligRef  = _dbRef('fws/LIG');
-    const ndcfRef = _dbRef('fws/NDCF');
-
-    // ────────────────────────────────────────────────────────────────────
-    // ENVOI : _fbSyncLIG — appelé depuis AL() après LIG.push()
-    // ────────────────────────────────────────────────────────────────────
-    window._fbSyncLIG = function(ligSnapshot) {
-      if (!Array.isArray(ligSnapshot)) return;
-      const payload = {
-        _src:  MY_ID,
-        _ts:   Date.now(),
-        data:  JSON.parse(JSON.stringify(ligSnapshot)) // sérialisation propre
-      };
-      _set(ligRef, payload).catch(e => console.warn('[Firebase] LIG envoi échoué :', e));
-    };
-
-    // ────────────────────────────────────────────────────────────────────
-    // ENVOI : _fbSyncNDCF — appelé depuis validerNDCF() après NDCF_PIECES.push()
-    // ────────────────────────────────────────────────────────────────────
-    window._fbSyncNDCF = function(ndcfSnapshot) {
-      if (!Array.isArray(ndcfSnapshot)) return;
-      const payload = {
-        _src:  MY_ID,
-        _ts:   Date.now(),
-        data:  JSON.parse(JSON.stringify(ndcfSnapshot))
-      };
-      _set(ndcfRef, payload).catch(e => console.warn('[Firebase] NDCF envoi échoué :', e));
-    };
-
-    // ────────────────────────────────────────────────────────────────────
-    // RÉCEPTION LIG — met à jour la variable globale + re-render
-    // Ignoré si la mise à jour vient de cette même session
-    // ────────────────────────────────────────────────────────────────────
-    _onValue(ligRef, (snapshot) => {
-      const payload = snapshot.val();
-      if (!payload || !Array.isArray(payload.data)) return;
-      if (payload._src === MY_ID) return; // ma propre écriture, ignorer
-
-      // Mettre à jour la variable globale LIG utilisée par renderECC()
-      window.LIG = payload.data;
-      if (typeof LIG !== 'undefined') {
-        // LIG est déclarée dans le scope principal, on la réassigne
-        try { LIG = payload.data; } catch(e) {}
-      }
-      console.log('[Firebase] LIG reçu de', payload._src, '—', payload.data.length, 'ligne(s)');
-      // Re-render sans toucher au reste de l'interface
-      if (typeof renderECC === 'function') renderECC();
-    });
-
-    // ────────────────────────────────────────────────────────────────────
-    // RÉCEPTION NDCF — met à jour NDCF_PIECES + re-render
-    // ────────────────────────────────────────────────────────────────────
-    _onValue(ndcfRef, (snapshot) => {
-      const payload = snapshot.val();
-      if (!payload || !Array.isArray(payload.data)) return;
-      if (payload._src === MY_ID) return; // ma propre écriture, ignorer
-
-      window.NDCF_PIECES = payload.data;
-      try { NDCF_PIECES = payload.data; } catch(e) {}
-      console.log('[Firebase] NDCF reçu de', payload._src, '—', payload.data.length, 'pièce(s)');
-      // Re-render sans toucher au reste de l'interface
-      if (typeof renderNDCFPieces === 'function') renderNDCFPieces();
-    });
-
-    console.log('[Firebase] ✅ Sync actif — nœuds : fws/LIG · fws/NDCF');
-
-  } catch(err) {
-    // Si Firebase échoue (offline, bloqué…), le reste de l'appli continue normalement
-    console.warn('[Firebase] ❌ Initialisation échouée — mode local uniquement :', err.message);
-    // Stubs silencieux pour éviter tout crash dans AL() / validerNDCF()
-    window._fbSyncLIG  = () => {};
-    window._fbSyncNDCF = () => {};
-  }
-})();
-
-// Stubs de sécurité synchrones — actifs tant que Firebase charge (async)
-// Évitent un "undefined is not a function" si AL() est appelé très tôt
-if (typeof window._fbSyncLIG  === 'undefined') window._fbSyncLIG  = () => {};
-if (typeof window._fbSyncNDCF === 'undefined') window._fbSyncNDCF = () => {};
 
 </script>
 
