@@ -11,68 +11,76 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   FWT PREMIUM — THÈME AÉRIEN & AGENCE DE VOYAGE
-   Bleu Horizon · Blanc Nuage · Or de Validation
-   Inter UI · JetBrains Mono Chiffres
+   FWT — AERO HORIZON DESIGN SYSTEM v2.0
+   Fond Nuage · Bleu Horizon · Slate · JetBrains Mono
 ═══════════════════════════════════════════════════════════════ */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 :root {
-  /* Palette principale — Bleu Horizon */
-  --sky:        #0ea5e9;   /* Bleu horizon vif */
-  --sky-dark:   #0284c7;   /* Bleu horizon foncé */
+  /* ── Palette principale AERO HORIZON ── */
+  --sky:        #0284c7;   /* Bleu Horizon principal */
+  --sky-light:  #0ea5e9;   /* Bleu clair */
+  --sky-pale:   #e0f2fe;   /* Bleu très pâle */
   --sky-deep:   #0369a1;   /* Bleu profond */
-  --navy:       #0c1a2e;   /* Bleu marine nuit */
-  --navy2:      #0f2342;   /* Bleu marine 2 */
-  --navy3:      #132b4e;   /* Bleu marine 3 */
-  --cloud:      #f0f4f8;   /* Blanc nuage */
+  --navy:       #0c1a2e;   /* Pour accents sombres */
 
-  /* Or — Validation & Accent chaud */
-  --gold:       #f59e0b;   /* Or principal */
-  --gold-light: #fbbf24;   /* Or clair */
-  --gold-dim:   rgba(251,191,36,.12);
+  /* ── Backgrounds ── */
+  --bg:         #f8fafc;   /* Fond principal (Slate-50) */
+  --bg2:        #f1f5f9;   /* Fond secondaire (Slate-100) */
+  --bg3:        #e2e8f0;   /* Fond tertiaire (Slate-200) */
+  --surface:    #ffffff;   /* Cartes blanches */
+  --surface2:   #f8fafc;   /* Cartes légèrement teintées */
 
-  /* Tons fonctionnels */
-  --green:      #10b981;   /* Succès */
-  --green2:     #059669;
-  --red:        #ef4444;   /* Erreur */
-  --amber:      #f59e0b;
+  /* ── Texte ── */
+  --txt:        #0f172a;   /* Slate-900 — texte principal */
+  --txt2:       #334155;   /* Slate-700 */
+  --txt3:       #64748b;   /* Slate-500 — texte tertiaire */
+  --txt4:       #94a3b8;   /* Slate-400 — placeholder */
 
-  /* Backgrounds — couches atmosphériques */
-  --bg:         #060d1a;   /* Ciel nocturne */
-  --bg2:        #0a1628;   /* Horizon profond */
-  --bg3:        #0d1e38;   /* Surface principale */
-  --bg4:        #102040;   /* Surface secondaire */
+  /* ── Bordures ── */
+  --bo:         #e2e8f0;   /* Slate-200 */
+  --bo2:        #cbd5e1;   /* Slate-300 */
+  --bo-sky:     rgba(2,132,199,.25);
 
-  /* Bordures */
-  --bo:         #1a3355;
-  --bo2:        #1e4070;
-  --bo-sky:     rgba(14,165,233,.35);
+  /* ── Couleurs fonctionnelles ── */
+  --green:      #059669;   /* Émeraude — succès */
+  --green2:     #d1fae5;   /* Émeraude pâle */
+  --red:        #dc2626;   /* Danger */
+  --red2:       #fee2e2;   /* Rouge pâle */
+  --amber:      #d97706;   /* Ambre — caution */
+  --amber2:     #fef3c7;   /* Ambre pâle */
 
-  /* Textes */
-  --txt:        #e2eeff;   /* Texte principal — blanc nuage */
-  --txt2:       #94a3b8;   /* Texte secondaire */
-  --txt3:       #64748b;   /* Texte tertiaire */
+  /* ── Codes types ── */
+  --c411:       #0284c7;   /* Bleu Horizon */
+  --c411-bg:    #e0f2fe;
+  --c165:       #d97706;   /* Ambre */
+  --c165-bg:    #fef3c7;
+  --c181:       #7c3aed;   /* Violet */
+  --c181-bg:    #ede9fe;
+  --mu:         #64748b;
+  --mu2:        #94a3b8;
 
-  /* Codes compagnies — variables d'alias */
-  --c411:       #38bdf8;
-  --c165:       #f59e0b;
-  --c181:       #a78bfa;
-  --mu:         #475569;
-  --mu2:        #64748b;
-
-  /* Typographie */
+  /* ── Typographie ── */
   --font-ui:    'Inter', system-ui, -apple-system, sans-serif;
   --font-mono:  'JetBrains Mono', 'Courier New', monospace;
 
-  /* Effets */
-  --glow-sky:   0 0 20px rgba(14,165,233,.25);
-  --glow-gold:  0 0 16px rgba(245,158,11,.2);
-  --blur:       blur(12px);
+  /* ── Ombres ── */
+  --shadow-sm:  0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+  --shadow-md:  0 4px 12px rgba(15,23,42,.08), 0 2px 4px rgba(15,23,42,.04);
+  --shadow-lg:  0 10px 30px rgba(15,23,42,.10), 0 4px 8px rgba(15,23,42,.06);
+  --shadow-sky: 0 4px 14px rgba(2,132,199,.18);
+
+  /* ── Rayons ── */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
 }
 
 /* ─── RESET ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html { -webkit-font-smoothing: antialiased; }
 
 body {
   background: var(--bg);
@@ -81,32 +89,11 @@ body {
   font-size: 13px;
   height: 100vh;
   overflow: hidden;
-  background-image:
-    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(14,165,233,.08) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 80% 100%, rgba(12,26,46,.6) 0%, transparent 80%);
 }
 
-/* ═══ LOGO COMPAGNIES — MAPS INLINE SVG / EMOJI ═══ */
-.airline-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-}
-.airline-logo .al-badge {
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: -.5px;
-  flex-shrink: 0;
-}
+/* ═══ AIRLINE LOGOS ═══ */
+.airline-logo { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; }
+.airline-logo .al-badge { width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; letter-spacing: -.5px; flex-shrink: 0; }
 .al-TK { background: linear-gradient(135deg,#cc0001,#8b0000); color: #fff; }
 .al-VY { background: linear-gradient(135deg,#ff6900,#d45500); color: #fff; }
 .al-V7 { background: linear-gradient(135deg,#6b21a8,#4c1d95); color: #e9d5ff; }
@@ -116,86 +103,59 @@ body {
 .al-IB { background: linear-gradient(135deg,#1d4ed8,#1e3a8a); color: #bfdbfe; }
 .al-BA { background: linear-gradient(135deg,#1e3a8a,#312e81); color: #c7d2fe; }
 
-/* ═══ ÉCRAN LOGIN ═══ */
-#login-screen {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 100% 80% at 50% -20%, rgba(14,165,233,.15) 0%, transparent 60%),
-    linear-gradient(180deg, #060d1a 0%, #0a1628 60%, #060d1a 100%);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ═══ SPLASH SCREEN ═══ */
+#splash-screen {
+  position: fixed; inset: 0; z-index: 99999;
+  background: linear-gradient(135deg, #0c1a2e 0%, #0369a1 50%, #0ea5e9 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 1s ease;
 }
 
-/* Étoiles animées */
+/* ═══ LOGIN SCREEN ═══ */
+#login-screen {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f0f9ff 100%);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+
 #login-screen::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background-image:
-    radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 45% 12%, rgba(255,255,255,.4) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 75% 35%, rgba(255,255,255,.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 65% 80%, rgba(255,255,255,.4) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 85% 55%, rgba(255,255,255,.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 20% 48%, rgba(255,255,255,.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 92% 18%, rgba(255,255,255,.5) 0%, transparent 100%);
+    radial-gradient(600px circle at 20% 30%, rgba(2,132,199,.06) 0%, transparent 60%),
+    radial-gradient(400px circle at 80% 70%, rgba(14,165,233,.05) 0%, transparent 60%);
   pointer-events: none;
 }
 
 .login-box {
-  background: linear-gradient(160deg, rgba(15,35,66,.9) 0%, rgba(10,22,40,.97) 100%);
-  border: 1px solid var(--bo-sky);
-  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid var(--bo);
+  border-radius: var(--r-xl);
   padding: 52px 44px;
   text-align: center;
-  width: 380px;
-  backdrop-filter: var(--blur);
-  box-shadow: 0 40px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
-  position: relative;
-  z-index: 1;
+  width: 400px;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(2,132,199,.06);
+  position: relative; z-index: 1;
 }
 
-.login-logo {
-  font-size: 56px;
-  margin-bottom: 18px;
-  filter: drop-shadow(0 4px 12px rgba(14,165,233,.4));
-  animation: float 4s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
+.login-logo { font-size: 56px; margin-bottom: 18px; animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 .login-title {
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: 8px;
-  background: linear-gradient(135deg, #7dd3fc, #0ea5e9, #38bdf8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 32px; font-weight: 800; letter-spacing: 8px;
+  background: linear-gradient(135deg, var(--sky-deep), var(--sky), var(--sky-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   margin-bottom: 6px;
 }
 
-.login-sub {
-  font-size: 10px;
-  color: var(--txt3);
-  letter-spacing: 3px;
-  margin-bottom: 36px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
+.login-sub { font-size: 10px; color: var(--txt3); letter-spacing: 3px; margin-bottom: 36px; font-weight: 600; text-transform: uppercase; }
 
 .login-box input {
   width: 100%;
-  background: rgba(6,13,26,.8);
+  background: var(--bg2);
   border: 2px solid var(--bo);
-  border-radius: 14px;
+  border-radius: var(--r-md);
   padding: 16px;
   color: var(--txt);
   font-family: var(--font-mono);
@@ -206,1008 +166,863 @@ body {
   transition: all .25s;
   outline: none;
 }
-.login-box input:focus {
-  border-color: var(--sky);
-  box-shadow: 0 0 0 4px rgba(14,165,233,.18), var(--glow-sky);
-}
+.login-box input:focus { border-color: var(--sky); box-shadow: 0 0 0 4px rgba(2,132,199,.12); }
 
 .login-btn {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #0ea5e9, #0369a1);
-  border: none;
-  border-radius: 14px;
-  color: #fff;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  transition: all .25s;
-  box-shadow: 0 8px 20px rgba(14,165,233,.3);
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--sky-light), var(--sky-deep));
+  border: none; border-radius: var(--r-md); color: #fff;
+  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+  cursor: pointer; letter-spacing: 5px; text-transform: uppercase;
+  transition: all .25s; box-shadow: var(--shadow-sky);
 }
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(14,165,233,.4);
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-}
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(2,132,199,.3); }
 .login-btn:active { transform: translateY(0); }
 .login-err { color: var(--red); font-size: 12px; min-height: 20px; margin-top: 10px; font-weight: 500; }
 
-/* ═══ ÉCRAN MODULE ═══ */
+/* ═══ MODULE SCREEN ═══ */
 #module-screen {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14,165,233,.1) 0%, transparent 60%),
-    linear-gradient(180deg, #060d1a, #0a1628);
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
   z-index: 9998;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  display: none; align-items: center; justify-content: center; flex-direction: column;
 }
 
-.mod-title {
-  font-size: 11px;
-  letter-spacing: 8px;
-  color: var(--txt3);
-  font-weight: 600;
-  margin-bottom: 52px;
-  text-transform: uppercase;
-}
+.mod-title { font-size: 11px; letter-spacing: 8px; color: var(--txt3); font-weight: 700; margin-bottom: 52px; text-transform: uppercase; }
 
 .mod-choices { display: flex; gap: 32px; }
 
 .mod-btn {
-  background: linear-gradient(180deg, rgba(15,35,66,.7) 0%, rgba(10,22,40,.95) 100%);
-  border: 1.5px solid var(--bo);
+  background: #ffffff;
+  border: 2px solid var(--bo);
   border-radius: 28px;
   padding: 52px 60px;
   text-align: center;
   cursor: pointer;
   transition: all .35s cubic-bezier(.4,0,.2,1);
   width: 260px;
-  backdrop-filter: var(--blur);
+  box-shadow: var(--shadow-md);
 }
 .mod-btn:hover {
   border-color: var(--sky);
-  background: linear-gradient(180deg, rgba(14,165,233,.12) 0%, rgba(10,22,40,.98) 100%);
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
   transform: translateY(-10px);
-  box-shadow: 0 30px 60px rgba(14,165,233,.22), inset 0 1px 0 rgba(14,165,233,.1);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(2,132,199,.15);
 }
 
-.mod-ico {
-  font-size: 60px;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,.4));
-  transition: transform .35s;
-}
+.mod-ico { font-size: 60px; margin-bottom: 20px; transition: transform .35s; }
 .mod-btn:hover .mod-ico { transform: scale(1.1) translateY(-4px); }
 
 .mod-lbl {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  background: linear-gradient(135deg, #7dd3fc, #0ea5e9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 14px; font-weight: 800; letter-spacing: 4px;
+  color: var(--sky);
   margin-bottom: 10px;
 }
 
 .mod-sub { font-size: 11px; color: var(--txt3); line-height: 1.7; }
 
-#module-jbr, #module-fac {
-  display: none;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-}
+#module-jbr, #module-fac { display: none; height: 100vh; overflow: hidden; position: relative; }
 
-/* Bouton retour */
+/* ── Bouton retour ── */
 .btn-retour {
-  position: fixed;
-  top: 9px; left: 9px;
-  z-index: 500;
+  position: fixed; top: 9px; left: 9px; z-index: 500;
   padding: 6px 14px;
-  background: rgba(10,22,40,.9);
+  background: rgba(255,255,255,.9);
   border: 1px solid var(--bo2);
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   color: var(--sky);
-  font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  backdrop-filter: var(--blur);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: all .2s;
+  font-family: var(--font-ui); font-size: 10px; font-weight: 700;
+  cursor: pointer; backdrop-filter: blur(8px);
+  display: flex; align-items: center; gap: 5px;
+  transition: all .2s; box-shadow: var(--shadow-sm);
+  letter-spacing: .5px;
 }
-.btn-retour:hover { background: var(--sky); color: #fff; border-color: var(--sky); }
+.btn-retour:hover { background: var(--sky); color: #fff; border-color: var(--sky); box-shadow: var(--shadow-sky); }
 
-/* ═══ TOPBAR ═══ */
+/* ═══ TOPBAR JBR ═══ */
 #top {
-  background: linear-gradient(90deg, #080f1e 0%, #0d1c34 50%, #091624 100%);
-  border-bottom: 1px solid var(--bo2);
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
-  height: 46px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--bo);
+  padding: 0 16px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+  height: 52px;
   position: relative;
+  box-shadow: var(--shadow-sm);
 }
 #top::after {
   content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 1px;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, transparent, var(--sky), transparent);
-  opacity: .25;
+  opacity: .4;
 }
 
 .logo { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
 
 .lico {
-  width: 32px; height: 32px;
-  background: linear-gradient(135deg, #0ea5e9, #0369a1);
-  border-radius: 9px;
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--sky-light), var(--sky-deep));
+  border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
   font-size: 16px;
-  box-shadow: 0 4px 12px rgba(14,165,233,.35), inset 0 1px 0 rgba(255,255,255,.1);
+  box-shadow: var(--shadow-sky);
 }
 
 .htit {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 13px; font-weight: 800; letter-spacing: 3px;
+  color: var(--sky-deep);
   white-space: nowrap;
 }
 
 .hfi {
-  background: rgba(6,13,26,.8);
-  border: 1px solid var(--bo);
-  border-radius: 7px;
+  background: var(--bg2);
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm);
   padding: 5px 10px;
   color: var(--txt);
   font-family: var(--font-mono);
   font-size: 12px;
   outline: none;
   transition: all .2s;
+  width: auto;
 }
-.hfi:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+.hfi:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background: #fff; }
 
-#ipc { width: 62px; color: #7dd3fc; font-weight: 700; }
+#ipc { width: 62px; color: var(--sky-deep); font-weight: 700; }
 #idat { width: 136px; }
 #iref { width: 78px; }
-#ilib-h { width: 170px; color: var(--gold-light); }
+#ilib-h { width: 170px; color: var(--amber); }
 
 .folio-b {
-  font-size: 10px;
-  color: var(--gold-light);
-  background: var(--gold-dim);
-  border: 1px solid rgba(251,191,36,.3);
-  border-radius: 5px;
+  font-size: 10px; color: var(--amber);
+  background: var(--amber2);
+  border: 1px solid rgba(217,119,6,.2);
+  border-radius: 6px;
   padding: 3px 9px;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.hfl {
-  font-size: 9px;
-  color: var(--txt3);
-  letter-spacing: 1.5px;
-  white-space: nowrap;
-  font-weight: 500;
-  text-transform: uppercase;
-}
+.hfl { font-size: 9px; color: var(--txt3); letter-spacing: 1.5px; white-space: nowrap; font-weight: 600; text-transform: uppercase; }
 
 .tabs { display: flex; gap: 4px; margin-left: auto; flex-shrink: 0; }
 
 .tb {
-  padding: 5px 13px;
-  border-radius: 7px;
+  padding: 5px 14px;
+  border-radius: var(--r-sm);
   cursor: pointer;
   font-family: var(--font-ui);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .5px;
-  border: 1px solid var(--bo);
+  border: 1.5px solid var(--bo);
   background: transparent;
   color: var(--txt3);
   transition: all .2s;
+  text-transform: uppercase;
 }
 .tb.on {
   background: var(--sky);
   border-color: var(--sky);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(14,165,233,.3);
+  box-shadow: var(--shadow-sky);
 }
-.tb:hover:not(.on) { border-color: var(--sky); color: var(--sky); background: rgba(14,165,233,.08); }
+.tb:hover:not(.on) { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
 
 .hst { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.snb { font-size: 10px; color: var(--sky); white-space: nowrap; font-family: var(--font-mono); font-weight: 500; }
+.snb { font-size: 10px; color: var(--sky); white-space: nowrap; font-family: var(--font-mono); font-weight: 600; }
 .stot { font-size: 13px; font-weight: 700; color: var(--green); white-space: nowrap; font-family: var(--font-mono); }
 
 /* ═══ MSG BAR ═══ */
-#msgbar { display: none; padding: 5px 14px; font-size: 11px; border-bottom: 1px solid; z-index: 10; font-weight: 500; }
-#msgbar.ok  { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.3); color: var(--green); display: block; }
-#msgbar.err { background: rgba(239,68,68,.08);  border-color: rgba(239,68,68,.3);  color: var(--red);   display: block; }
+#msgbar { display: none; padding: 6px 16px; font-size: 11px; border-bottom: 1px solid; z-index: 10; font-weight: 600; }
+#msgbar.ok  { background: rgba(5,150,105,.06); border-color: rgba(5,150,105,.2); color: var(--green); display: block; }
+#msgbar.err { background: rgba(220,38,38,.06); border-color: rgba(220,38,38,.2); color: var(--red); display: block; }
 
 /* ═══ MAIN LAYOUT ═══ */
-#main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 46px); }
+#main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 52px); }
 
 /* ═══ COLONNE GAUCHE — SAISIE ═══ */
 #col-saisie {
-  border-right: 1px solid var(--bo2);
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg3) 100%);
+  border-right: 1px solid var(--bo);
+  display: flex; flex-direction: column;
+  background: var(--surface);
   overflow: hidden;
 }
 
 /* TYPE BTNS */
-.tbtns { display: flex; gap: 4px; padding: 10px 10px 8px; flex-shrink: 0; }
+.tbtns { display: flex; gap: 6px; padding: 12px 12px 10px; flex-shrink: 0; }
 
 .tybtn {
-  flex: 1;
-  padding: 7px 4px;
-  border-radius: 8px;
-  border: 1px solid var(--bo);
-  background: rgba(6,13,26,.5);
+  flex: 1; padding: 8px 4px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--bo);
+  background: var(--bg2);
   color: var(--txt3);
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  line-height: 1.4;
-  transition: all .2s;
-  letter-spacing: .3px;
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700;
+  cursor: pointer; text-align: center; line-height: 1.4;
+  transition: all .2s; letter-spacing: .3px; text-transform: uppercase;
 }
-.tybtn:hover { border-color: var(--sky); color: var(--sky); }
-.tybtn.on411 { background: rgba(56,189,248,.12); border-color: var(--c411); color: var(--c411); box-shadow: 0 2px 8px rgba(56,189,248,.15); }
-.tybtn.on165 { background: rgba(245,158,11,.1);  border-color: var(--c165); color: var(--c165); box-shadow: 0 2px 8px rgba(245,158,11,.1); }
-.tybtn.onV   { background: rgba(16,185,129,.08); border-color: var(--green); color: var(--green); box-shadow: 0 2px 8px rgba(16,185,129,.1); }
+.tybtn:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
+
+/* Badge Règlement — Vert */
+.tybtn.on411 {
+  background: linear-gradient(135deg, #059669, #047857);
+  border-color: #059669; color: #fff;
+  box-shadow: 0 2px 8px rgba(5,150,105,.25);
+}
+/* Badge Caution — Ambre */
+.tybtn.on165 {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  border-color: #d97706; color: #fff;
+  box-shadow: 0 2px 8px rgba(217,119,6,.25);
+}
+/* Badge Ventilé — Bleu */
+.tybtn.onV {
+  background: linear-gradient(135deg, var(--sky-light), var(--sky-deep));
+  border-color: var(--sky); color: #fff;
+  box-shadow: var(--shadow-sky);
+}
 
 /* TOTAL VIREMENT */
 .tvz {
-  background: rgba(14,165,233,.07);
-  border: 1px solid rgba(14,165,233,.25);
-  border-radius: 8px;
-  padding: 8px 11px;
-  margin: 0 10px 8px;
+  background: var(--sky-pale);
+  border: 1.5px solid rgba(2,132,199,.2);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  margin: 0 12px 10px;
   flex-shrink: 0;
 }
 .tvz label {
-  font-size: 9px;
-  color: #7dd3fc;
-  letter-spacing: 1.5px;
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 9px; color: var(--sky-deep);
+  letter-spacing: 1.5px; display: block; margin-bottom: 6px;
+  font-weight: 700; text-transform: uppercase;
 }
 #itot {
   width: 100%;
-  background: rgba(6,13,26,.8);
-  border: 1px solid rgba(14,165,233,.3);
-  border-radius: 6px;
-  padding: 7px 10px;
+  background: #fff;
+  border: 1.5px solid rgba(2,132,199,.3);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
   color: var(--green);
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 700;
-  outline: none;
+  font-family: var(--font-mono); font-size: 16px; font-weight: 700;
+  outline: none; transition: all .2s;
 }
-#itot:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(14,165,233,.12); }
-#tot-v { font-size: 10px; margin-top: 4px; }
+#itot:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
 
-/* CHAMP CLIENT */
-.saisie-zone { padding: 0 10px 7px; flex-shrink: 0; }
-.sz-lbl {
-  font-size: 9px;
-  color: var(--txt3);
-  letter-spacing: 1.5px;
-  margin-bottom: 4px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
+/* SAISIE ZONE */
+.saisie-zone { padding: 0 12px 8px; flex-shrink: 0; }
+.sz-lbl { font-size: 9px; color: var(--txt3); letter-spacing: 1.5px; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
+
 .ac-wrap { position: relative; }
-
 #isrc {
   width: 100%;
-  background: rgba(6,13,26,.8);
-  border: 1px solid var(--bo);
-  border-radius: 8px;
-  padding: 9px 12px;
+  background: var(--bg2);
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm);
+  padding: 9px 13px;
   color: var(--txt);
-  font-family: var(--font-ui);
-  font-size: 13px;
-  outline: none;
-  transition: all .2s;
+  font-family: var(--font-ui); font-size: 13px;
+  outline: none; transition: all .2s;
 }
-#isrc:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(14,165,233,.12); }
+#isrc:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background: #fff; }
 
 #acd {
-  display: none;
-  position: absolute;
-  top: calc(100% + 3px); left: 0; right: 0;
-  background: #071020;
-  border: 1px solid var(--bo2);
-  border-radius: 10px;
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #fff;
+  border: 1.5px solid var(--bo2);
+  border-radius: var(--r-md);
   z-index: 400;
-  max-height: 240px;
-  overflow-y: auto;
-  box-shadow: 0 12px 40px rgba(0,0,0,.85), 0 0 0 1px rgba(14,165,233,.1);
+  max-height: 240px; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
 }
 #acd.on { display: block; }
 
 .aci {
-  padding: 8px 12px;
+  padding: 8px 13px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(26,51,85,.4);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 7px;
+  border-bottom: 1px solid var(--bg3);
+  display: flex; justify-content: space-between; align-items: center; gap: 7px;
+  transition: background .1s;
 }
 .aci:last-child { border-bottom: none; }
-.aci.hi, .aci:hover { background: rgba(14,165,233,.1); }
+.aci.hi, .aci:hover { background: var(--sky-pale); }
 
-.acn { font-size: 12px; flex: 1; font-weight: 500; }
+.acn { font-size: 12px; flex: 1; font-weight: 500; color: var(--txt); }
 .acmeta { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-.act { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-family: var(--font-mono); }
+.act { font-size: 9px; padding: 2px 7px; border-radius: 5px; font-weight: 700; font-family: var(--font-mono); }
 
-.b411 { color: var(--c411); background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.25); }
-.b165 { color: var(--c165); background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25); }
-.b181 { color: var(--c181); background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.25); }
+/* Badges types */
+.b411 { color: var(--sky-deep); background: var(--sky-pale); border: 1px solid rgba(2,132,199,.25); }
+.b165 { color: var(--amber); background: var(--amber2); border: 1px solid rgba(217,119,6,.25); }
+.b181 { color: #7c3aed; background: #ede9fe; border: 1px solid rgba(124,58,237,.25); }
 #selinfo { margin-top: 5px; min-height: 22px; }
 
 /* CHAMP MONTANT */
-.mt-zone { padding: 0 10px 7px; flex-shrink: 0; }
+.mt-zone { padding: 0 12px 8px; flex-shrink: 0; }
 #imt {
   width: 100%;
-  background: rgba(6,13,26,.8);
-  border: 1px solid var(--bo);
-  border-radius: 8px;
-  padding: 9px 12px;
+  background: var(--bg2);
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm);
+  padding: 10px 13px;
   color: var(--green);
-  font-family: var(--font-mono);
-  font-size: 18px;
-  font-weight: 700;
-  outline: none;
-  transition: all .2s;
+  font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+  outline: none; transition: all .2s;
 }
-#imt:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,.12); }
-#vst { font-size: 10px; margin-top: 4px; min-height: 14px; }
-.vok { color: var(--green); }
-.vko { color: var(--red); }
-.vwarn { color: var(--gold-light); }
+#imt:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(5,150,105,.1); background: #fff; }
+#vst { font-size: 10px; margin-top: 5px; min-height: 14px; }
+.vok { color: var(--green); font-weight: 600; }
+.vko { color: var(--red); font-weight: 600; }
+.vwarn { color: var(--amber); font-weight: 600; }
 
 /* ÉCRITURE EN COURS */
-.ecc-zone { flex: 1; overflow-y: auto; padding: 0 10px 8px; min-height: 0; }
+.ecc-zone { flex: 1; overflow-y: auto; padding: 0 12px 8px; min-height: 0; }
 .ecc-title {
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--txt3);
-  padding: 5px 0;
-  border-top: 1px solid var(--bo);
-  border-bottom: 1px solid var(--bo);
-  margin-bottom: 6px;
-  display: flex;
-  justify-content: space-between;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-size: 9px; letter-spacing: 2px; color: var(--txt4);
+  padding: 6px 0; border-top: 1px solid var(--bo); border-bottom: 1px solid var(--bo);
+  margin-bottom: 8px;
+  display: flex; justify-content: space-between; text-transform: uppercase; font-weight: 700;
 }
-.ecc-empty { color: var(--txt3); font-size: 10px; text-align: center; padding: 20px 0; opacity: .5; }
+.ecc-empty { color: var(--txt4); font-size: 11px; text-align: center; padding: 24px 0; }
 
 /* DÉBIT ROW */
 .d-row {
   display: flex; align-items: center;
-  padding: 6px 9px;
-  border-radius: 7px;
-  background: rgba(14,165,233,.06);
-  border: 1px solid rgba(14,165,233,.2);
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  background: #eff6ff;
+  border: 1px solid rgba(2,132,199,.15);
   margin-bottom: 4px; gap: 7px; font-size: 11px;
   transition: background .15s;
 }
-.d-row:hover { background: rgba(14,165,233,.1); }
-.sd { background: rgba(14,165,233,.18); color: #7dd3fc; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-family: var(--font-mono); }
-.dcpt { color: #7dd3fc; font-weight: 700; width: 52px; flex-shrink: 0; font-family: var(--font-mono); }
+.d-row:hover { background: #dbeafe; }
+.sd { background: rgba(2,132,199,.12); color: var(--sky-deep); font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-family: var(--font-mono); }
+.dcpt { color: var(--sky-deep); font-weight: 700; width: 52px; flex-shrink: 0; font-family: var(--font-mono); }
 .dlib { flex: 1; color: var(--txt2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dmt { font-weight: 700; color: var(--green); font-size: 12px; flex-shrink: 0; font-family: var(--font-mono); }
 
 /* CRÉDIT ROW */
 .c-row {
   display: flex; align-items: center;
-  padding: 6px 9px;
-  border-radius: 7px;
-  background: rgba(10,22,40,.6);
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  background: var(--bg2);
   border: 1px solid var(--bo);
   margin-bottom: 4px; gap: 7px; font-size: 11px;
   transition: background .15s;
 }
-.c-row:hover { background: rgba(10,22,40,.9); }
-.sc { background: rgba(16,185,129,.12); color: var(--green); font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-family: var(--font-mono); }
+.c-row:hover { background: var(--bg3); }
+.sc { background: rgba(5,150,105,.1); color: var(--green); font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-family: var(--font-mono); }
 .ccpt { font-weight: 700; width: 52px; flex-shrink: 0; font-size: 11px; font-family: var(--font-mono); }
-.caux { font-size: 9px; color: var(--txt3); width: 72px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); }
+.caux { font-size: 9px; color: var(--txt4); width: 72px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); }
 .clib { flex: 1; font-size: 11px; color: var(--txt2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmt { font-weight: 700; font-size: 12px; flex-shrink: 0; font-family: var(--font-mono); }
-.cdel { background: none; border: 1px solid rgba(239,68,68,.3); color: var(--red); border-radius: 4px; padding: 2px 6px; cursor: pointer; font-family: var(--font-ui); font-size: 10px; flex-shrink: 0; transition: all .15s; }
-.cdel:hover { background: rgba(239,68,68,.15); }
+.cdel { background: none; border: 1px solid rgba(220,38,38,.2); color: var(--red); border-radius: 5px; padding: 2px 6px; cursor: pointer; font-family: var(--font-ui); font-size: 10px; flex-shrink: 0; transition: all .15s; }
+.cdel:hover { background: var(--red2); }
 
 /* SOLDE */
-.solde-b { border-radius: 7px; padding: 7px 11px; border: 1px solid; margin-bottom: 5px; }
-.s-ok   { background: rgba(16,185,129,.06);  border-color: rgba(16,185,129,.25); }
-.s-warn { background: rgba(245,158,11,.06);  border-color: rgba(245,158,11,.25); }
-.s-err  { background: rgba(239,68,68,.07);   border-color: rgba(239,68,68,.3); }
+.solde-b { border-radius: var(--r-sm); padding: 8px 12px; border: 1.5px solid; margin-bottom: 6px; }
+.s-ok   { background: #ecfdf5; border-color: rgba(5,150,105,.25); }
+.s-warn { background: #fffbeb; border-color: rgba(217,119,6,.25); }
+.s-err  { background: #fef2f2; border-color: rgba(220,38,38,.25); }
 .srow { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px; }
 .slbl { color: var(--txt3); }
 .sval { font-weight: 700; font-family: var(--font-mono); }
 .sreste { font-size: 17px; font-weight: 800; text-align: right; font-family: var(--font-mono); }
 .sr-ok   { color: var(--green); }
-.sr-warn { color: var(--gold-light); }
+.sr-warn { color: var(--amber); }
 .sr-err  { color: var(--red); }
 
 /* FOOTER SAISIE */
 .saisie-footer {
-  padding: 8px 10px;
-  border-top: 1px solid var(--bo2);
+  padding: 10px 12px;
+  border-top: 1px solid var(--bo);
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  background: rgba(6,13,26,.4);
+  display: flex; flex-direction: column; gap: 7px;
+  background: var(--bg2);
 }
 
 .bval {
-  width: 100%;
-  padding: 10px;
+  width: 100%; padding: 11px;
   background: linear-gradient(135deg, #059669, #047857);
-  border: none;
-  border-radius: 9px;
-  color: #fff;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  cursor: pointer;
+  border: none; border-radius: var(--r-sm);
+  color: #fff; font-family: var(--font-ui); font-size: 11px; font-weight: 800;
+  letter-spacing: 2px; cursor: pointer;
   transition: all .2s;
-  box-shadow: 0 4px 14px rgba(5,150,105,.25);
+  box-shadow: 0 3px 10px rgba(5,150,105,.25);
 }
-.bval:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(5,150,105,.35); background: linear-gradient(135deg, #10b981, #059669); }
-.bval:disabled { background: rgba(26,35,66,.8); color: var(--txt3); cursor: not-allowed; box-shadow: none; transform: none; }
+.bval:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(5,150,105,.35); }
+.bval:disabled { background: var(--bg3); color: var(--txt4); cursor: not-allowed; box-shadow: none; transform: none; }
 
 .shortcuts { font-size: 9px; color: var(--txt3); display: flex; justify-content: space-between; align-items: center; }
 .bnewpce {
-  padding: 3px 11px;
-  background: rgba(245,158,11,.1);
-  border: 1px solid rgba(245,158,11,.3);
-  border-radius: 5px;
-  color: var(--gold-light);
-  font-family: var(--font-ui);
-  font-size: 9px;
-  cursor: pointer;
-  transition: all .15s;
+  padding: 4px 12px;
+  background: var(--amber2);
+  border: 1px solid rgba(217,119,6,.25);
+  border-radius: 6px; color: var(--amber);
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
 }
-.bnewpce:hover { background: rgba(245,158,11,.18); }
+.bnewpce:hover { background: #fde68a; }
 
 /* RV BAR */
 .rvwarn {
-  background: rgba(28,18,0,.8);
-  border: 1px solid rgba(133,77,14,.5);
-  border-radius: 6px;
-  padding: 5px 10px;
-  margin: 0 10px 6px;
-  font-size: 10px;
-  color: var(--gold-light);
-  display: flex; align-items: center; gap: 7px; flex-shrink: 0;
+  background: #fffbeb;
+  border: 1px solid rgba(217,119,6,.25);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  margin: 0 12px 8px;
+  font-size: 10px; font-weight: 600;
+  color: var(--amber);
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
 }
 .rvok {
-  background: rgba(5,46,22,.6);
-  border: 1px solid rgba(22,101,52,.5);
-  border-radius: 6px;
-  padding: 5px 10px;
-  margin: 0 10px 6px;
-  font-size: 10px;
+  background: #ecfdf5;
+  border: 1px solid rgba(5,150,105,.2);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  margin: 0 12px 8px;
+  font-size: 10px; font-weight: 600;
   color: var(--green);
   display: flex; justify-content: space-between; flex-shrink: 0;
 }
 .bsm {
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid rgba(133,77,14,.5);
-  background: transparent;
-  color: var(--gold-light);
-  cursor: pointer;
-  font-family: var(--font-ui);
-  font-size: 9px;
+  padding: 2px 9px; border-radius: 5px;
+  border: 1px solid rgba(217,119,6,.3);
+  background: transparent; color: var(--amber);
+  cursor: pointer; font-family: var(--font-ui); font-size: 9px; font-weight: 700;
 }
 
 /* ═══ COLONNE DROITE — ÉCRITURES ═══ */
 #col-ecr {
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg) 100%);
+  display: flex; flex-direction: column;
+  background: var(--bg2);
   overflow: hidden;
 }
 
 .ecr-head {
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--bo2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-  background: rgba(6,13,26,.4);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--bo);
+  display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
 }
 
 .ecr-title {
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--txt3);
-  font-weight: 600;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-size: 9px; letter-spacing: 3px; color: var(--txt3); font-weight: 700;
+  text-transform: uppercase; display: flex; align-items: center; gap: 6px;
 }
-.ecr-title::before {
-  content: '📑';
-  font-size: 12px;
-}
+.ecr-title::before { content: '📑'; font-size: 13px; }
 
 .ecr-btns { display: flex; gap: 5px; flex-wrap: wrap; }
 
 .bexp {
-  padding: 5px 12px;
-  background: rgba(14,165,233,.1);
-  border: 1px solid rgba(14,165,233,.35);
-  border-radius: 6px;
-  color: #7dd3fc;
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  cursor: pointer;
-  transition: all .15s;
+  padding: 5px 13px;
+  background: var(--sky-pale);
+  border: 1.5px solid rgba(2,132,199,.2);
+  border-radius: var(--r-sm);
+  color: var(--sky);
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700; letter-spacing: .5px;
+  cursor: pointer; transition: all .15s;
 }
-.bexp:hover { background: rgba(14,165,233,.22); border-color: var(--sky); }
+.bexp:hover { background: #bae6fd; border-color: var(--sky); }
 
 .bimport {
-  padding: 5px 12px;
-  background: rgba(14,165,233,.08);
-  border: 1px solid rgba(14,165,233,.3);
-  border-radius: 6px;
-  color: #7dd3fc;
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  cursor: pointer;
-  transition: all .15s;
+  padding: 5px 13px;
+  background: var(--bg2);
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm);
+  color: var(--txt2);
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700; letter-spacing: .5px;
+  cursor: pointer; transition: all .15s;
 }
-.bimport:hover { background: rgba(14,165,233,.18); }
+.bimport:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
 
-#ecr-list { flex: 1; overflow-y: auto; padding: 8px 10px; }
-.ecr-empty { text-align: center; color: var(--txt3); padding: 50px 0; font-size: 11px; opacity: .5; }
+#ecr-list { flex: 1; overflow-y: auto; padding: 10px 12px; }
+.ecr-empty { text-align: center; color: var(--txt4); padding: 50px 0; font-size: 11px; }
 
 /* ÉCRITURE VALIDÉE */
 .ecard {
-  background: linear-gradient(180deg, rgba(15,34,64,.8) 0%, rgba(10,22,40,.9) 100%);
-  border: 1px solid var(--bo);
-  border-radius: 10px;
-  margin-bottom: 8px;
+  background: #ffffff;
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-md);
+  margin-bottom: 10px;
   overflow: hidden;
-  transition: border-color .2s;
+  transition: all .2s;
+  box-shadow: var(--shadow-sm);
 }
-.ecard.current { border-color: var(--sky); box-shadow: 0 0 0 1px rgba(14,165,233,.2), var(--glow-sky); }
-.ecard:hover { border-color: var(--bo2); }
+.ecard.current { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1), var(--shadow-md); }
+.ecard:hover { border-color: var(--bo2); box-shadow: var(--shadow-md); }
 
 .ehead {
-  background: rgba(6,13,26,.6);
-  padding: 6px 12px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: var(--txt3);
+  background: var(--bg2);
+  padding: 7px 14px;
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--txt3);
   border-bottom: 1px solid var(--bo);
 }
-.ep { color: #7dd3fc; font-weight: 700; font-family: var(--font-mono); }
+.ep { color: var(--sky-deep); font-weight: 700; font-family: var(--font-mono); }
 .et { color: var(--green); font-weight: 700; font-family: var(--font-mono); }
 
 .el {
-  display: flex;
-  padding: 6px 12px;
-  font-size: 11px;
-  border-bottom: 1px solid rgba(6,13,26,.6);
-  align-items: center;
-  gap: 7px;
+  display: flex; padding: 6px 14px; font-size: 11px;
+  border-bottom: 1px solid var(--bg3); align-items: center; gap: 8px;
 }
 .el:last-child { border-bottom: none; }
-.el:nth-child(odd) { background: rgba(6,13,26,.25); }
-.elsd { background: rgba(14,165,233,.15); color: #7dd3fc; font-size: 8px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-weight: 800; font-family: var(--font-mono); }
-.elsc { background: rgba(16,185,129,.1); color: var(--green); font-size: 8px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-weight: 800; font-family: var(--font-mono); }
+.el:nth-child(odd) { background: rgba(248,250,252,.7); }
+.elsd { background: rgba(2,132,199,.1); color: var(--sky-deep); font-size: 8px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-weight: 800; font-family: var(--font-mono); }
+.elsc { background: rgba(5,150,105,.08); color: var(--green); font-size: 8px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-weight: 800; font-family: var(--font-mono); }
 .elc { width: 52px; font-weight: 700; flex-shrink: 0; font-size: 11px; font-family: var(--font-mono); }
-.ela { width: 72px; font-size: 10px; color: var(--txt3); flex-shrink: 0; font-family: var(--font-mono); }
+.ela { width: 72px; font-size: 10px; color: var(--txt4); flex-shrink: 0; font-family: var(--font-mono); }
 .ell { flex: 1; color: var(--txt2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.elmd { color: #7dd3fc; font-weight: 700; font-family: var(--font-mono); }
+.elmd { color: var(--sky-deep); font-weight: 700; font-family: var(--font-mono); }
 .elmc { color: var(--green); font-weight: 700; font-family: var(--font-mono); }
 
 /* PANELS SECONDAIRES */
-.opan { height: calc(100vh - 46px); overflow-y: auto; padding: 14px; max-width: 980px; margin: 0 auto; }
+.opan { height: calc(100vh - 52px); overflow-y: auto; padding: 16px; max-width: 980px; margin: 0 auto; }
 
 .card {
-  background: linear-gradient(180deg, rgba(13,30,56,.8) 0%, rgba(10,22,40,.95) 100%);
-  border: 1px solid var(--bo);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  transition: border-color .2s;
+  background: #ffffff;
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s;
 }
-.card:hover { border-color: var(--bo2); }
+.card:hover { box-shadow: var(--shadow-md); }
 
 .ctit {
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--txt3);
-  margin-bottom: 12px;
-  padding-bottom: 7px;
+  font-size: 9px; letter-spacing: 3px; color: var(--txt3); font-weight: 700;
+  margin-bottom: 14px; padding-bottom: 9px;
   border-bottom: 1px solid var(--bo);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   text-transform: uppercase;
-  font-weight: 600;
 }
 
-label.lb { font-size: 9px; color: var(--txt3); letter-spacing: 2px; display: block; margin-bottom: 4px; margin-top: 10px; font-weight: 600; text-transform: uppercase; }
+label.lb { font-size: 9px; color: var(--txt3); letter-spacing: 2px; display: block; margin-bottom: 4px; margin-top: 10px; font-weight: 700; text-transform: uppercase; }
 label.lb:first-child { margin-top: 0; }
 
 input, select {
   width: 100%;
-  background: rgba(6,13,26,.8);
-  border: 1px solid var(--bo);
-  border-radius: 7px;
-  padding: 8px 10px;
+  background: var(--bg2);
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm);
+  padding: 8px 11px;
   color: var(--txt);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  outline: none;
-  transition: all .2s;
+  font-family: var(--font-ui); font-size: 12px;
+  outline: none; transition: all .2s;
 }
-input:focus, select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(14,165,233,.12); }
-select option { background: #0a1628; }
+input:focus, select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background: #fff; }
+select option { background: #fff; color: var(--txt); }
 
 .tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
 .tbl th {
-  padding: 7px 11px; text-align: left; color: var(--txt3);
-  font-size: 9px; letter-spacing: 2px; font-weight: 600; text-transform: uppercase;
-  border-bottom: 1px solid var(--bo);
-  background: rgba(6,13,26,.5);
+  padding: 8px 12px; text-align: left; color: var(--txt3);
+  font-size: 9px; letter-spacing: 2px; font-weight: 700; text-transform: uppercase;
+  border-bottom: 1.5px solid var(--bo);
+  background: var(--bg2);
 }
-.tbl td { padding: 6px 11px; border-bottom: 1px solid rgba(6,13,26,.8); }
-.tbl tr:nth-child(even) td { background: rgba(6,13,26,.3); }
+.tbl td { padding: 7px 12px; border-bottom: 1px solid var(--bg3); color: var(--txt2); }
+.tbl tr:nth-child(even) td { background: rgba(248,250,252,.6); }
+.tbl tr:hover td { background: var(--sky-pale); }
 .tcc { color: var(--green); font-weight: 700; text-align: right; font-family: var(--font-mono); }
 
 .izn {
-  border: 2px dashed var(--bo);
-  border-radius: 10px;
+  border: 2px dashed var(--bo2);
+  border-radius: var(--r-md);
   padding: 28px 16px;
-  text-align: center;
-  cursor: pointer;
-  color: var(--txt3);
-  transition: all .2s;
+  text-align: center; cursor: pointer; color: var(--txt3);
+  transition: all .2s; background: var(--bg2);
 }
-.izn:hover { border-color: var(--sky); color: var(--sky); background: rgba(14,165,233,.04); }
+.izn:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
 .izn input { display: none; }
 
 .badc {
-  padding: 5px 12px;
-  background: rgba(14,165,233,.1);
-  border: 1px solid rgba(14,165,233,.35);
-  border-radius: 6px;
-  color: #7dd3fc;
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  cursor: pointer;
-  transition: all .15s;
+  padding: 5px 13px;
+  background: var(--sky-pale);
+  border: 1.5px solid rgba(2,132,199,.2);
+  border-radius: var(--r-sm); color: var(--sky);
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700; letter-spacing: .5px;
+  cursor: pointer; transition: all .15s;
 }
-.badc:hover { background: rgba(14,165,233,.2); }
+.badc:hover { background: #bae6fd; }
 
-.bec { padding: 3px 7px; background: none; border: 1px solid var(--bo); border-radius: 4px; color: var(--txt3); cursor: pointer; font-family: var(--font-ui); font-size: 10px; transition: all .15s; }
-.bec:hover { border-color: var(--sky); color: var(--sky); }
+.bec { padding: 3px 8px; background: none; border: 1.5px solid var(--bo); border-radius: 5px; color: var(--txt3); cursor: pointer; font-family: var(--font-ui); font-size: 10px; transition: all .15s; }
+.bec:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
 
-.bdc { padding: 3px 7px; background: none; border: 1px solid rgba(239,68,68,.3); border-radius: 4px; color: var(--red); cursor: pointer; font-family: var(--font-ui); font-size: 10px; transition: all .15s; }
-.bdc:hover { background: rgba(239,68,68,.1); }
+.bdc { padding: 3px 8px; background: none; border: 1.5px solid rgba(220,38,38,.2); border-radius: 5px; color: var(--red); cursor: pointer; font-family: var(--font-ui); font-size: 10px; transition: all .15s; }
+.bdc:hover { background: var(--red2); }
 
-#mov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); z-index: 500; align-items: center; justify-content: center; }
+#mov { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.4); backdrop-filter: blur(6px); z-index: 500; align-items: center; justify-content: center; }
 #mov.on { display: flex; }
 #mbox {
-  background: linear-gradient(160deg, #0f2342, #0a1628);
-  border: 1px solid var(--bo2);
-  border-radius: 16px;
-  padding: 24px 28px;
-  width: 400px;
-  max-width: 95vw;
-  box-shadow: 0 40px 80px rgba(0,0,0,.7);
+  background: #ffffff;
+  border: 1.5px solid var(--bo);
+  border-radius: var(--r-xl);
+  padding: 28px 32px;
+  width: 420px; max-width: 95vw;
+  box-shadow: var(--shadow-lg);
 }
-#mbox h3 { font-size: 10px; letter-spacing: 2px; color: #7dd3fc; margin-bottom: 14px; text-transform: uppercase; }
-.mbtns { display: flex; gap: 9px; margin-top: 16px; justify-content: flex-end; }
+#mbox h3 { font-size: 10px; letter-spacing: 2px; color: var(--sky); margin-bottom: 16px; text-transform: uppercase; font-weight: 800; }
+.mbtns { display: flex; gap: 9px; margin-top: 18px; justify-content: flex-end; }
 
-.bprim { padding: 8px 18px; background: linear-gradient(135deg, var(--sky), var(--sky-deep)); border: none; border-radius: 7px; color: #fff; font-family: var(--font-ui); font-size: 10px; font-weight: 700; cursor: pointer; transition: all .2s; }
-.bprim:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14,165,233,.3); }
-.bcan { padding: 8px 18px; background: transparent; border: 1px solid var(--bo); border-radius: 7px; color: var(--txt3); font-family: var(--font-ui); font-size: 10px; cursor: pointer; transition: all .15s; }
-.bcan:hover { border-color: var(--txt3); color: var(--txt); }
+.bprim { padding: 9px 20px; background: linear-gradient(135deg, var(--sky-light), var(--sky-deep)); border: none; border-radius: var(--r-sm); color: #fff; font-family: var(--font-ui); font-size: 10px; font-weight: 700; cursor: pointer; transition: all .2s; box-shadow: var(--shadow-sky); }
+.bprim:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(2,132,199,.3); }
+.bcan { padding: 9px 20px; background: transparent; border: 1.5px solid var(--bo); border-radius: var(--r-sm); color: var(--txt3); font-family: var(--font-ui); font-size: 10px; font-weight: 600; cursor: pointer; transition: all .15s; }
+.bcan:hover { border-color: var(--bo2); color: var(--txt); }
 
 /* ÉDITION LIBELLÉ */
-.edit-lib { background: rgba(6,13,26,.9); border: 1px solid var(--sky); border-radius: 4px; padding: 2px 7px; color: var(--gold-light); font-family: var(--font-ui); font-size: 11px; outline: none; width: 130px; }
-.bedit   { background: none; border: none; color: var(--txt3); cursor: pointer; font-size: 11px; padding: 0 4px; flex-shrink: 0; opacity: .5; transition: opacity .15s; }
-.bedit:hover { opacity: 1; color: #7dd3fc; }
+.edit-lib { background: var(--bg2); border: 1.5px solid var(--sky); border-radius: 5px; padding: 3px 8px; color: var(--txt); font-family: var(--font-ui); font-size: 11px; outline: none; width: 130px; }
+.bedit   { background: none; border: none; color: var(--txt4); cursor: pointer; font-size: 11px; padding: 0 4px; flex-shrink: 0; opacity: .5; transition: opacity .15s; }
+.bedit:hover { opacity: 1; color: var(--sky); }
 .bconfirm { background: none; border: none; color: var(--green); cursor: pointer; font-size: 11px; padding: 0 4px; flex-shrink: 0; }
-.bcancel  { background: none; border: none; color: var(--red);   cursor: pointer; font-size: 11px; padding: 0 4px; flex-shrink: 0; }
+.bcancel  { background: none; border: none; color: var(--red); cursor: pointer; font-size: 11px; padding: 0 4px; flex-shrink: 0; }
 
 /* SUGGESTION MONTANT */
 #mt-suggest, #mt-suggest-tot, #mt-sug-fac {
-  display: none;
-  position: absolute;
-  top: calc(100% + 3px); left: 0; right: 0;
-  background: #071020;
-  border: 1px solid var(--bo2);
-  border-radius: 10px;
-  z-index: 400;
-  max-height: 240px;
-  overflow-y: auto;
-  box-shadow: 0 12px 40px rgba(0,0,0,.85);
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #fff; border: 1.5px solid var(--bo2);
+  border-radius: var(--r-md); z-index: 400;
+  max-height: 240px; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
 }
 .mt-sug-item {
-  padding: 8px 13px;
-  cursor: pointer;
-  border-bottom: 1px solid rgba(26,64,112,.3);
+  padding: 8px 14px; cursor: pointer;
+  border-bottom: 1px solid var(--bo);
   display: flex; gap: 12px; align-items: center;
   transition: background .1s;
 }
-.mt-sug-item:hover { background: rgba(14,165,233,.1); }
+.mt-sug-item:hover { background: var(--sky-pale); }
 
 /* SCROLLBAR */
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--bo2); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--sky-dark); }
+::-webkit-scrollbar-thumb { background: var(--bo2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sky); }
 
 /* ═══ MODULE FAC — Variables propres ═══ */
 :root {
-  --bg-f:    #060d1a;
-  --surface: #0a1628;
-  --surface2:#0d1e38;
-  --border:  #1a3355;
-  --accent:  #0ea5e9;
-  --accent2: #10b981;
-  --text:    #e2eeff;
-  --text2:   #94a3b8;
-  --warn:    #f59e0b;
-  --danger:  #ef4444;
-  --green-f: #10b981;
+  --bg-f:    var(--bg);
+  --surface: #ffffff;
+  --surface2: var(--bg2);
+  --border:  var(--bo);
+  --accent:  var(--sky);
+  --accent2: var(--green);
+  --text:    var(--txt);
+  --text2:   var(--txt2);
+  --warn:    var(--amber);
+  --danger:  var(--red);
+  --green-f: var(--green);
 }
 
 /* HEADER module FAC */
 .header {
-  background: linear-gradient(90deg, #080f1e, #0d1c34);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid var(--bo);
+  padding: 10px 22px;
+  display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
-  height: 50px;
+  height: 52px; box-shadow: var(--shadow-sm);
 }
 .header-title {
   font-size: 13px; font-weight: 800; letter-spacing: .08em;
-  background: linear-gradient(135deg, #7dd3fc, var(--accent));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--sky-deep);
   text-transform: uppercase;
   display: flex; align-items: center; gap: 7px;
 }
-.header-sub { font-size: 11px; color: var(--text2); margin-top: 1px; font-family: var(--font-mono); }
+.header-sub { font-size: 11px; color: var(--txt3); margin-top: 1px; font-family: var(--font-mono); }
 .header-right { display: flex; gap: 9px; align-items: center; }
 
 .stat-chip {
-  background: rgba(10,22,40,.8);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 13px;
-  text-align: center;
+  background: var(--bg2); border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm); padding: 5px 14px; text-align: center;
 }
-.stat-val { font-size: 15px; font-weight: 700; font-family: var(--font-mono); color: var(--accent2); }
-.stat-lbl { font-size: 9px; color: var(--text2); text-transform: uppercase; letter-spacing: .1em; }
+.stat-val { font-size: 15px; font-weight: 700; font-family: var(--font-mono); color: var(--green); }
+.stat-lbl { font-size: 9px; color: var(--txt3); text-transform: uppercase; letter-spacing: .1em; }
 
 /* MAIN FAC */
-.main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 50px); }
-.left-panel { background: linear-gradient(180deg, var(--surface), var(--bg-f)); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: hidden; }
-.section { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text2); margin-bottom: 8px; }
+.main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 52px); }
+.left-panel { background: #ffffff; border-right: 1px solid var(--bo); display: flex; flex-direction: column; overflow-y: hidden; }
+.section { padding: 12px 16px; border-bottom: 1px solid var(--bo); }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--txt3); margin-bottom: 8px; }
 
 /* TABS FAC */
 .tab {
-  flex: 1; padding: 7px; background: rgba(10,22,40,.8);
-  border: 1px solid var(--border); border-radius: 7px;
-  cursor: pointer; font-size: 10px; font-weight: 600;
-  color: var(--text2); text-align: center; transition: all .2s;
-  font-family: var(--font-ui);
+  flex: 1; padding: 7px;
+  background: var(--bg2);
+  border: 1.5px solid var(--bo); border-radius: var(--r-sm);
+  cursor: pointer; font-size: 10px; font-weight: 700;
+  color: var(--txt3); text-align: center; transition: all .2s; font-family: var(--font-ui);
 }
-.tab.active { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 3px 10px rgba(14,165,233,.25); }
-.tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+.tab.active { background: var(--sky); border-color: var(--sky); color: white; box-shadow: var(--shadow-sky); }
+.tab:hover:not(.active) { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
 
 /* COMPANY GRID */
-.company-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; }
+.company-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
 .comp-btn {
-  background: rgba(10,22,40,.8); border: 1px solid var(--border);
-  border-radius: 7px; padding: 8px 4px; text-align: center;
+  background: var(--bg2); border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm); padding: 8px 4px; text-align: center;
   cursor: pointer; transition: all .2s; font-family: var(--font-mono);
-  font-size: 11px; font-weight: 600; color: var(--text2);
+  font-size: 11px; font-weight: 700; color: var(--txt2);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
 }
-.comp-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(14,165,233,.08); }
-.comp-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+.comp-btn:hover { border-color: var(--sky); color: var(--txt); background: var(--sky-pale); }
+.comp-btn.active { background: var(--sky); border-color: var(--sky); color: white; }
 .comp-btn .cnt { display: block; font-size: 9px; font-weight: 400; opacity: .7; }
 .comp-btn .al-badge { font-size: 8px; width: 20px; height: 20px; }
 
 /* INPUTS FAC */
 .input-group { margin-bottom: 10px; }
-.input-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; display: block; letter-spacing: .04em; }
+.input-label { font-size: 11px; color: var(--txt2); margin-bottom: 4px; display: block; letter-spacing: .04em; }
 .big-input {
-  width: 100%; background: rgba(6,13,26,.9);
-  border: 2px solid var(--border); border-radius: 8px;
-  padding: 11px 13px; font-family: var(--font-mono);
-  font-size: 19px; font-weight: 600; color: var(--text);
+  width: 100%; background: var(--bg2);
+  border: 2px solid var(--bo); border-radius: var(--r-sm);
+  padding: 11px 14px; font-family: var(--font-mono);
+  font-size: 20px; font-weight: 700; color: var(--txt);
   outline: none; transition: border-color .15s; text-align: right;
 }
-.big-input:focus { border-color: var(--accent); }
-.big-input.found    { border-color: var(--green-f); }
-.big-input.multi    { border-color: var(--warn); }
-.big-input.notfound { border-color: var(--danger); }
+.big-input:focus { border-color: var(--sky); background: #fff; box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
+.big-input.found    { border-color: var(--green); }
+.big-input.multi    { border-color: var(--amber); }
+.big-input.notfound { border-color: var(--red); }
 
 .text-input {
-  width: 100%; background: rgba(6,13,26,.9);
-  border: 1px solid var(--border); border-radius: 7px;
-  padding: 8px 11px; font-size: 12px; color: var(--text);
-  outline: none; font-family: var(--font-ui); transition: border-color .15s;
+  width: 100%; background: var(--bg2);
+  border: 1.5px solid var(--bo); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 12px; color: var(--txt);
+  outline: none; font-family: var(--font-ui); transition: all .15s;
 }
-.text-input:focus { border-color: var(--accent); }
+.text-input:focus { border-color: var(--sky); background: #fff; box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
 .text-input.iata { font-family: var(--font-mono); font-size: 17px; font-weight: 700; letter-spacing: .18em; text-align: center; }
 
 /* RESULT BOX */
 .result-box {
-  background: rgba(6,13,26,.8); border: 1px solid var(--border);
-  border-radius: 9px; padding: 11px 13px; min-height: 52px; transition: all .2s;
+  background: var(--bg2); border: 1.5px solid var(--bo);
+  border-radius: var(--r-sm); padding: 11px 14px; min-height: 52px; transition: all .2s;
 }
-.result-box.found    { border-color: var(--green-f); }
-.result-box.multi    { border-color: var(--warn); }
-.result-box.notfound { border-color: var(--danger); }
-.result-client { font-size: 13px; font-weight: 600; color: var(--green-f); }
-.result-meta   { font-size: 11px; color: var(--text2); margin-top: 2px; font-family: var(--font-mono); }
-.result-ph     { font-size: 11px; color: var(--text2); font-style: italic; }
+.result-box.found    { border-color: var(--green); background: #ecfdf5; }
+.result-box.multi    { border-color: var(--amber); background: #fffbeb; }
+.result-box.notfound { border-color: var(--red); background: #fef2f2; }
+.result-client { font-size: 13px; font-weight: 700; color: var(--green); }
+.result-meta   { font-size: 11px; color: var(--txt3); margin-top: 2px; font-family: var(--font-mono); }
+.result-ph     { font-size: 11px; color: var(--txt4); font-style: italic; }
 .choices { display: flex; flex-direction: column; gap: 4px; margin-top: 7px; }
 .choice-btn {
-  background: rgba(10,22,40,.8); border: 1px solid rgba(245,158,11,.4);
-  border-radius: 6px; padding: 7px 11px; cursor: pointer; font-size: 11px;
-  color: var(--text); text-align: left; transition: all .15s; font-family: var(--font-ui);
+  background: var(--bg2); border: 1.5px solid rgba(217,119,6,.3);
+  border-radius: var(--r-sm); padding: 7px 12px; cursor: pointer; font-size: 11px;
+  color: var(--txt); text-align: left; transition: all .15s; font-family: var(--font-ui);
 }
-.choice-btn:hover { background: rgba(245,158,11,.12); }
+.choice-btn:hover { background: var(--amber2); }
 
 /* BUTTONS FAC */
-.btn { border: none; border-radius: 7px; padding: 9px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; font-family: var(--font-ui); }
-.btn-primary { background: linear-gradient(135deg, var(--accent), var(--sky-deep)); color: white; width: 100%; box-shadow: 0 4px 12px rgba(14,165,233,.25); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(14,165,233,.35); }
-.btn-primary:disabled { background: var(--border); color: var(--text2); cursor: not-allowed; box-shadow: none; transform: none; }
-.btn-secondary { background: rgba(10,22,40,.8); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-.btn-export { background: linear-gradient(135deg, var(--accent2), var(--green2)); color: white; font-weight: 700; }
-.btn-export:hover { transform: translateY(-1px); }
-.btn-danger-sm { background: transparent; color: var(--danger); border: 1px solid var(--danger); font-size: 11px; padding: 4px 9px; border-radius: 6px; }
+.btn { border: none; border-radius: var(--r-sm); padding: 9px 16px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; font-family: var(--font-ui); }
+.btn-primary { background: linear-gradient(135deg, var(--sky-light), var(--sky-deep)); color: white; width: 100%; box-shadow: var(--shadow-sky); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(2,132,199,.3); }
+.btn-primary:disabled { background: var(--bg3); color: var(--txt4); cursor: not-allowed; box-shadow: none; transform: none; }
+.btn-secondary { background: var(--bg2); color: var(--txt); border: 1.5px solid var(--bo); }
+.btn-secondary:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-pale); }
+.btn-export { background: linear-gradient(135deg, var(--green), #047857); color: white; font-weight: 700; }
+.btn-export:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(5,150,105,.3); }
+.btn-danger-sm { background: transparent; color: var(--red); border: 1.5px solid rgba(220,38,38,.3); font-size: 11px; padding: 4px 9px; border-radius: var(--r-sm); }
+.btn-danger-sm:hover { background: var(--red2); }
 .btn-sm { padding: 6px 12px; font-size: 11px; }
-.btn-row { display: flex; gap: 6px; margin-top: 7px; }
-.link-btn { font-size: 11px; color: var(--accent); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 2px 0; font-family: var(--font-ui); }
+.btn-row { display: flex; gap: 6px; margin-top: 8px; }
+.link-btn { font-size: 11px; color: var(--sky); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 2px 0; font-family: var(--font-ui); font-weight: 600; }
 
 /* DROP ZONE */
-.drop-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center; cursor: pointer; transition: all .2s; }
-.drop-zone:hover, .drop-zone.drag { border-color: var(--accent2); background: rgba(16,185,129,.04); }
-.drop-zone p { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.drop-zone { border: 2px dashed var(--bo2); border-radius: var(--r-md); padding: 18px; text-align: center; cursor: pointer; transition: all .2s; background: var(--bg2); }
+.drop-zone:hover, .drop-zone.drag { border-color: var(--green); background: #ecfdf5; }
+.drop-zone p { font-size: 11px; color: var(--txt3); margin-top: 4px; }
 
 /* RIGHT PANEL FAC */
-.right-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--bg-f); }
-.table-header { padding: 11px 18px; background: linear-gradient(90deg, var(--surface), var(--bg-f)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.table-title { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-.table-title::before { content: '🧾'; font-size: 13px; }
-.table-sub { font-size: 10px; color: var(--text2); margin-top: 1px; }
+.right-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--bg2); }
+.table-header { padding: 12px 20px; background: #ffffff; border-bottom: 1px solid var(--bo); display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); }
+.table-title { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; color: var(--txt); }
+.table-title::before { content: '🧾'; font-size: 14px; }
+.table-sub { font-size: 10px; color: var(--txt3); margin-top: 1px; }
 .table-wrap { flex: 1; overflow-y: auto; }
 
 /* TABLE FAC */
 table { width: 100%; border-collapse: collapse; font-size: 11px; }
 thead { position: sticky; top: 0; z-index: 10; }
 thead th {
-  background: linear-gradient(180deg, var(--surface), rgba(10,22,40,.95));
-  padding: 8px 11px;
+  background: #ffffff;
+  padding: 9px 12px;
   text-align: left;
   font-size: 9px; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text2);
-  border-bottom: 1px solid var(--border);
+  color: var(--txt3);
+  border-bottom: 1.5px solid var(--bo);
 }
-tbody tr { border-bottom: 1px solid rgba(26,51,85,.4); transition: background .1s; }
-tbody tr:hover { background: rgba(14,165,233,.05); }
-tbody tr.dup-warn { background: rgba(245,158,11,.05); }
-tbody td { padding: 7px 11px; vertical-align: middle; }
+tbody tr { border-bottom: 1px solid var(--bo); transition: background .1s; }
+tbody tr:hover { background: var(--sky-pale); }
+tbody tr.dup-warn { background: #fffbeb; }
+tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* TAGS COMPAGNIES */
-.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 5px; font-size: 9px; font-weight: 700; font-family: var(--font-mono); }
-.tag-TK     { background: rgba(30,58,95,.6);  color: #60a5fa; border: 1px solid rgba(30,58,95,.8); }
-.tag-VY     { background: rgba(30,61,47,.6);  color: #4ade80; border: 1px solid rgba(30,61,47,.8); }
-.tag-IB     { background: rgba(61,30,30,.6);  color: #f87171; border: 1px solid rgba(61,30,30,.8); }
-.tag-AC     { background: rgba(61,46,30,.6);  color: #fb923c; border: 1px solid rgba(61,46,30,.8); }
-.tag-V7     { background: rgba(46,30,61,.6);  color: #c084fc; border: 1px solid rgba(46,30,61,.8); }
-.tag-BJ     { background: rgba(30,61,61,.6);  color: #22d3ee; border: 1px solid rgba(30,61,61,.8); }
-.tag-TO     { background: rgba(61,61,30,.6);  color: #facc15; border: 1px solid rgba(61,61,30,.8); }
-.tag-BA     { background: rgba(45,30,61,.6);  color: #a78bfa; border: 1px solid rgba(45,30,61,.8); }
-.tag-NDCTK  { background: rgba(26,45,77,.6);  color: #93c5fd; border: 1px solid rgba(26,45,77,.8); }
-.tag-NEW    { background: rgba(61,46,30,.5);  color: var(--warn); border: 1px solid rgba(245,158,11,.3); }
-.tag-DUP    { background: rgba(61,46,0,.5);   color: var(--warn); font-size: 8px; border: 1px solid rgba(245,158,11,.2); }
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 9px; font-weight: 700; font-family: var(--font-mono); }
+.tag-TK     { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.tag-VY     { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.tag-IB     { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+.tag-AC     { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+.tag-V7     { background: #f3e8ff; color: #7c3aed; border: 1px solid #e9d5ff; }
+.tag-BJ     { background: #cffafe; color: #0e7490; border: 1px solid #a5f3fc; }
+.tag-TO     { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+.tag-BA     { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+.tag-NDCTK  { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+.tag-NEW    { background: var(--amber2); color: var(--amber); border: 1px solid rgba(217,119,6,.3); }
+.tag-DUP    { background: #fef3c7; color: var(--amber); font-size: 8px; border: 1px solid rgba(217,119,6,.2); }
 
-.amt { font-family: var(--font-mono); font-weight: 600; text-align: right; }
-.pos { color: var(--green-f); }
-.neg { color: var(--danger); }
-.del-btn { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 12px; padding: 2px 5px; border-radius: 4px; transition: all .15s; }
-.del-btn:hover { background: rgba(239,68,68,.15); color: var(--danger); }
-.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; color: var(--text2); gap: 5px; }
+.amt { font-family: var(--font-mono); font-weight: 700; text-align: right; }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.del-btn { background: none; border: none; color: var(--txt3); cursor: pointer; font-size: 12px; padding: 2px 5px; border-radius: 4px; transition: all .15s; }
+.del-btn:hover { background: var(--red2); color: var(--red); }
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; color: var(--txt3); gap: 5px; }
 .empty-icon { font-size: 26px; opacity: .25; }
-.total-row td { background: rgba(10,22,40,.8); font-weight: 700; border-top: 2px solid var(--border); font-family: var(--font-mono); }
-.piece-sep td { background: rgba(10,22,40,.6); color: var(--accent2); font-size: 10px; font-weight: 700; font-family: var(--font-mono); letter-spacing: .08em; padding: 5px 11px; border-top: 2px solid rgba(16,185,129,.3); }
-.iata-badge { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 4px; background: rgba(26,45,26,.8); color: var(--green-f); font-family: var(--font-mono); font-weight: 700; margin-left: 3px; }
-.qz { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(10,22,40,.8); color: var(--text2); margin-left: 3px; font-family: var(--font-mono); }
+.total-row td { background: var(--bg2); font-weight: 700; border-top: 2px solid var(--bo); font-family: var(--font-mono); }
+.piece-sep td { background: #ecfdf5; color: var(--green); font-size: 10px; font-weight: 700; font-family: var(--font-mono); letter-spacing: .08em; padding: 5px 12px; border-top: 2px solid rgba(5,150,105,.2); }
+.iata-badge { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 4px; background: #dcfce7; color: var(--green); font-family: var(--font-mono); font-weight: 700; margin-left: 3px; }
+.qz { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 4px; background: var(--bg3); color: var(--txt3); margin-left: 3px; font-family: var(--font-mono); }
 
 /* TOAST */
 .toast {
-  position: fixed;
-  bottom: 20px; right: 20px;
-  background: linear-gradient(180deg, rgba(15,35,66,.95), rgba(10,22,40,.98));
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 12px; color: var(--text);
+  position: fixed; bottom: 22px; right: 22px;
+  background: #ffffff; border: 1.5px solid var(--bo);
+  border-radius: var(--r-md); padding: 12px 20px;
+  font-size: 12px; color: var(--txt);
   transform: translateY(70px); opacity: 0;
   transition: all .35s cubic-bezier(.4,0,.2,1);
-  z-index: 1000;
-  backdrop-filter: var(--blur);
-  box-shadow: 0 20px 40px rgba(0,0,0,.5);
-  font-weight: 500;
+  z-index: 1000; box-shadow: var(--shadow-lg); font-weight: 600;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-color: rgba(16,185,129,.4); }
-.toast.error   { border-color: rgba(239,68,68,.4); }
-.toast.warn    { border-color: rgba(245,158,11,.4); }
+.toast.success { border-color: rgba(5,150,105,.35); background: #ecfdf5; color: var(--green); }
+.toast.error   { border-color: rgba(220,38,38,.3); background: #fef2f2; color: var(--red); }
+.toast.warn    { border-color: rgba(217,119,6,.3); background: #fffbeb; color: var(--amber); }
 
 /* PARAM ROWS */
 .param-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 10px; }
 .param-group { flex: 1; }
-.param-label { font-size: 10px; color: var(--text2); margin-bottom: 4px; display: block; letter-spacing: .04em; }
-.param-input { width: 100%; background: rgba(6,13,26,.9); border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 14px; font-weight: 700; color: var(--accent2); outline: none; font-family: var(--font-mono); text-align: center; transition: border-color .15s; }
-.param-input:focus { border-color: var(--accent); }
-.param-badge { background: rgba(10,22,40,.8); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-size: 12px; font-weight: 700; color: var(--text); font-family: var(--font-mono); white-space: nowrap; }
+.param-label { font-size: 10px; color: var(--txt2); margin-bottom: 4px; display: block; letter-spacing: .04em; }
+.param-input { width: 100%; background: var(--bg2); border: 1.5px solid var(--bo); border-radius: var(--r-sm); padding: 8px 10px; font-size: 14px; font-weight: 700; color: var(--green); outline: none; font-family: var(--font-mono); text-align: center; transition: border-color .15s; }
+.param-input:focus { border-color: var(--sky); }
+.param-badge { background: var(--bg2); border: 1.5px solid var(--bo); border-radius: var(--r-sm); padding: 8px 13px; font-size: 12px; font-weight: 700; color: var(--txt); font-family: var(--font-mono); white-space: nowrap; }
 
 /* PÉRIODE TOGGLE */
 .period-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
-.per-btn { flex: 1; padding: 8px; background: rgba(10,22,40,.8); border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text2); text-align: center; transition: all .15s; font-family: var(--font-mono); }
-.per-btn.active { background: rgba(16,185,129,.12); border-color: var(--accent2); color: var(--accent2); }
+.per-btn { flex: 1; padding: 8px; background: var(--bg2); border: 2px solid var(--bo); border-radius: var(--r-sm); cursor: pointer; font-size: 14px; font-weight: 700; color: var(--txt2); text-align: center; transition: all .15s; font-family: var(--font-mono); }
+.per-btn.active { background: #ecfdf5; border-color: var(--green); color: var(--green); }
+
+/* COMPANY SELECT */
+#company-select { color: var(--txt); }
+#company-select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
+#company-select option { font-weight: 700; font-family: var(--font-mono); color: var(--txt); background: #fff; }
+.comp-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: contain; background: #fff; vertical-align: middle; }
+
+/* COMP BADGE */
+#comp-badge { display: none; }
+#comp-badge[style*="flex"] { display: flex !important; }
 
 /* RESPONSIVE */
 @media(max-width:700px) {
@@ -1217,7 +1032,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
 }
 
 /* ─── NUMÉRO PIÈCE FORMAT ─── */
-#pc-fmt { font-size: 9px; color: var(--gold-light); font-family: var(--font-mono); font-weight: 600; }
+#pc-fmt { font-size: 9px; color: var(--amber); font-family: var(--font-mono); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -1264,7 +1079,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
 ══════════════════════════════════════════ -->
 <div id="module-screen">
   <div class="mod-title">SÉLECTIONNER UN MODULE</div>
-  <button onclick="deconnexion()" style="position:absolute;top:18px;right:22px;background:rgba(10,22,40,.8);border:1px solid var(--bo2);border-radius:8px;padding:6px 16px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;letter-spacing:1px;backdrop-filter:blur(10px);" title="Retour écran mot de passe">🔒 DÉCONNEXION</button>
+  <button onclick="deconnexion()" style="position:absolute;top:18px;right:22px;background:var(--bg2);border:1px solid var(--bo2);border-radius:8px;padding:6px 16px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;letter-spacing:1px;backdrop-filter:blur(10px);" title="Retour écran mot de passe">🔒 DÉCONNEXION</button>
   <div class="mod-choices">
     <div class="mod-btn" onclick="openModule('fac')">
       <div class="mod-ico">🧾</div>
@@ -1285,7 +1100,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
 <div id="module-jbr">
   <div style="position:fixed;top:9px;left:9px;z-index:500;display:flex;gap:5px;">
     <button class="btn-retour" onclick="retourChoix()" style="position:static;">⬅ MODULES</button>
-    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:rgba(10,22,40,.9);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
+    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
   </div>
 
 <!-- TOPBAR -->
@@ -1376,7 +1191,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
     <div class="ecc-zone">
       <div class="ecc-title">
         <span>── PIÈCE EN COURS ─────────</span>
-        <span id="lctr" style="color:var(--gold-light);font-size:10px;font-family:var(--font-mono);"></span>
+        <span id="lctr" style="color:var(--amber);font-size:10px;font-family:var(--font-mono);"></span>
       </div>
       <div id="ecc-content">
         <div class="ecc-empty">Saisir client + montant + ENTRÉE</div>
@@ -1389,8 +1204,8 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
       <button class="bval" id="bval" onclick="VAL()">✔ VALIDER PIÈCE &nbsp;[F1]</button>
       <div class="shortcuts">
         <span style="color:var(--txt3);">
-          <b style="color:#7dd3fc;">ENTRÉE</b> ajouter &nbsp;
-          <b style="color:var(--gold-light);">F2</b> nouvelle &nbsp;
+          <b style="color:var(--sky);">ENTRÉE</b> ajouter &nbsp;
+          <b style="color:var(--amber);">F2</b> nouvelle &nbsp;
           <b style="color:var(--green);">F1</b> valider
         </span>
         <button class="bnewpce" onclick="nouvellePiece()">F2 NOUVELLE</button>
@@ -1435,9 +1250,9 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
       <div class="ctit"><span>── OPÉRATIONS CRÉDIT ──</span><span id="rvcnt" style="color:var(--txt3);font-size:10px;font-family:var(--font-mono);"></span></div>
       <div style="display:flex;gap:6px;margin-bottom:9px;">
         <input id="rv-q" placeholder="🔍 Libellé..." oninput="filtreRV()"
-          style="flex:1;background:rgba(6,13,26,.8);border:1px solid var(--bo);border-radius:6px;padding:6px 9px;color:var(--txt);font-family:var(--font-ui);font-size:11px;">
+          style="flex:1;background:var(--bg2);border:1px solid var(--bo);border-radius:6px;padding:6px 9px;color:var(--txt);font-family:var(--font-ui);font-size:11px;">
         <input id="rv-m" placeholder="💰 Montant..." oninput="filtreRV()" type="number"
-          style="width:110px;background:rgba(6,13,26,.8);border:1px solid var(--bo);border-radius:6px;padding:6px 9px;color:var(--txt);font-family:var(--font-mono);font-size:11px;">
+          style="width:110px;background:var(--bg2);border:1px solid var(--bo);border-radius:6px;padding:6px 9px;color:var(--txt);font-family:var(--font-mono);font-size:11px;">
       </div>
       <div style="overflow-x:auto;max-height:300px;overflow-y:auto;" id="rv-tbody-wrap">
         <table class="tbl"><thead><tr><th>DATE</th><th>LIBELLÉ</th><th style="text-align:right;">CRÉDIT (DA)</th></tr></thead>
@@ -1492,12 +1307,12 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
 <div id="module-fac">
   <div style="position:fixed;top:9px;left:9px;z-index:500;display:flex;gap:5px;">
     <button class="btn-retour" onclick="retourChoix()" style="position:static;">⬅ MODULES</button>
-    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:rgba(10,22,40,.9);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
+    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
   </div>
   <div id="ndcf-right-panel" style="display:none;position:fixed;right:0;top:0;width:380px;height:100vh;
-    background:#060d1a;border-left:1px solid var(--bo2);overflow-y:auto;z-index:200;padding:14px;">
+    background:#fff;border-left:1px solid var(--bo2);overflow-y:auto;z-index:200;padding:14px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--bo2);">
-      <span style="font-size:10px;letter-spacing:3px;color:#7dd3fc;font-weight:700;">ÉCRITURES NDC-F</span>
+      <span style="font-size:10px;letter-spacing:3px;color:var(--sky);font-weight:700;">ÉCRITURES NDC-F</span>
       <div style="display:flex;gap:6px;">
         <button onclick="razNDCF()" title="Effacer toutes les écritures NDC-F" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:2px 7px;line-height:1;">🗑</button>
         <button onclick="document.getElementById('ndcf-right-panel').style.display='none'"
@@ -1506,8 +1321,8 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
     </div>
     <div id="ndcf-right-list"></div>
     <button onclick="exportNDCF()" id="ndcf-exp-btn" style="display:none;width:100%;margin-top:12px;
-      padding:10px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);border-radius:8px;
-      color:#7dd3fc;font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;letter-spacing:2px;">
+      padding:10px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:8px;
+      color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;letter-spacing:2px;">
       ⬇ EXPORT XLS COMPTA
     </button>
   </div>
@@ -1522,15 +1337,15 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
   </div>
   <div class="header-right">
     <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-      <label style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;">N° Pièce départ</label>
+      <label style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;font-weight:600;">N° Pièce départ</label>
       <input type="number" id="piece-depart" min="1" value="1" oninput="onPieceDepartChange()"
-        style="width:80px;background:rgba(6,13,26,.9);border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent2);text-align:center;outline:none;">
-      <div style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);" id="piece-preview">000001</div>
+        style="width:80px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent2);text-align:center;outline:none;">
+      <div style="font-size:10px;font-family:var(--font-mono);color:var(--green);font-weight:700;" id="piece-preview">000001</div>
     </div>
     <div class="stat-chip"><div class="stat-val" id="total-count">0</div><div class="stat-lbl">Écritures</div></div>
     <div class="stat-chip"><div class="stat-val" id="total-pieces">0</div><div class="stat-lbl">Pièces</div></div>
     <div class="stat-chip"><div class="stat-val" id="total-amt">0</div><div class="stat-lbl">Total DZD</div></div>
-    <button class="btn btn-export btn-sm" onclick="exportXLS()">⬇ Export XLS</button>
+    <button class="btn btn-export btn-sm" onclick="exportXLS()" id="export-btn">⬇ Export XLS</button>
   </div>
 </div>
 
@@ -1550,20 +1365,33 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
     <div id="tab-saisie">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:5px;">
-          <span style="font-size:10px;color:var(--text2);">Mois</span>
+          <span style="font-size:10px;color:var(--txt3);">Mois</span>
           <input type="number" id="mois-input" min="1" max="12" value="2" oninput="onMoisChange()"
-            style="width:46px;background:rgba(6,13,26,.9);border:1px solid var(--border);border-radius:6px;padding:5px;font-size:13px;font-weight:700;color:var(--accent);text-align:center;outline:none;font-family:var(--font-mono);">
-          <span id="mois-display" style="font-size:11px;font-weight:700;color:var(--accent);min-width:60px;font-family:var(--font-mono);">FÉVRIER</span>
+            style="width:46px;background:var(--bg2);border:1.5px solid var(--bo);border-radius:var(--r-sm);padding:5px;font-size:13px;font-weight:700;color:var(--sky);text-align:center;outline:none;font-family:var(--font-mono);">
+          <span id="mois-display" style="font-size:11px;font-weight:700;color:var(--sky);min-width:60px;font-family:var(--font-mono);">FÉVRIER</span>
         </div>
         <div style="display:flex;align-items:center;gap:5px;">
-          <span style="font-size:10px;color:var(--text2);">Quin.</span>
+          <span style="font-size:10px;color:var(--txt3);">Quin.</span>
           <input type="number" id="periode-input" min="1" max="2" value="1" oninput="onPeriodeInputChange()"
-            style="width:40px;background:rgba(6,13,26,.9);border:1px solid var(--border);border-radius:6px;padding:5px;font-size:13px;font-weight:700;color:var(--accent2);text-align:center;outline:none;font-family:var(--font-mono);">
-          <span id="periode-display" style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--font-mono);">1/15</span>
+            style="width:40px;background:var(--bg2);border:1.5px solid var(--bo);border-radius:var(--r-sm);padding:5px;font-size:13px;font-weight:700;color:var(--green);text-align:center;outline:none;font-family:var(--font-mono);">
+          <span id="periode-display" style="font-size:11px;font-weight:700;color:var(--green);font-family:var(--font-mono);">1/15</span>
         </div>
       </div>
       <div class="section-label">Compagnie</div>
-      <div class="company-grid" id="company-grid"></div>
+      <div style="position:relative;">
+        <select id="company-select" onchange="selectComp(this.value)"
+          style="width:100%;padding:9px 36px 9px 12px;background:#fff;border:2px solid var(--bo);border-radius:var(--r-sm);color:var(--txt);font-family:var(--font-mono);font-size:13px;font-weight:700;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s;box-shadow:var(--shadow-sm);">
+          <option value="">— Sélectionner une compagnie —</option>
+        </select>
+        <div style="pointer-events:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--sky);font-size:10px;">▼</div>
+      </div>
+      <div id="comp-badge" style="display:none;margin-top:8px;padding:7px 12px;background:var(--sky-pale);border:1.5px solid var(--bo-sky);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--sky-deep);">
+        <span id="comp-badge-logo"></span>
+        <span id="comp-badge-name"></span>
+        <span id="comp-badge-cnt" style="margin-left:auto;font-size:10px;color:var(--txt3);font-weight:400;"></span>
+      </div>
+      <!-- hidden div kept for JS compatibility -->
+      <div class="company-grid" id="company-grid" style="display:none;"></div>
     </div>
 
     <!-- TAB IMPORT -->
@@ -1578,7 +1406,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
         <p>.xlsx / .xls — Planning de Réception</p>
       </div>
       <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
-      <div id="import-status" style="margin-top:9px;font-size:11px;color:var(--text2)"></div>
+      <div id="import-status" style="margin-top:9px;font-size:11px;color:var(--txt3)"></div>
       <div style="margin-top:14px">
         <div class="section-label">Base intégrée</div>
         <button class="btn btn-secondary" style="width:100%;font-size:11px" onclick="loadBuiltinDB()">Charger base Février 2026</button>
@@ -1591,7 +1419,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
     <div class="tabs">
       <button class="tab active" id="tab-iata-btn" onclick="switchSearch('iata',this)">🔢 Code IATA</button>
       <button class="tab" id="tab-montant-btn" onclick="switchSearch('montant',this)">💰 Montant</button>
-      <button class="tab" id="tab-ndcf-btn" onclick="switchSearch('ndcf',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:#7dd3fc;font-weight:700;">✈ NDC-F</button>
+      <button class="tab" id="tab-ndcf-btn" onclick="switchSearch('ndcf',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">✈ NDC-F</button>
     </div>
     <div id="search-iata">
       <div class="input-group">
@@ -1603,81 +1431,81 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
 
 <!-- PANNEAU NDC-F -->
 <div id="search-ndcf" style="display:none">
-  <div id="ndcf-import-zone" style="background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.25);border-radius:9px;padding:11px 14px;margin-bottom:10px;">
-    <div style="font-size:10px;color:#7dd3fc;font-weight:700;margin-bottom:7px;">📂 FICHIER COMMERCIAL NDC-F</div>
+  <div id="ndcf-import-zone" style="background:rgba(14,165,233,.07);border:1.5px solid var(--bo-sky);border-radius:9px;padding:11px 14px;margin-bottom:10px;">
+    <div style="font-size:10px;color:var(--sky);font-weight:700;margin-bottom:7px;">📂 FICHIER COMMERCIAL NDC-F</div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <label style="padding:5px 14px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.35);border-radius:6px;color:#7dd3fc;font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;" for="f-ndcf">
+      <label style="padding:5px 14px;background:rgba(14,165,233,.15);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;" for="f-ndcf">
         CHARGER EXCEL
       </label>
       <input type="file" id="f-ndcf" accept=".xlsx,.xls,.csv" style="display:none;" onchange="loadNDCF(this)">
-      <span id="ndcf-load-st" style="font-size:9px;color:var(--text2);">Non chargé</span>
+      <span id="ndcf-load-st" style="font-size:9px;color:var(--txt3);">Non chargé</span>
     </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px;">
     <div>
-      <label style="font-size:9px;color:#7dd3fc;letter-spacing:1px;font-weight:600;">DATE</label>
+      <label style="font-size:9px;color:var(--sky);letter-spacing:1px;font-weight:600;">DATE</label>
       <input id="ndcf-date" type="date"
-        style="width:100%;background:rgba(6,13,26,.9);border:1px solid rgba(14,165,233,.25);border-radius:6px;padding:6px;color:var(--text);font-family:var(--font-ui);font-size:11px;margin-top:3px;">
+        style="width:100%;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;padding:6px;color:var(--text);font-family:var(--font-ui);font-size:11px;margin-top:3px;">
     </div>
     <div>
-      <label style="font-size:9px;color:#7dd3fc;letter-spacing:1px;font-weight:600;">N° PIÈCE</label>
+      <label style="font-size:9px;color:var(--sky);letter-spacing:1px;font-weight:600;">N° PIÈCE</label>
       <input id="ndcf-piece" type="text" placeholder="000005"
         oninput="searchNDCFByPiece(this.value)"
-        style="width:100%;background:rgba(6,13,26,.9);border:1px solid rgba(14,165,233,.25);border-radius:6px;padding:6px;color:var(--text);font-family:var(--font-mono);font-size:11px;text-align:center;margin-top:3px;">
+        style="width:100%;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;padding:6px;color:var(--text);font-family:var(--font-mono);font-size:11px;text-align:center;margin-top:3px;">
     </div>
   </div>
   <div style="margin-bottom:9px;">
-    <label style="font-size:9px;color:#7dd3fc;letter-spacing:1px;font-weight:600;">RÉFÉRENCE N°</label>
+    <label style="font-size:9px;color:var(--sky);letter-spacing:1px;font-weight:600;">RÉFÉRENCE N°</label>
     <div style="display:flex;gap:7px;align-items:center;margin-top:4px;">
       <input id="ndcf-num" type="number" placeholder="072" min="1" max="999"
-        style="width:80px;background:rgba(6,13,26,.9);border:1px solid rgba(14,165,233,.25);border-radius:6px;padding:7px;color:var(--text);font-family:var(--font-mono);font-size:13px;text-align:center;"
+        style="width:80px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;padding:7px;color:var(--text);font-family:var(--font-mono);font-size:13px;text-align:center;"
         oninput="updNDCFRef()">
-      <span id="ndcf-ref-preview" style="font-size:11px;color:#7dd3fc;font-weight:700;font-family:var(--font-mono);"></span>
+      <span id="ndcf-ref-preview" style="font-size:11px;color:var(--sky);font-weight:700;font-family:var(--font-mono);"></span>
     </div>
   </div>
 
   <div style="margin-bottom:7px;">
-    <label style="font-size:9px;color:var(--gold-light);letter-spacing:1px;font-weight:600;">🔢 N° FACTURE</label>
+    <label style="font-size:9px;color:var(--amber);letter-spacing:1px;font-weight:600;">🔢 N° FACTURE</label>
     <div style="position:relative;margin-top:4px;">
       <input id="ndcf-fac-num" placeholder="Ex: 12, 045..." oninput="onNDCFFac(this.value)" onkeydown="ndcfFacMK(event)"
-        style="width:100%;background:rgba(6,13,26,.9);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:7px;color:var(--gold-light);font-family:var(--font-mono);font-size:13px;font-weight:700;" autocomplete="off">
-      <div id="ndcf-fac-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:#060d1a;border:1px solid rgba(245,158,11,.3);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
+        style="width:100%;background:var(--bg2);border:1.5px solid rgba(217,119,6,.25);border-radius:6px;padding:7px;color:var(--amber);font-family:var(--font-mono);font-size:13px;font-weight:700;" autocomplete="off">
+      <div id="ndcf-fac-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:#fff;border:1.5px solid rgba(217,119,6,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
     </div>
   </div>
 
   <div style="margin-bottom:7px;">
-    <label style="font-size:9px;color:#7dd3fc;letter-spacing:1px;font-weight:600;">💰 TOTAL RÈGLEMENT (DA)</label>
+    <label style="font-size:9px;color:var(--sky);letter-spacing:1px;font-weight:600;">💰 TOTAL RÈGLEMENT (DA)</label>
     <div style="position:relative;margin-top:4px;">
       <input id="ndcf-mt" placeholder="0" oninput="onNDCFMt(this.value)" onkeydown="ndcfMK(event)"
-        style="width:100%;background:rgba(6,13,26,.9);border:1px solid rgba(14,165,233,.25);border-radius:6px;padding:8px;color:var(--green-f);font-family:var(--font-mono);font-size:14px;font-weight:700;">
-      <div id="ndcf-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:#060d1a;border:1px solid rgba(14,165,233,.25);border-radius:8px;z-index:400;max-height:220px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
+        style="width:100%;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;padding:8px;color:var(--green-f);font-family:var(--font-mono);font-size:14px;font-weight:700;">
+      <div id="ndcf-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:#fff;border:1.5px solid var(--bo-sky);border-radius:8px;z-index:400;max-height:220px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
     </div>
   </div>
 
-  <div id="ndcf-result" style="display:none;background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.3);border-radius:9px;padding:11px 13px;margin-bottom:9px;">
-    <div style="font-size:9px;color:#7dd3fc;letter-spacing:1px;margin-bottom:7px;font-weight:600;">ÉCRITURES À GÉNÉRER</div>
+  <div id="ndcf-result" style="display:none;background:rgba(14,165,233,.07);border:1.5px solid var(--bo-sky);border-radius:9px;padding:11px 13px;margin-bottom:9px;">
+    <div style="font-size:9px;color:var(--sky);letter-spacing:1px;margin-bottom:7px;font-weight:600;">ÉCRITURES À GÉNÉRER</div>
     <div id="ndcf-preview"></div>
   </div>
 
   <button onclick="validerNDCF()" id="ndcf-btn-val" disabled
-    style="width:100%;padding:9px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);border-radius:7px;color:#7dd3fc;font-family:var(--font-ui);font-size:10px;font-weight:700;cursor:pointer;opacity:.5;letter-spacing:2px;transition:all .2s;">
+    style="width:100%;padding:9px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:7px;color:var(--sky);font-family:var(--font-ui);font-size:10px;font-weight:700;cursor:pointer;opacity:.5;letter-spacing:2px;transition:all .2s;">
     ✅ VALIDER PIÈCE NDC-F  [F1]
   </button>
 
   <div style="margin-top:9px;">
     <button onclick="toggleNDCFClients()"
-      style="width:100%;padding:6px;background:rgba(6,13,26,.8);border:1px solid rgba(14,165,233,.2);border-radius:6px;color:#7dd3fc;font-family:var(--font-ui);font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .15s;">
+      style="width:100%;padding:6px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .15s;">
       ✈️ GÉRER CLIENTS NDC-F
     </button>
     <div id="ndcf-clients-zone" style="display:none;margin-top:7px;">
       <div style="max-height:200px;overflow-y:auto;" id="ndcf-clients-list"></div>
       <div style="display:flex;gap:4px;margin-top:5px;">
         <button onclick="addNDCFClient()"
-          style="flex:1;padding:6px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);border-radius:6px;color:#7dd3fc;font-family:var(--font-ui);font-size:9px;cursor:pointer;">
+          style="flex:1;padding:6px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;">
           + AJOUTER
         </button>
-        <label style="flex:1;padding:6px;background:rgba(6,13,26,.8);border:1px solid rgba(14,165,233,.2);border-radius:6px;color:#7dd3fc;font-family:var(--font-ui);font-size:9px;cursor:pointer;text-align:center;" for="f-ndcf-cl">
+        <label style="flex:1;padding:6px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;text-align:center;" for="f-ndcf-cl">
           📥 IMPORTER
         </label>
         <input type="file" id="f-ndcf-cl" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importNDCFClients(this)">
@@ -1686,10 +1514,10 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
   </div>
 
   <div id="ndcf-pieces-zone" style="margin-top:10px;display:none;">
-    <div style="font-size:9px;color:#7dd3fc;letter-spacing:2px;margin-bottom:7px;font-weight:600;">PIÈCES NDC-F VALIDÉES</div>
+    <div style="font-size:9px;color:var(--sky);letter-spacing:2px;margin-bottom:7px;font-weight:600;">PIÈCES NDC-F VALIDÉES</div>
     <div id="ndcf-pieces-list"></div>
     <button onclick="exportNDCF()"
-      style="width:100%;margin-top:9px;padding:8px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);border-radius:7px;color:#7dd3fc;font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;letter-spacing:2px;">
+      style="width:100%;margin-top:9px;padding:8px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:7px;color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;letter-spacing:2px;">
       ⬇ EXPORT XLS COMPTA
     </button>
   </div>
@@ -1749,7 +1577,7 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
     <div class="section" style="flex-shrink:0;">
       <div class="section-label">Base clients ✈</div>
       <div style="margin-bottom:9px;">
-        <label style="display:block;padding:7px 11px;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.25);border-radius:7px;color:#7dd3fc;font-size:9px;cursor:pointer;text-align:center;font-weight:700;letter-spacing:1px;" for="f-iata-import">
+        <label style="display:block;padding:7px 11px;background:rgba(14,165,233,.08);border:1.5px solid var(--bo-sky);border-radius:7px;color:var(--sky);font-size:9px;cursor:pointer;text-align:center;font-weight:700;letter-spacing:1px;" for="f-iata-import">
           📥 IMPORTER BASE CLIENTS (Excel/CSV)
         </label>
         <input type="file" id="f-iata-import" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importIATAClients(this)">
@@ -1779,9 +1607,9 @@ tbody td { padding: 7px 11px; vertical-align: middle; }
   <div class="table-wrap">
     <div style="display:flex;gap:6px;margin-bottom:7px;padding:8px 10px 0;">
       <input id="fac-search-q" placeholder="🔍 Client..." oninput="filtreEntries()"
-        style="flex:1;background:rgba(10,22,40,.8);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--text);font-family:var(--font-ui);font-size:11px;">
+        style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--text);font-family:var(--font-ui);font-size:11px;">
       <input id="fac-search-m" placeholder="💰 Montant..." type="number" oninput="filtreEntries()"
-        style="width:110px;background:rgba(10,22,40,.8);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--text);font-family:var(--font-mono);font-size:11px;">
+        style="width:110px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--text);font-family:var(--font-mono);font-size:11px;">
     </div>
     <div id="entries-container"></div>
   </div>
@@ -2168,7 +1996,7 @@ function FM(n){return n.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumF
 let DB=[...BASE],RV=[],rvL=false,SEL=null,acI=-1,acR=[],LIG=[],ECR=[],editC=null;
 let TYP='411',TOT=0;
 const MAX=15;
-const TC={"411":"#38bdf8","165":"#f59e0b","181":"#a78bfa"};
+const TC={"411":"#0284c7","165":"#d97706","181":"#7c3aed"};
 const TL={"411":"Vente","165":"Caution","181":"Unité"};
 const H13=['FOLIO','PIECE','DATE','REFERENCE','LIBELLE','CODE_JRN','CODE_COM','CODE_AUX','CODE_BDG','CODE_NAT','CODE_UNT','DEBIT','CREDIT'];
 
@@ -2227,7 +2055,7 @@ function onTot(v){
   TOT=PM(v);
   const el=document.getElementById('tot-v');
   if(!TOT){el.innerHTML='';renderECC();return;}
-  if(!rvL){el.innerHTML='<span style="color:#fbbf24;">⚠️ Relevé non chargé</span>';renderECC();return;}
+  if(!rvL){el.innerHTML='<span style="color:var(--amber);">⚠️ Relevé non chargé</span>';renderECC();return;}
   const ok=RV.some(r=>Math.abs(r.credit-TOT)<0.01);
   el.innerHTML=ok?'<span style="color:var(--green);">✅ Trouvé dans relevé</span>':'<span style="color:var(--red);">❌ Absent du relevé</span>';
   renderECC();
@@ -2446,7 +2274,7 @@ function renderECC(){
     const libMainV=mainV?mainV.lib||mainV.client.label:'VENTILÉ';
     html+=`<div class="d-row" style="border-color:rgba(74,222,128,.4);">
       <span class="sd">D</span><span class="dcpt">512214</span>
-      <span class="dlib" style="color:#fbbf24;">${libMainV}</span>
+      <span class="dlib" style="color:var(--amber);">${libMainV}</span>
       <span class="dmt">${FM(TOT)}</span>
     </div>`;
     vLines.forEach(l=>{
@@ -2560,7 +2388,7 @@ function renderECR(){
       const totV=e.tot_v||vLines.reduce((a,l)=>a+l.montant,0);
       rows+=`<div class="el" style="background:rgba(37,99,235,.08);">
         <span class="elsd">D</span><span class="elc" style="color:#93c5fd;">512214</span>
-        <span class="ela"></span><span class="ell" style="color:#fbbf24;">VENTILÉ</span>
+        <span class="ela"></span><span class="ell" style="color:var(--amber);">VENTILÉ</span>
         <span class="elmd">${FM(totV)}</span>
       </div>`;
       vLines.forEach(l=>{
@@ -2578,7 +2406,7 @@ function renderECR(){
     }
     return `<div class="ecard" id="ecard-${e.id}">
       <div class="ehead">
-        <span>Pièce <span class="ep">${e.piece}</span> · F:<span style="color:#fbbf24;">${e.folio}</span> · ${e.date} · <span style="color:#38bdf8;">${e.ref}</span></span>
+        <span>Pièce <span class="ep">${e.piece}</span> · F:<span style="color:var(--amber);">${e.folio}</span> · ${e.date} · <span style="color:var(--sky-deep);font-weight:700;">${e.ref}</span></span>
         <span class="et">${FM(e.total)} DA</span>
       </div>${rows}</div>`;
   }).join('');
@@ -2768,7 +2596,7 @@ function PRVx(buf,fn){
 }
 function SRV(ops,fn){
   RV=ops;rvL=true;
-  document.getElementById('rvstat').innerHTML=`<div style="background:#052e16;border:1px solid #166534;border-radius:6px;padding:9px 13px;color:#4ade80;font-size:12px;">✅ ${fn} — <strong>${ops.length}</strong> opérations crédit</div>`;
+  document.getElementById('rvstat').innerHTML=`<div style="background:#052e16;border:1px solid #166534;border-radius:6px;padding:9px 13px;color:var(--green);font-size:12px;">✅ ${fn} — <strong>${ops.length}</strong> opérations crédit</div>`;
   document.getElementById('rvtb').innerHTML=ops.map(r=>`<tr><td>${r.code}</td><td style="color:#64748b">${r.dateOp}</td><td style="color:#cbd5e1">${r.libelle}</td><td class="tcc">${FM(r.credit)}</td></tr>`).join('');
   document.getElementById('rvcnt').textContent=ops.length+' opérations';
   document.getElementById('rvtcard').style.display='block';
@@ -3612,18 +3440,31 @@ function getAirLogo(code){
 }
 
 function renderCompanyGrid(){
+  // Populate the select dropdown — TK always first
+  const sel = document.getElementById('company-select');
+  const prevVal = sel.value;
+  sel.innerHTML = '<option value="">— Sélectionner une compagnie —</option>';
+  const allComps = FAC_DB ? Object.keys(FAC_DB) : Object.keys(COMPANY_ACCOUNTS);
+  // Sort: TK first, then rest alphabetically
+  const sorted = ['TK', ...allComps.filter(c=>c!=='TK').sort()];
+  sorted.forEach(comp => {
+    if(!allComps.includes(comp)) return;
+    const cnt = FAC_DB ? FAC_DB[comp].length : 0;
+    const opt = document.createElement('option');
+    opt.value = comp;
+    opt.textContent = comp + (FAC_DB ? '  —  '+cnt+' clients' : '');
+    sel.appendChild(opt);
+  });
+  // Auto-select TK on first load
+  if(!prevVal || prevVal==='') {
+    sel.value = 'TK';
+    selectComp('TK');
+  } else {
+    sel.value = prevVal;
+  }
+  // Also keep hidden grid in sync for any legacy code
   const grid = document.getElementById('company-grid');
   grid.innerHTML = '';
-  const comps = FAC_DB ? Object.keys(FAC_DB) : Object.keys(COMPANY_ACCOUNTS);
-  comps.forEach(comp => {
-    const cnt = FAC_DB ? FAC_DB[comp].length : 0;
-    const b = document.createElement('button');
-    b.className = 'comp-btn';
-    b.id = 'cb-'+comp.replace(/\s/g,'-');
-    b.innerHTML = getLogoHTML(comp)+comp+'<span class="cnt">'+(FAC_DB?cnt+' cli.':'-')+'</span>';
-    b.onclick = ()=>selectComp(comp);
-    grid.appendChild(b);
-  });
 }
 
 function switchMainTab(name, el){
@@ -3647,13 +3488,30 @@ function switchSearch(mode, el){
 }
 
 function selectComp(comp){
+  if(!comp) return;
   selectedComp = comp;
-  document.querySelectorAll('.comp-btn').forEach(b=>b.classList.remove('active'));
-  const btn = document.getElementById('cb-'+comp.replace(/\s/g,'-'));
-  if(btn) btn.classList.add('active');
+  // Sync select value
+  const sel = document.getElementById('company-select');
+  if(sel && sel.value !== comp) sel.value = comp;
+  // Update badge
+  const badge = document.getElementById('comp-badge');
+  const badgeName = document.getElementById('comp-badge-name');
+  const badgeLogo = document.getElementById('comp-badge-logo');
+  const badgeCnt = document.getElementById('comp-badge-cnt');
+  if(badge){
+    badge.style.display = 'flex';
+    badgeName.textContent = comp;
+    badgeLogo.innerHTML = getLogoHTML(comp) || '';
+    badgeCnt.textContent = FAC_DB&&FAC_DB[comp] ? FAC_DB[comp].length+' clients' : '';
+  }
+  // Style the select border to sky blue when company selected
+  if(sel) { sel.style.borderColor = 'var(--sky)'; sel.style.boxShadow = '0 0 0 3px rgba(2,132,199,.1)'; }
   resetResult();
   document.getElementById('table-title').innerHTML = 'Journal &nbsp;'+getAirLogo(comp);
   document.getElementById('table-sub').textContent = FAC_DB&&FAC_DB[comp]?FAC_DB[comp].length+' clients dans la base':'';
+  // Update export button label
+  const expBtn = document.getElementById('export-btn');
+  if(expBtn) expBtn.textContent = '⬇ Export '+comp;
   renderTable();
   const inp = searchMode==='iata'?document.getElementById('iata-input'):document.getElementById('montant-input');
   inp.focus();
@@ -3760,7 +3618,7 @@ function showMtSuggestFAC(digits){
   if(!box){
     box=document.createElement('div');
     box.id='mt-sug-fac';
-    box.style.cssText='position:absolute;top:calc(100%+2px);left:0;right:0;background:#0d1421;border:1px solid #283593;border-radius:6px;z-index:400;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.9);';
+    box.style.cssText='position:absolute;top:calc(100%+2px);left:0;right:0;background:#fff;border:1.5px solid var(--bo2);border-radius:var(--r-md);z-index:400;max-height:200px;overflow-y:auto;box-shadow:var(--shadow-lg);';
     const wrap=document.getElementById('montant-input').parentNode;
     wrap.style.position='relative';
     wrap.appendChild(box);
@@ -3770,8 +3628,8 @@ function showMtSuggestFAC(digits){
   box.innerHTML=mtSugFACList.map((e,i)=>`
     <div id="msfac${i}" onmousedown="selectMtSugFAC(${i})"
       style="padding:6px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);display:flex;gap:10px;align-items:center;">
-      <span style="font-weight:700;color:#4ade80;min-width:100px;">${Math.round(e.montant).toLocaleString('fr-DZ')} DA</span>
-      <span style="color:#e3f2fd;font-size:11px;">${e.client||''}</span>
+      <span style="font-weight:700;color:var(--green);min-width:100px;">${Math.round(e.montant).toLocaleString('fr-DZ')} DA</span>
+      <span style="color:var(--txt2);font-size:11px;">${e.client||''}</span>
     </div>`).join('');
   box.style.display='block';
 }
@@ -4061,8 +3919,8 @@ function renderTable(){
   let globalIdx=1;
   pieces.forEach(piece=>{
     const acc=selectedComp?COMPANY_ACCOUNTS[selectedComp]:null;
-    const pieceColor=piece.num%2===0?'#1a237e':'#0d1421';
-    html+=`<tr class="piece-sep" style="background:${pieceColor};"><td colspan="9" style="color:${piece.num%2===0?'#90caf9':'#93c5fd'};">— PIÈCE N° ${piece.num}&nbsp;${selectedComp?getAirLogo(selectedComp):''}&nbsp;${piece.rows.length} client(s) | Total: ${fmtAmt(Math.abs(piece.total))} DZD ${piece.total>=0?'✓':'⚠'}</td></tr>`;
+    const pieceColor=piece.num%2===0?'var(--sky-pale)':'var(--bg2)';
+    html+=`<tr class="piece-sep" style="background:${pieceColor};"><td colspan="9" style="color:var(--sky-deep);font-weight:700;">— PIÈCE N° ${piece.num}&nbsp;${selectedComp?getAirLogo(selectedComp):''}&nbsp;${piece.rows.length} client(s) | Total: ${fmtAmt(Math.abs(piece.total))} DZD ${piece.total>=0?'✓':'⚠'}</td></tr>`;
 
     piece.rows.forEach(e=>{
       const dup=isDuplicate(e,e.comp)&&filtered.filter(x=>getNomCompta(x.client)===e.nomCompta&&Math.abs(x.montant-e.montant)<0.01&&x.comp===e.comp).length>1;
@@ -4071,12 +3929,12 @@ function renderTable(){
       const debit=e.montant;
       const credit=0; // négatif reste au débit
       html+=`<tr${dup?' class="dup-warn"':''}>
-        <td style="color:var(--text2);font-size:10px;font-family:'IBM Plex Mono',monospace">${globalIdx++}</td>
+        <td style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">${globalIdx++}</td>
         <td><span class="tag tag-${cls}" style="display:inline-flex;align-items:center;gap:4px;">${getAirLogo(e.comp)}</span>${e.isNew?` <span class="tag tag-NEW">NEW</span>`:''}</td>
-        <td style="font-size:11px;font-weight:500">${e.nomCompta}${dup?' <span class="tag tag-DUP">⚠DUP</span>':''}</td>
-        <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent2)">${iata}</td>
-        <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${e.isFWT?'var(--warn)':'var(--text2)'}">${e.codeAux}</td>
-        <td style="font-size:10px;color:var(--text2)">${e.ref}</td>
+        <td style="font-size:11px;font-weight:600;color:var(--txt)">${e.nomCompta}${dup?' <span class="tag tag-DUP">⚠DUP</span>':''}</td>
+        <td style="font-family:var(--font-mono);font-size:10px;color:var(--green);font-weight:700">${iata}</td>
+        <td style="font-family:var(--font-mono);font-size:10px;color:${e.isFWT?'var(--amber)':'var(--txt3)'}">${e.codeAux}</td>
+        <td style="font-size:10px;color:var(--txt3)">${e.ref}</td>
         <td class="amt${debit<0?' neg':' pos'}">${debit!==0?fmtAmt(debit):''}</td>
         <td class="amt neg"></td>
         <td><button class="del-btn" onclick="deleteEntry(${e.id})">✕</button></td>
@@ -4087,20 +3945,20 @@ function renderTable(){
     if(acc){
       const tDebit=piece.total<0?Math.abs(piece.total):0;
       const tCredit=piece.total>=0?piece.total:0;
-      html+=`<tr style="background:var(--surface2)">
-        <td style="color:var(--text2);font-size:10px;font-family:'IBM Plex Mono',monospace">${globalIdx++}</td>
+      html+=`<tr style="background:var(--bg2)">
+        <td style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">${globalIdx++}</td>
         <td></td>
-        <td style="font-size:11px;font-style:italic;color:var(--text2)">${acc.label}</td>
+        <td style="font-size:11px;font-style:italic;color:var(--txt2)">${acc.label}</td>
         <td></td>
-        <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2)">${acc.credit}</td>
-        <td style="font-size:10px;color:var(--text2)">${getRef(selectedComp||'')}</td>
+        <td style="font-family:var(--font-mono);font-size:10px;color:var(--sky-deep);font-weight:700">${acc.credit}</td>
+        <td style="font-size:10px;color:var(--txt3)">${getRef(selectedComp||'')}</td>
         <td class="amt neg">${tDebit>0?fmtAmt(tDebit):''}</td>
         <td class="amt pos">${tCredit>0?fmtAmt(tCredit):''}</td>
         <td></td>
       </tr>`;
       const eq=Math.abs(piece.total-piece.total)<0.01;
       html+=`<tr class="total-row"><td colspan="6" style="text-align:right;padding-right:11px;font-size:10px">
-        PIÈCE ${piece.num} — ÉQUILIBRE: DÉBIT = CRÉDIT = ${fmtAmt(Math.abs(piece.total))} ✓
+        ✓ Pièce ${piece.num} — Débit = Crédit = ${fmtAmt(Math.abs(piece.total))} DA
       </td><td class="amt pos">${fmtAmt(Math.abs(piece.total))}</td><td class="amt pos">${fmtAmt(Math.abs(piece.total))}</td><td></td></tr>`;
     }
   });
@@ -4128,54 +3986,50 @@ function updateStats(){
 // ─── EXPORT XLS ────────────────────────────────────────────────────────────
 function exportXLS(){
   if(!entries.length){showToast('Aucune écriture','error');return;}
-  const headers=['FOLIO','PIECE','DATE','REFERENCE','LIBELLE','CODE_JRN','CODE_COM','CODE_AUX','CODE_BDG','CODE_NAT','CODE_UNT','DEBIT','CREDIT','LIBELLEA','CTP_COM','CTP_AUX','ECHEANCE'];
-  const wb=XLSX.utils.book_new();
-  const byComp={};
-  entries.forEach(e=>{if(!byComp[e.comp])byComp[e.comp]=[];byComp[e.comp].push(e);});
-  const moisNom=MOIS_NOMS[currentMois];
-  const lastDay=new Date(2026,currentMois,0).getDate();
-  const dateStr=`${String(lastDay).padStart(2,'0')}/${String(currentMois).padStart(2,'0')}/2026`;
+  if(!selectedComp){showToast('Sélectionnez une compagnie','error');return;}
 
-  Object.entries(byComp).forEach(([comp,rows])=>{
-    const pieces=buildPieces(rows);
-    const sheetData=[headers];
-    pieces.forEach((piece,pi)=>{
-      const pieceNum=String(piece.num).padStart(6,'0');
-      piece.rows.forEach(r=>{
-        const nomCompta=r.nomCompta||r.client;
-        const debit=r.montant;
-        const creditClient=0;
-        if(r.isFWT){
-          // FWT: compte unique, pas de CODE_AUX séparé
-          sheetData.push([currentMois,pieceNum,dateStr,r.ref,nomCompta,'',r.codeAux,'','','','',debit,creditClient,'','','','']);
-        } else {
-          sheetData.push([currentMois,pieceNum,dateStr,r.ref,nomCompta,'',411,r.codeAux,'','','',debit,creditClient,'','','','']);
-        }
-      });
-      const acc=COMPANY_ACCOUNTS[comp];
-      if(acc){
-        const tDebit=piece.total<0?Math.abs(piece.total):0;
-        const tCredit=piece.total>=0?piece.total:0;
-        sheetData.push([currentMois,pieceNum,dateStr,`${currentPeriode}/15 ${moisNom} ${comp}`,acc.label,'',acc.credit,'','','','',tDebit,tCredit,'','','','']);
+  // Only export entries for the currently selected company
+  const compEntries = entries.filter(e => e.comp === selectedComp);
+  if(!compEntries.length){
+    showToast('Aucune écriture pour '+selectedComp,'error');
+    return;
+  }
+
+  const headers=['FOLIO','PIECE','DATE','REFERENCE','LIBELLE','CODE_JRN','CODE_COM','CODE_AUX','CODE_BDG','CODE_NAT','CODE_UNT','DEBIT','CREDIT','LIBELLEA','CTP_COM','CTP_AUX','ECHEANCE'];
+  const wb = XLSX.utils.book_new();
+  const moisNom = MOIS_NOMS[currentMois];
+  const lastDay = new Date(2026,currentMois,0).getDate();
+  const dateStr = `${String(lastDay).padStart(2,'0')}/${String(currentMois).padStart(2,'0')}/2026`;
+
+  const pieces = buildPieces(compEntries);
+  const sheetData = [headers];
+  pieces.forEach((piece, pi) => {
+    const pieceNum = String(piece.num).padStart(6,'0');
+    piece.rows.forEach(r => {
+      const nomCompta = r.nomCompta||r.client;
+      const debit = r.montant;
+      const creditClient = 0;
+      if(r.isFWT){
+        sheetData.push([currentMois,pieceNum,dateStr,r.ref,nomCompta,'',r.codeAux,'','','','',debit,creditClient,'','','','']);
+      } else {
+        sheetData.push([currentMois,pieceNum,dateStr,r.ref,nomCompta,'',411,r.codeAux,'','','',debit,creditClient,'','','','']);
       }
     });
-    const ws=XLSX.utils.aoa_to_sheet(sheetData);
-    ws['!cols']=[{wch:5},{wch:8},{wch:12},{wch:22},{wch:38},{wch:8},{wch:10},{wch:10},{wch:7},{wch:7},{wch:7},{wch:14},{wch:14},{wch:8},{wch:8},{wch:8},{wch:12}];
-    XLSX.utils.book_append_sheet(wb,ws,comp.replace(/\s/g,'_').substring(0,31));
+    const acc = COMPANY_ACCOUNTS[selectedComp];
+    if(acc){
+      const tDebit = piece.total<0 ? Math.abs(piece.total) : 0;
+      const tCredit = piece.total>=0 ? piece.total : 0;
+      sheetData.push([currentMois,pieceNum,dateStr,`${currentPeriode}/15 ${moisNom} ${selectedComp}`,acc.label,'',acc.credit,'','','','',tDebit,tCredit,'','','','']);
+    }
   });
+  const ws = XLSX.utils.aoa_to_sheet(sheetData);
+  ws['!cols']=[{wch:5},{wch:8},{wch:12},{wch:22},{wch:38},{wch:8},{wch:10},{wch:10},{wch:7},{wch:7},{wch:7},{wch:14},{wch:14},{wch:8},{wch:8},{wch:8},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws, selectedComp.replace(/\s/g,'_').substring(0,31));
 
-  // Recapitulatif
-  const sumData=[['COMPAGNIE','NB ÉCRITURES','NB PIÈCES','TOTAL DZD']];
-  Object.entries(byComp).forEach(([comp,rows])=>{
-    const p=buildPieces(rows);
-    sumData.push([comp,rows.length,p.length,rows.reduce((s,r)=>s+r.montant,0)]);
-  });
-  sumData.push(['TOTAL',entries.length,'-',entries.reduce((s,e)=>s+e.montant,0)]);
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sumData),'RECAPITULATIF');
-
-  const fname=`IMPORT_${moisNom}_${currentPeriode}15_${new Date().toISOString().slice(0,10)}.xls`;
-  XLSX.writeFile(wb,fname,{bookType:'xls',type:'binary'});
-  showToast('✅ Export : '+entries.length+' écritures','success');
+  // Filename includes company code
+  const fname = `IMPORT_${selectedComp.replace(/\s/g,'_')}_${moisNom}_${currentPeriode}15_${new Date().toISOString().slice(0,10)}.xls`;
+  XLSX.writeFile(wb, fname, {bookType:'xls', type:'binary'});
+  showToast('✅ Export '+selectedComp+' : '+compEntries.length+' écritures','success');
 }
 
 // ─── PIÈCE DÉPART ──────────────────────────────────────────────────────────
@@ -4210,21 +4064,21 @@ function renderClientsList(){
   ) : allClients;
 
   if(!filtered.length){
-    container.innerHTML='<div style="padding:20px;text-align:center;color:var(--text2);font-size:12px;">Aucun résultat</div>';
+    container.innerHTML='<div style="padding:20px;text-align:center;color:var(--txt3);font-size:12px;">Aucun résultat</div>';
     return;
   }
 
   let html='<table style="width:100%;border-collapse:collapse;font-size:11px;">';
   html+='<thead><tr style="position:sticky;top:0;background:var(--surface);">';
   html+='<th style="padding:7px 6px;border-bottom:1px solid var(--border);width:32px"></th>';
-  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--text2);border-bottom:1px solid var(--border)">IATA</th>';
-  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--text2);border-bottom:1px solid var(--border)">NOM PLANNING</th>';
-  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--text2);border-bottom:1px solid var(--border)">NOM COMPTABLE</th>';
-  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--text2);border-bottom:1px solid var(--border)">CODE</th>';
+  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--txt3);border-bottom:1px solid var(--border)">IATA</th>';
+  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--txt3);border-bottom:1px solid var(--border)">NOM PLANNING</th>';
+  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--txt3);border-bottom:1px solid var(--border)">NOM COMPTABLE</th>';
+  html+='<th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--txt3);border-bottom:1px solid var(--border)">CODE</th>';
   html+='</tr></thead><tbody>';
 
   filtered.forEach(c=>{
-    const iataDisp = c.iata ? `<span style="font-family:'IBM Plex Mono',monospace;color:var(--accent2)">${c.iata}</span>` : '<span style="color:var(--text2)">—</span>';
+    const iataDisp = c.iata ? `<span style="font-family:var(--font-mono);color:var(--accent2)">${c.iata}</span>` : '<span style="color:var(--txt4)">—</span>';
     const auxManquant = !c.isFWT && (!c.aux||c.aux==='???'||c.aux==='#N/A'||c.aux==='');
     const codeColor = c.isFWT ? 'var(--warn)' : auxManquant ? 'var(--danger)' : 'var(--text2)';
     const auxDisp = auxManquant ? '⚠ MANQUANT' : c.aux;
@@ -4236,7 +4090,7 @@ function renderClientsList(){
       <td style="padding:6px 10px">${iataDisp}</td>
       <td style="padding:6px 10px;font-size:11px">${c.planning}</td>
       <td style="padding:6px 10px;font-size:11px;font-weight:500">${c.nom}</td>
-      <td style="padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:${codeColor}">${auxDisp}</td>
+      <td style="padding:6px 10px;font-family:var(--font-mono);font-size:10px;color:${codeColor}">${auxDisp}</td>
     </tr>`;
   });
   html+='</tbody></table>';
@@ -4254,11 +4108,11 @@ function editClient(planning, nom, aux, iata){
       <button onclick="saveClient('${planning.replace(/'/g,"\\'")}','${rowId}')"
         style="background:var(--accent);color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer;font-weight:700;">✓</button>
       <button onclick="renderClientsList()"
-        style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px 7px;font-size:12px;cursor:pointer;">✕</button>
+        style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px 7px;font-size:12px;cursor:pointer;">✕</button>
     </td>
     <td style="padding:4px 6px;">
       <input id="ed-iata" value="${iata}" maxlength="4"
-        style="width:46px;background:var(--bg);border:1px solid var(--accent2);border-radius:4px;padding:3px 5px;font-size:11px;text-align:center;color:var(--accent2);font-family:'IBM Plex Mono',monospace;outline:none;">
+        style="width:46px;background:var(--bg);border:1px solid var(--accent2);border-radius:4px;padding:3px 5px;font-size:11px;text-align:center;color:var(--accent2);font-family:var(--font-mono);outline:none;">
     </td>
     <td style="padding:4px 6px;">
       <input id="ed-planning" value="${planning}"
@@ -4270,7 +4124,7 @@ function editClient(planning, nom, aux, iata){
     </td>
     <td style="padding:4px 6px;">
       <input id="ed-aux" value="${aux==='⚠ MANQUANT'?'':aux}"
-        style="width:90px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 6px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text);outline:none;" placeholder="41100XXX">
+        style="width:90px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 6px;font-size:11px;font-family:var(--font-mono);color:var(--text);outline:none;" placeholder="41100XXX">
     </td>`;
   document.getElementById('ed-nom').focus();
 }
@@ -4351,7 +4205,7 @@ function loadNDCF(inp){
         });
       });
       document.getElementById('ndcf-load-st').textContent='✅ '+NDCF_DATA.length+' clients chargés';
-      document.getElementById('ndcf-load-st').style.color='#4ade80';
+      document.getElementById('ndcf-load-st').style.color='var(--green)';
       document.getElementById('ndcf-import-zone').style.borderColor='rgba(74,222,128,.4)';
       // Proposer prochain numéro
       if(ndcfLastNum>0){
@@ -4419,14 +4273,14 @@ function renderNDCFSug(){
   const box=document.getElementById('ndcf-suggest');
   const year=new Date().getFullYear();
   box.innerHTML=ndcfSugList.map((d,i)=>{
-    const hi=i===ndcfSugIdx?'background:#1a237e;':'';
-    const clientOk=d.client?`<span style="color:#4ade80;font-size:9px;">${d.client.compta}</span>`:`<span style="color:#f87171;font-size:9px;">⚠️ ${d.agence}</span>`;
-    const mtColor=d._neg?'#f87171':'#4ade80';
+    const hi=i===ndcfSugIdx?'background:var(--sky-pale);':'background:#fff;';
+    const clientOk=d.client?`<span style="color:var(--green);font-size:9px;font-weight:700;">${d.client.compta}</span>`:`<span style="color:var(--red);font-size:9px;">⚠️ ${d.agence}</span>`;
+    const mtColor=d._neg?'var(--red)':'var(--green)';
     const mtSign=d._neg?'(AVOIR) ':'';
     return `<div id="ndcs${i}" onmousedown="selectNDCF(${i})"
       style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;">
       <span style="font-weight:700;color:${mtColor};min-width:110px;">${mtSign}${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
-      <span style="color:#e3f2fd;flex:1;font-size:11px;">${d.agence}</span>
+      <span style="color:var(--txt2);flex:1;font-size:11px;">${d.agence}</span>
       ${clientOk}
     </div>`;
   }).join('');
@@ -4453,7 +4307,7 @@ function showNDCFPreview(d){
   const prev=document.getElementById('ndcf-preview');
   const btn=document.getElementById('ndcf-btn-val');
   if(!d.client){
-    prev.innerHTML=`<div style="color:#f87171;font-size:10px;">⚠️ "${d.agence}" non trouvé dans la base NDC-F</div>`;
+    prev.innerHTML=`<div style="color:var(--red);font-size:10px;">⚠️ "${d.agence}" non trouvé dans la base NDC-F</div>`;
     res.style.display='block';
     btn.disabled=true;btn.style.opacity='0.5';
     return;
@@ -4470,11 +4324,11 @@ function showNDCFPreview(d){
     // D 181xxx  total_reg
     // C 46741111 total_reg
     prev.innerHTML=`
-      <div style="font-size:10px;font-family:'Courier New',monospace;line-height:1.9;">
-        <div><span style="color:#a78bfa;font-weight:700;">D ${cl.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e3f2fd;">${cl.compta}</span>&nbsp;&nbsp;<span style="color:#4ade80;font-weight:700;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
-        <div><span style="color:#90caf9;">C 46741111&nbsp;</span><span style="color:#e3f2fd;">${cl.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
+      <div style="font-size:10px;font-family:var(--font-mono);line-height:1.9;">
+        <div><span style="color:var(--sky-deep);font-weight:700;">D ${cl.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--green);font-weight:700;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
+        <div><span style="color:var(--sky);">C 46741111&nbsp;</span><span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
       </div>
-      <div style="margin-top:5px;font-size:9px;color:#4ade80;">✅ Équilibré · Unité FWT</div>`;
+      <div style="margin-top:5px;font-size:9px;color:var(--green);">✅ Équilibré · Unité FWT</div>`;
     res.style.display='block';
     res._data={d, total_reg, frais, tva, ttc, isFWTclient:true};
     btn.disabled=false;btn.style.opacity='1';
@@ -4483,13 +4337,13 @@ function showNDCFPreview(d){
     const ctrl = frais+tva+ttc;
     const ok = ctrl===total_reg;
     prev.innerHTML=`
-      <div style="font-size:10px;font-family:'Courier New',monospace;line-height:1.9;">
-        <div><span style="color:#38bdf8;font-weight:700;">D 411/${cl.aux}</span>&nbsp;&nbsp;<span style="color:#e3f2fd;">${cl.compta}</span>&nbsp;&nbsp;<span style="color:#4ade80;font-weight:700;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
-        <div><span style="color:#90caf9;">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${cl.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${frais.toLocaleString('fr-DZ')} DA</span></div>
-        <div><span style="color:#90caf9;">C 44551&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${cl.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${tva.toLocaleString('fr-DZ')} DA</span></div>
-        <div><span style="color:#90caf9;">C 46741111&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${cl.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${ttc.toLocaleString('fr-DZ')} DA</span></div>
+      <div style="font-size:10px;font-family:var(--font-mono);line-height:1.9;">
+        <div><span style="color:var(--sky-deep);font-weight:700;">D 411/${cl.aux}</span>&nbsp;&nbsp;<span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--green);font-weight:700;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
+        <div><span style="color:var(--sky);">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${frais.toLocaleString('fr-DZ')} DA</span></div>
+        <div><span style="color:var(--sky);">C 44551&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${tva.toLocaleString('fr-DZ')} DA</span></div>
+        <div><span style="color:var(--sky);">C 46741111&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${ttc.toLocaleString('fr-DZ')} DA</span></div>
       </div>
-      <div style="margin-top:5px;font-size:9px;color:${ok?'#4ade80':'#f87171'};">
+      <div style="margin-top:5px;font-size:9px;color:${ok?'var(--green)':'var(--red)'};font-weight:600;">
         ${ok?'✅ Équilibré':'❌ Écart : '+(ctrl-total_reg).toLocaleString('fr-DZ')+' DA'}
       </div>`;
     res.style.display='block';
@@ -4578,19 +4432,19 @@ function renderNDCFPieces(){
   const pieceHTML=NDCF_PIECES.map((p,i)=>{
     const isFWT = p.isFWT===true;
     const lines = isFWT
-      ? `<div><span style="color:#a78bfa;font-weight:700;">D ${p.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#dde4f0;">${p.compta}</span>&nbsp;<span style="color:#4ade80;font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')}</span></div>
-         <div><span style="color:#93c5fd;">C 46741111&nbsp;</span><span style="color:#dde4f0;">${p.compta}</span>&nbsp;<span style="color:#fbbf24;">${Math.round(p.total_reg).toLocaleString('fr-DZ')}</span></div>`
-      : `<div><span style="color:#38bdf8;font-weight:700;">D 411/${p.aux}</span>&nbsp;<span style="color:#dde4f0;">${p.compta}</span>&nbsp;<span style="color:#4ade80;font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')}</span></div>
-         <div><span style="color:#93c5fd;">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#dde4f0;">${p.compta}</span>&nbsp;<span style="color:#fbbf24;">${Math.round(p.frais).toLocaleString('fr-DZ')}</span></div>
-         <div><span style="color:#93c5fd;">C 44551&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#dde4f0;">${p.compta}</span>&nbsp;<span style="color:#fbbf24;">${Math.round(p.tva).toLocaleString('fr-DZ')}</span></div>
-         <div><span style="color:#93c5fd;">C 46741111&nbsp;&nbsp;</span><span style="color:#dde4f0;">${p.compta}</span>&nbsp;<span style="color:#fbbf24;">${Math.round(p.ttc).toLocaleString('fr-DZ')}</span></div>`;
+      ? `<div><span style="color:var(--sky-deep);font-weight:700;">D ${p.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--txt);">${p.compta}</span>&nbsp;<span style="color:var(--green);font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')}</span></div>
+         <div><span style="color:#93c5fd;">C 46741111&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;<span style="color:var(--amber);">${Math.round(p.total_reg).toLocaleString('fr-DZ')}</span></div>`
+      : `<div><span style="color:var(--sky-deep);font-weight:700;">D 411/${p.aux}</span>&nbsp;<span style="color:var(--txt);">${p.compta}</span>&nbsp;<span style="color:var(--green);font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')}</span></div>
+         <div><span style="color:#93c5fd;">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;<span style="color:var(--amber);">${Math.round(p.frais).toLocaleString('fr-DZ')}</span></div>
+         <div><span style="color:#93c5fd;">C 44551&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;<span style="color:var(--amber);">${Math.round(p.tva).toLocaleString('fr-DZ')}</span></div>
+         <div><span style="color:#93c5fd;">C 46741111&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;<span style="color:var(--amber);">${Math.round(p.ttc).toLocaleString('fr-DZ')}</span></div>`;
     return `
     <div style="background:#0f1825;border:1px solid ${isFWT?'#4c1d95':'#1e3a5f'};border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:10px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
         <span style="color:${isFWT?'#a78bfa':'#93c5fd'};font-weight:700;">${p.piece} · ${p.ref}${isFWT?' 🏢':''}</span>
         <span style="color:#64748b;font-size:9px;">${p.date}</span>
       </div>
-      <div style="font-family:'Courier New',monospace;font-size:9px;line-height:1.7;border-top:1px solid ${isFWT?'#4c1d95':'#1e3a5f'};padding-top:4px;">${lines}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;line-height:1.7;border-top:1px solid ${isFWT?'rgba(124,58,237,.2)':'var(--bo-sky)'};padding-top:4px;">${lines}</div>
     </div>`;
   }).join('');
   if(rl){
@@ -4601,20 +4455,20 @@ function renderNDCFPieces(){
   list.innerHTML=NDCF_PIECES.map((p,i)=>{
     const isFWT = p.isFWT===true;
     const lines = isFWT
-      ? `<div><span style="color:#a78bfa;font-weight:700;">D ${p.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e3f2fd;">${p.compta}</span>&nbsp;&nbsp;<span style="color:#4ade80;font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')} DA</span></div>
-         <div><span style="color:#90caf9;">C 46741111&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${p.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${Math.round(p.total_reg).toLocaleString('fr-DZ')} DA</span></div>`
-      : `<div><span style="color:#38bdf8;font-weight:700;">D 411/${p.aux}</span>&nbsp;&nbsp;<span style="color:#e3f2fd;">${p.compta}</span>&nbsp;&nbsp;<span style="color:#4ade80;font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')} DA</span></div>
-         <div><span style="color:#90caf9;">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${p.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${Math.round(p.frais).toLocaleString('fr-DZ')} DA</span></div>
-         <div><span style="color:#90caf9;">C 44551&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${p.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${Math.round(p.tva).toLocaleString('fr-DZ')} DA</span></div>
-         <div><span style="color:#90caf9;">C 46741111&nbsp;&nbsp;&nbsp;</span><span style="color:#e3f2fd;">${p.compta}</span>&nbsp;&nbsp;<span style="color:#fbbf24;">${Math.round(p.ttc).toLocaleString('fr-DZ')} DA</span></div>`;
+      ? `<div><span style="color:var(--sky-deep);font-weight:700;">D ${p.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--txt);">${p.compta}</span>&nbsp;&nbsp;<span style="color:var(--green);font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')} DA</span></div>
+         <div><span style="color:var(--sky);">C 46741111&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${Math.round(p.total_reg).toLocaleString('fr-DZ')} DA</span></div>`
+      : `<div><span style="color:var(--sky-deep);font-weight:700;">D 411/${p.aux}</span>&nbsp;&nbsp;<span style="color:var(--txt);">${p.compta}</span>&nbsp;&nbsp;<span style="color:var(--green);font-weight:700;">${Math.round(p.total_reg).toLocaleString('fr-DZ')} DA</span></div>
+         <div><span style="color:var(--sky);">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${Math.round(p.frais).toLocaleString('fr-DZ')} DA</span></div>
+         <div><span style="color:var(--sky);">C 44551&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${Math.round(p.tva).toLocaleString('fr-DZ')} DA</span></div>
+         <div><span style="color:var(--sky);">C 46741111&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${p.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${Math.round(p.ttc).toLocaleString('fr-DZ')} DA</span></div>`;
     return `
-    <div style="background:rgba(13,20,33,.8);border:1px solid ${isFWT?'#4c1d95':'#1a237e'};border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:10px;">
+    <div style="background:${isFWT?'#ede9fe':'var(--sky-pale)'};border:1.5px solid ${isFWT?'rgba(124,58,237,.25)':'var(--bo-sky)'};border-radius:var(--r-sm);padding:8px 10px;margin-bottom:6px;font-size:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-        <span style="color:${isFWT?'#a78bfa':'#90caf9'};font-weight:700;">${p.piece} · ${p.ref}${isFWT?' 🏢':''}</span>
+        <span style="color:${isFWT?'#7c3aed':'var(--sky-deep)'};font-weight:700;">${p.piece} · ${p.ref}${isFWT?' 🏢':''}</span>
         <span style="color:#64748b;font-size:9px;">${p.date}</span>
-        <button onclick="delNDCFPiece(${i})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;">✕</button>
+        <button onclick="delNDCFPiece(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;">✕</button>
       </div>
-      <div style="font-family:'Courier New',monospace;font-size:9px;line-height:1.7;border-top:1px solid ${isFWT?'#4c1d95':'#1a237e'};padding-top:5px;">${lines}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;line-height:1.7;border-top:1px solid ${isFWT?'rgba(124,58,237,.2)':'var(--bo-sky)'};padding-top:5px;">${lines}</div>
     </div>`;
   }).join('');
 }
@@ -4734,10 +4588,10 @@ function renderNDCFClients(){
   list.innerHTML=NDCF_CLIENTS.map((c,i)=>`
     <div style="display:grid;grid-template-columns:1fr 1fr 80px 40px;gap:4px;align-items:center;
       padding:4px 6px;border-bottom:1px solid rgba(40,53,147,.3);font-size:9px;" id="ndcfc${i}">
-      <span style="color:#e3f2fd;" title="${c.ndc}">${c.ndc.substring(0,20)}</span>
-      <span style="color:#90caf9;" title="${c.compta}">${c.compta.substring(0,18)}</span>
-      <span style="color:#fbbf24;">${c.aux}</span>
-      <button onclick="editNDCFClient(${i})" style="background:none;border:1px solid #283593;border-radius:3px;color:#90caf9;cursor:pointer;font-size:9px;padding:1px 4px;">✎</button>
+      <span style="color:var(--txt);" title="${c.ndc}">${c.ndc.substring(0,20)}</span>
+      <span style="color:var(--sky);" title="${c.compta}">${c.compta.substring(0,18)}</span>
+      <span style="color:var(--amber);">${c.aux}</span>
+      <button onclick="editNDCFClient(${i})" style="background:none;border:1px solid #283593;border-radius:3px;color:var(--sky);cursor:pointer;font-size:9px;padding:1px 4px;">✎</button>
     </div>`).join('');
 }
 
@@ -4925,11 +4779,11 @@ function renderMtSugFAC(){
   const box=document.getElementById('mt-sug-fac');
   if(!box)return;
   box.innerHTML=mtSugFACList.map((e,i)=>{
-    const hi=i===mtSugFACIdx?'background:#1a237e;':'';
+    const hi=i===mtSugFACIdx?'background:var(--sky-pale);':'background:#fff;';
     return `<div id="msfac${i}" onmousedown="selectMtSugFAC(${i})"
       style="padding:6px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;">
-      <span style="font-weight:700;color:#4ade80;min-width:100px;">${Math.round(e.montant).toLocaleString('fr-DZ')} DA</span>
-      <span style="color:#e3f2fd;font-size:11px;">${e.client||''}</span>
+      <span style="font-weight:700;color:var(--green);min-width:100px;">${Math.round(e.montant).toLocaleString('fr-DZ')} DA</span>
+      <span style="color:var(--txt2);font-size:11px;">${e.client||''}</span>
     </div>`;
   }).join('');
 }
@@ -4962,13 +4816,13 @@ function onNDCFFac(v){
 function renderNDCFFacSug(){
   const box=document.getElementById('ndcf-fac-suggest');
   box.innerHTML=ndcfFacSugList.map((d,i)=>{
-    const hi=i===ndcfFacSugIdx?'background:#1a237e;':'';
+    const hi=i===ndcfFacSugIdx?'background:var(--sky-pale);':'background:#fff;';
     const clientLabel=d.client?d.client.compta:`<span style="color:#f87171">${d.agence}</span>`;
     return `<div id="ndfac${i}" onmousedown="selectNDCFFac(${i})"
       style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <span style="color:#fbbf24;font-weight:700;min-width:80px;">${d.facture}</span>
-      <span style="color:#e3f2fd;flex:1;font-size:11px;">${d.agence}</span>
-      <span style="color:#4ade80;font-weight:700;">${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
+      <span style="color:var(--amber);font-weight:700;min-width:80px;">${d.facture}</span>
+      <span style="color:var(--txt2);flex:1;font-size:11px;">${d.agence}</span>
+      <span style="color:var(--green);font-weight:700;">${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
     </div>`;
   }).join('');
 }
