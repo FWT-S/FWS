@@ -339,7 +339,7 @@ body {
 #msgbar.err { background: rgba(220,38,38,.06); border-color: rgba(220,38,38,.2); color: var(--red); display: block; }
 
 /* ═══ MAIN LAYOUT ═══ */
-#main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 52px); }
+#main { display: grid; grid-template-columns: 1fr 1fr 1fr; height: calc(100vh - 52px); }
 
 /* ═══ COLONNE GAUCHE — SAISIE ═══ */
 #col-saisie {
@@ -842,8 +842,9 @@ select option { background: #fff; color: var(--txt); }
 .stat-lbl { font-size: 9px; color: var(--txt3); text-transform: uppercase; letter-spacing: .1em; }
 
 /* MAIN FAC */
-.main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 52px); }
+.main { display: grid; grid-template-columns: 1fr 1fr 1fr; height: calc(100vh - 52px); }
 .left-panel { background: #ffffff; border-right: 1px solid var(--bo); display: flex; flex-direction: column; overflow-y: hidden; }
+.right-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--bg2); grid-column: span 2; }
 .section { padding: 12px 16px; border-bottom: 1px solid var(--bo); }
 .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--txt3); margin-bottom: 8px; }
 
@@ -1027,12 +1028,110 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 /* RESPONSIVE */
 @media(max-width:700px) {
   #main { grid-template-columns: 1fr; }
+  #col-releve { display: none; }
   #col-ecr { display: none; }
   body { overflow: auto; height: auto; }
 }
 
 /* ─── NUMÉRO PIÈCE FORMAT ─── */
 #pc-fmt { font-size: 9px; color: var(--amber); font-family: var(--font-mono); font-weight: 700; }
+
+/* ─── RELEVÉ RECHERCHE INTELLIGENTE ─── */
+.izn-drag {
+  border-color: var(--fwt-red) !important;
+  background: var(--fwt-red-pale) !important;
+}
+
+/* Focus ring sur les champs de recherche RV */
+#rv-q:focus, #rv-m:focus {
+  border-color: var(--sky) !important;
+  box-shadow: 0 0 0 3px rgba(26,107,181,.1);
+}
+
+/* Item du dropdown suggestions */
+.rv-sug-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--bo);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  transition: background .1s;
+  color: var(--txt2);
+}
+.rv-sug-item:last-child { border-bottom: none; }
+.rv-sug-item:hover, .rv-sug-item.hi { background: var(--sky-pale); }
+
+/* Partie surlignée de la correspondance */
+.rv-sug-item .match-hl {
+  background: rgba(192,57,43,.15);
+  color: var(--fwt-red-deep);
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Montant dans la suggestion */
+.rv-sug-item .sug-amt {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--green);
+  flex-shrink: 0;
+  font-size: 12px;
+}
+.rv-sug-item .sug-date {
+  color: var(--txt4);
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+/* Chip filtre actif */
+.rv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: var(--sky-pale);
+  border: 1px solid var(--bo-sky);
+  border-radius: 20px;
+  font-size: 10px;
+  color: var(--sky-deep);
+  font-weight: 600;
+}
+.rv-chip button {
+  background: none;
+  border: none;
+  color: var(--sky-deep);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+  opacity: .7;
+}
+.rv-chip button:hover { opacity: 1; }
+
+/* Ligne RV dans le tableau */
+.rv-row { cursor: pointer; transition: background .1s; }
+.rv-row:hover td { background: var(--sky-pale) !important; }
+.rv-row.selected td { background: rgba(192,57,43,.07) !important; }
+
+/* Bouton utiliser dans le tableau */
+.rv-use-btn {
+  padding: 3px 8px;
+  background: linear-gradient(135deg, var(--fwt-red-light), var(--fwt-red-deep));
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+  font-family: var(--font-ui);
+}
+.rv-use-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-red); }
 </style>
 </head>
 <body>
@@ -1135,10 +1234,11 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 <div id="msgbar"></div>
 
 <!-- MAIN : SAISIE + ÉCRITURES -->
-<div id="main" style="display:grid;grid-template-columns:340px 1fr;height:calc(100vh - 46px);">
+<div id="main" style="display:grid;grid-template-columns:1fr 1fr 1fr;height:calc(100vh - 46px);">
 
-  <!-- ═══ GAUCHE — SAISIE ═══ -->
   <div id="col-saisie">
+
+    <!-- ═══ CONTENU SAISIE (inchangé) ═══ -->
 
     <!-- RV BAR -->
     <div id="rvbar" style="flex-shrink:0;"></div>
@@ -1214,6 +1314,76 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
   </div>
 
+  <!-- ═══ MILIEU — OPÉRATIONS RELEVÉ ═══ -->
+  <div id="col-releve" style="border-right:1px solid var(--bo);display:flex;flex-direction:column;background:var(--bg);overflow:hidden;position:relative;">
+    <!-- Watermark -->
+    <div class="ecr-head" style="border-bottom:1px solid var(--bo);padding:8px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:var(--surface);">
+      <span class="ecr-title" style="display:flex;align-items:center;gap:6px;">📂 OPÉRATIONS RELEVÉ</span>
+      <div style="display:flex;gap:5px;align-items:center;">
+        <label for="frv-inline" style="padding:4px 11px;background:linear-gradient(135deg,var(--fwt-red-light),var(--fwt-red-deep));border:none;border-radius:6px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;letter-spacing:.5px;">
+          📂 CHARGER
+        </label>
+        <input type="file" id="frv-inline" accept=".csv,.xls,.xlsx,.txt,.zip" style="display:none;" onchange="IRV(this);document.getElementById('frv').value=''">
+        <span id="rvcnt-inline" style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);"></span>
+      </div>
+    </div>
+
+    <!-- Zone import si pas encore chargé -->
+    <div id="col-releve-empty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:.5;">
+      <div style="font-size:40px;">📄</div>
+      <div style="font-size:11px;color:var(--txt3);text-align:center;">Glissez un relevé BNA ici<br>ou cliquez CHARGER</div>
+    </div>
+
+    <!-- Recherche + tableau (affiché après chargement) -->
+    <div id="col-releve-content" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+      <!-- Barre recherche -->
+      <div style="padding:8px 10px;border-bottom:1px solid var(--bo);display:flex;flex-direction:column;gap:6px;flex-shrink:0;background:var(--surface);">
+        <!-- Libellé -->
+        <div style="position:relative;">
+          <input id="rv-q-inline"
+            placeholder="🔍 Libellé..."
+            oninput="onRVQInputInline()"
+            onkeydown="onRVQKeyInline(event)"
+            onfocus="onRVQInputInline()"
+            onblur="setTimeout(()=>hideRVSuggestInline('q'),180)"
+            autocomplete="off"
+            style="width:100%;background:var(--bg2);border:1.5px solid var(--bo);border-radius:var(--r-sm);padding:7px 10px;color:var(--txt);font-family:var(--font-ui);font-size:11px;outline:none;transition:border-color .2s;">
+          <div id="rv-q-drop-inline" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo2);border-radius:var(--r-sm);z-index:500;max-height:180px;overflow-y:auto;box-shadow:var(--shadow-lg);"></div>
+        </div>
+        <!-- Montant -->
+        <div style="position:relative;">
+          <input id="rv-m-inline"
+            placeholder="💰 Ex: 346, 58 000..."
+            oninput="onRVMInputInline()"
+            onkeydown="onRVMKeyInline(event)"
+            onfocus="onRVMInputInline()"
+            onblur="setTimeout(()=>hideRVSuggestInline('m'),180)"
+            autocomplete="off"
+            style="width:100%;background:var(--bg2);border:1.5px solid var(--bo);border-radius:var(--r-sm);padding:7px 10px;color:var(--txt);font-family:var(--font-mono);font-size:11px;font-weight:600;outline:none;transition:border-color .2s;">
+          <div id="rv-m-drop-inline" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo2);border-radius:var(--r-sm);z-index:500;max-height:180px;overflow-y:auto;box-shadow:var(--shadow-lg);"></div>
+        </div>
+        <!-- RAZ rapide -->
+        <div style="display:flex;justify-content:flex-end;">
+          <button onclick="razFiltreRVInline()" style="padding:2px 9px;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:var(--txt3);font-size:9px;cursor:pointer;font-family:var(--font-ui);">✕ RAZ</button>
+        </div>
+      </div>
+      <!-- Tableau -->
+      <div style="flex:1;overflow-y:auto;overflow-x:hidden;">
+        <table class="tbl" style="font-size:11px;">
+          <thead>
+            <tr>
+              <th style="width:72px;">DATE</th>
+              <th>LIBELLÉ</th>
+              <th style="text-align:right;width:110px;">CRÉDIT (DA)</th>
+            </tr>
+          </thead>
+          <tbody id="rvtb-inline"></tbody>
+        </table>
+        <div id="rv-inline-empty" style="display:none;text-align:center;padding:24px;color:var(--txt3);font-size:11px;">Aucun résultat</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ DROITE — TOUTES LES ÉCRITURES ═══ -->
   <div id="col-ecr">
     <div class="ecr-head">
@@ -1233,31 +1403,109 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 </div>
 
-<!-- PANEL RELEVÉ -->
+<!-- PANEL RELEVÉ (onglet séparé — conservé pour compatibilité) -->
 <div id="pan-releve" style="display:none;">
   <div class="opan">
+
+    <!-- IMPORT ZONE -->
     <div class="card">
       <div class="ctit">── IMPORT RELEVÉ BANCAIRE BNA ─────────────────────────────</div>
-      <label class="izn" for="frv">
-        <div style="font-size:28px;margin-bottom:8px;">📂</div>
-        <div style="color:var(--txt3);">Charger relevé Excel, CSV ou ZIP</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:5px;">Format BNA — Code | Date | Libellé | Débit | Crédit</div>
+      <label class="izn" for="frv" id="drop-releve"
+        ondragover="event.preventDefault();this.classList.add('izn-drag')"
+        ondragleave="this.classList.remove('izn-drag')"
+        ondrop="event.preventDefault();this.classList.remove('izn-drag');IRV({files:event.dataTransfer.files})">
+        <div style="font-size:32px;margin-bottom:8px;">📂</div>
+        <div style="font-weight:700;color:var(--txt2);font-size:13px;">Charger ou glisser le relevé</div>
+        <div style="font-size:10px;color:var(--txt3);margin-top:5px;">Excel · CSV · ZIP — Format BNA : Code | Date | Libellé | Débit | Crédit</div>
         <input type="file" id="frv" accept=".csv,.xls,.xlsx,.txt,.zip" onchange="IRV(this)">
       </label>
       <div id="rvstat" style="margin-top:10px;"></div>
     </div>
+
+    <!-- TABLEAU RELEVÉ avec recherche intelligente -->
     <div class="card" id="rvtcard" style="display:none;">
-      <div class="ctit"><span>── OPÉRATIONS CRÉDIT ──</span><span id="rvcnt" style="color:var(--txt3);font-size:10px;font-family:var(--font-mono);"></span></div>
-      <div style="display:flex;gap:6px;margin-bottom:9px;">
-        <input id="rv-q" placeholder="🔍 Libellé..." oninput="filtreRV()"
-          style="flex:1;background:var(--bg2);border:1px solid var(--bo);border-radius:6px;padding:6px 9px;color:var(--txt);font-family:var(--font-ui);font-size:11px;">
-        <input id="rv-m" placeholder="💰 Montant..." oninput="filtreRV()" type="number"
-          style="width:110px;background:var(--bg2);border:1px solid var(--bo);border-radius:6px;padding:6px 9px;color:var(--txt);font-family:var(--font-mono);font-size:11px;">
+
+      <!-- HEADER COMPTEUR + BOUTON RAZ -->
+      <div class="ctit" style="margin-bottom:12px;">
+        <span>── OPÉRATIONS CRÉDIT ──</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="rvcnt" style="color:var(--txt3);font-size:10px;font-family:var(--font-mono);"></span>
+          <button onclick="razFiltreRV()" title="Effacer les filtres"
+            style="padding:2px 9px;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;
+                   color:var(--txt3);font-family:var(--font-ui);font-size:9px;cursor:pointer;">✕ RAZ</button>
+        </div>
       </div>
-      <div style="overflow-x:auto;max-height:300px;overflow-y:auto;" id="rv-tbody-wrap">
-        <table class="tbl"><thead><tr><th>DATE</th><th>LIBELLÉ</th><th style="text-align:right;">CRÉDIT (DA)</th></tr></thead>
-        <tbody id="rvtb"></tbody></table>
+
+      <!-- BARRE DE RECHERCHE INTELLIGENTE -->
+      <div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;">
+
+        <!-- Recherche LIBELLÉ avec autocomplétion -->
+        <div style="flex:1;position:relative;">
+          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px;letter-spacing:1px;font-weight:600;">🔍 LIBELLÉ</div>
+          <input id="rv-q"
+            placeholder="Tapez un mot-clé..."
+            oninput="onRVQInput()"
+            onkeydown="onRVQKey(event)"
+            onfocus="onRVQInput()"
+            onblur="setTimeout(()=>hideRVSuggest('q'),180)"
+            autocomplete="off"
+            style="width:100%;background:var(--bg2);border:1.5px solid var(--bo);border-radius:var(--r-sm);
+                   padding:8px 11px;color:var(--txt);font-family:var(--font-ui);font-size:12px;
+                   outline:none;transition:border-color .2s;">
+          <!-- Dropdown suggestions libellé -->
+          <div id="rv-q-drop" style="
+            display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;
+            background:var(--surface);border:1.5px solid var(--bo2);border-radius:var(--r-sm);
+            z-index:500;max-height:220px;overflow-y:auto;
+            box-shadow:var(--shadow-lg);
+          "></div>
+        </div>
+
+        <!-- Recherche MONTANT avec autocomplétion par série de chiffres -->
+        <div style="width:180px;position:relative;">
+          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px;letter-spacing:1px;font-weight:600;">💰 MONTANT</div>
+          <input id="rv-m"
+            placeholder="Ex: 346, 58 000..."
+            oninput="onRVMInput()"
+            onkeydown="onRVMKey(event)"
+            onfocus="onRVMInput()"
+            onblur="setTimeout(()=>hideRVSuggest('m'),180)"
+            autocomplete="off"
+            style="width:100%;background:var(--bg2);border:1.5px solid var(--bo);border-radius:var(--r-sm);
+                   padding:8px 11px;color:var(--txt);font-family:var(--font-mono);font-size:12px;font-weight:600;
+                   outline:none;transition:border-color .2s;">
+          <!-- Dropdown suggestions montants -->
+          <div id="rv-m-drop" style="
+            display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;
+            background:var(--surface);border:1.5px solid var(--bo2);border-radius:var(--r-sm);
+            z-index:500;max-height:220px;overflow-y:auto;
+            box-shadow:var(--shadow-lg);
+          "></div>
+        </div>
+
       </div>
+
+      <!-- CHIPS des filtres actifs -->
+      <div id="rv-active-filters" style="display:none;margin-bottom:8px;display:flex;gap:5px;flex-wrap:wrap;"></div>
+
+      <!-- TABLEAU -->
+      <div style="overflow-x:auto;max-height:380px;overflow-y:auto;border-radius:var(--r-sm);border:1px solid var(--bo);" id="rv-tbody-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:80px;">DATE</th>
+              <th>LIBELLÉ</th>
+              <th style="text-align:right;width:130px;">CRÉDIT (DA)</th>
+              <th style="width:36px;"></th>
+            </tr>
+          </thead>
+          <tbody id="rvtb"></tbody>
+        </table>
+        <div id="rv-empty" style="display:none;text-align:center;padding:28px;color:var(--txt3);font-size:11px;">
+          Aucune opération ne correspond aux filtres
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -2596,11 +2844,21 @@ function PRVx(buf,fn){
 }
 function SRV(ops,fn){
   RV=ops;rvL=true;
-  document.getElementById('rvstat').innerHTML=`<div style="background:#052e16;border:1px solid #166534;border-radius:6px;padding:9px 13px;color:var(--green);font-size:12px;">✅ ${fn} — <strong>${ops.length}</strong> opérations crédit</div>`;
-  document.getElementById('rvtb').innerHTML=ops.map(r=>`<tr><td>${r.code}</td><td style="color:#64748b">${r.dateOp}</td><td style="color:#cbd5e1">${r.libelle}</td><td class="tcc">${FM(r.credit)}</td></tr>`).join('');
-  document.getElementById('rvcnt').textContent=ops.length+' opérations';
+  document.getElementById('rvstat').innerHTML=`<div style="background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.3);border-radius:var(--r-sm);padding:9px 13px;color:var(--green);font-size:12px;font-weight:600;">✅ ${fn} — <strong>${ops.length}</strong> opérations crédit chargées</div>`;
+  document.getElementById('rvtb').innerHTML=ops.map(r=>`
+    <tr class="rv-row" onclick="selectRVLine(${r.credit}, this)">
+      <td style="color:var(--txt3);font-size:10px;white-space:nowrap;">${r.dateOp}</td>
+      <td style="color:var(--txt2);">${r.libelle}</td>
+      <td class="tcc" style="white-space:nowrap;">${FM(r.credit)}</td>
+      <td><button class="rv-use-btn" onclick="event.stopPropagation();selectRVLine(${r.credit}, this.closest('tr'))">↗ Utiliser</button></td>
+    </tr>`).join('');
+  const _cnt=document.getElementById('rvcnt');
+  if(_cnt) _cnt.textContent = ops.length+' / '+ops.length+' opérations';
   document.getElementById('rvtcard').style.display='block';
   updRVB();MSG('ok','✅ Relevé chargé : '+ops.length+' opérations');
+  // Mettre à jour la colonne inline
+  _showColReleve();
+  filtreRVInline();
 }
 function updRVB(){
   const b=document.getElementById('rvbar');
@@ -4657,34 +4915,397 @@ function searchNDCFByPiece(val){
 
 
 // ══ FILTRE RELEVÉ BNA ════════════════════════════════════════
-function filtreRV(){
-  const q=(document.getElementById('rv-q')||{value:''}).value.toLowerCase();
-  const m=parseFloat((document.getElementById('rv-m')||{value:''}).value)||0;
-  const filtered=RV.filter(r=>{
-    if(q&&!r.libelle.toLowerCase().includes(q)) return false;
-    if(m&&Math.abs(r.credit-m)>1) return false;
-    return true;
-  });
-  const tbody=document.getElementById('rvtb');
-  if(!tbody)return;
-  tbody.innerHTML=filtered.map(r=>`
-    <tr style="cursor:pointer;"
-      onclick="selectRVLine(${r.credit})"
-      onmouseover="this.style.background='var(--bg2)'"
-      onmouseout="this.style.background=''">
-      <td style="color:#64748b;font-size:10px;">${r.dateOp}</td>
-      <td style="color:#cbd5e1">${r.libelle}</td>
-      <td class="tcc">${FM(r.credit)}</td>
-    </tr>`).join('');
-  const cnt=document.getElementById('rvcnt');
-  if(cnt)cnt.textContent=filtered.length+'/'+RV.length;
+// ══════════════════════════════════════════════════════════════════════
+// RELEVÉ — RECHERCHE INTELLIGENTE AVEC AUTOCOMPLÉTION
+// ══════════════════════════════════════════════════════════════════════
+
+// État interne de la recherche RV
+const _rv = {
+  qIdx: -1,  // index actif dans dropdown libellé
+  mIdx: -1,  // index actif dans dropdown montant
+};
+
+// ── Normalise une chaîne pour la recherche (supprime accents, espaces) ──
+function _rvNorm(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+
+// ── Highlighter : entoure les occurrences du terme dans le texte HTML ──
+function _rvHL(text, term){
+  if(!term) return text;
+  const idx = _rvNorm(text).indexOf(_rvNorm(term));
+  if(idx < 0) return text;
+  return text.slice(0,idx)
+    + `<span class="match-hl">${text.slice(idx, idx+term.length)}</span>`
+    + text.slice(idx+term.length);
 }
 
-function selectRVLine(mt){
+// ── Render principal du tableau filtré ──────────────────────────────────
+function filtreRV(){
+  const q   = (document.getElementById('rv-q')||{value:''}).value.trim();
+  const mRaw= (document.getElementById('rv-m')||{value:''}).value.trim();
+  // Pour le montant : chercher la SÉRIE de chiffres dans la représentation string du montant
+  const mSeries = mRaw.replace(/\s/g,'').replace(/[,\.]/g,''); // ex: "346" ou "58000"
+
+  const filtered = RV.filter(r=>{
+    const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
+    let amtOk = true;
+    if(mSeries){
+      // Supprimer séparateurs du montant de la base et chercher la série
+      const amtStr = String(Math.round(r.credit)).replace(/\s/g,'');
+      amtOk = amtStr.includes(mSeries);
+    }
+    return libOk && amtOk;
+  });
+
+  const tbody  = document.getElementById('rvtb');
+  const empty  = document.getElementById('rv-empty');
+  const cnt    = document.getElementById('rvcnt');
+  if(!tbody) return;
+
+  if(!filtered.length){
+    tbody.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+  } else {
+    if(empty) empty.style.display = 'none';
+    tbody.innerHTML = filtered.map((r,i)=>`
+      <tr class="rv-row" onclick="selectRVLine(${r.credit}, this)">
+        <td style="color:var(--txt3);font-size:10px;white-space:nowrap;">${r.dateOp}</td>
+        <td style="color:var(--txt2);">${_rvHL(r.libelle, q)}</td>
+        <td class="tcc" style="white-space:nowrap;">${FM(r.credit)}</td>
+        <td><button class="rv-use-btn" onclick="event.stopPropagation();selectRVLine(${r.credit}, this.closest('tr'))">↗ Utiliser</button></td>
+      </tr>`).join('');
+  }
+
+  if(cnt) cnt.textContent = filtered.length+' / '+RV.length+' opérations';
+  renderActiveFilters(q, mRaw);
+}
+
+// ── Chips filtres actifs ────────────────────────────────────────────────
+function renderActiveFilters(q, m){
+  const zone = document.getElementById('rv-active-filters');
+  if(!zone) return;
+  const chips = [];
+  if(q) chips.push(`<span class="rv-chip">🔍 "${q}" <button onclick="clearRVFilter('q')">✕</button></span>`);
+  if(m) chips.push(`<span class="rv-chip">💰 "${m}" <button onclick="clearRVFilter('m')">✕</button></span>`);
+  zone.style.display = chips.length ? 'flex' : 'none';
+  zone.innerHTML = chips.join('');
+}
+
+function clearRVFilter(field){
+  const el = document.getElementById(field==='q'?'rv-q':'rv-m');
+  if(el){ el.value=''; el.focus(); }
+  filtreRV();
+}
+
+function razFiltreRV(){
+  const q = document.getElementById('rv-q');
+  const m = document.getElementById('rv-m');
+  if(q) q.value='';
+  if(m) m.value='';
+  filtreRV();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// COLONNE RELEVÉ INLINE (col-releve dans le grid 3 colonnes JBR)
+// Miroir des fonctions filtreRV / suggest pour les champs -inline
+// ══════════════════════════════════════════════════════════════════════
+
+const _rvi = { qIdx:-1, mIdx:-1 }; // état navigation inline
+
+function _showColReleve(){
+  const empty   = document.getElementById('col-releve-empty');
+  const content = document.getElementById('col-releve-content');
+  if(empty)   empty.style.display   = 'none';
+  if(content) content.style.display = 'flex';
+}
+
+function filtreRVInline(){
+  const q      = (document.getElementById('rv-q-inline')||{value:''}).value.trim();
+  const mRaw   = (document.getElementById('rv-m-inline')||{value:''}).value.trim();
+  const mSeries= mRaw.replace(/\s/g,'').replace(/[,\.]/g,'');
+  const filtered= RV.filter(r=>{
+    const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
+    let amtOk = true;
+    if(mSeries){ const s=String(Math.round(r.credit)); amtOk=s.includes(mSeries); }
+    return libOk && amtOk;
+  });
+  const tbody = document.getElementById('rvtb-inline');
+  const empty = document.getElementById('rv-inline-empty');
+  const cnt   = document.getElementById('rvcnt-inline');
+  if(!tbody) return;
+  if(!filtered.length){
+    tbody.innerHTML='';
+    if(empty) empty.style.display='block';
+  } else {
+    if(empty) empty.style.display='none';
+    tbody.innerHTML=filtered.map(r=>`
+      <tr class="rv-row" onclick="selectRVLine(${r.credit}, this)" title="${r.libelle}">
+        <td style="color:var(--txt3);font-size:9px;white-space:nowrap;">${r.dateOp}</td>
+        <td style="color:var(--txt2);max-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${_rvHL(r.libelle,q)}</td>
+        <td class="tcc" style="white-space:nowrap;font-size:11px;">${FM(r.credit)}</td>
+      </tr>`).join('');
+  }
+  if(cnt) cnt.textContent = filtered.length+'/'+RV.length;
+}
+
+function razFiltreRVInline(){
+  const q=document.getElementById('rv-q-inline');
+  const m=document.getElementById('rv-m-inline');
+  if(q) q.value=''; if(m) m.value='';
+  filtreRVInline();
+}
+
+// Autocomplétion libellé inline
+function onRVQInputInline(){
+  const val=(document.getElementById('rv-q-inline')||{value:''}).value.trim();
+  filtreRVInline();
+  const drop=document.getElementById('rv-q-drop-inline');
+  if(!drop||!RV.length){return;}
+  if(!val){drop.style.display='none';return;}
+  const norm=_rvNorm(val); const seenLib=new Set();
+  const matches=RV.filter(r=>{
+    if(!_rvNorm(r.libelle).includes(norm)) return false;
+    if(seenLib.has(r.libelle)) return false;
+    seenLib.add(r.libelle); return true;
+  }).slice(0,10);
+  if(!matches.length){drop.style.display='none';return;}
+  _rvi.qIdx=-1;
+  drop.innerHTML=matches.map((r,i)=>`
+    <div class="rv-sug-item" data-idx="${i}"
+      onmousedown="pickRVLibInline('${r.libelle.replace(/'/g,"\\'")}')"
+      onmouseover="_rvi.qIdx=${i};highlightRVDropInline('q',${i})">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${_rvHL(r.libelle,val)}</span>
+      <span class="sug-amt">${FM(r.credit)}</span>
+    </div>`).join('');
+  drop.style.display='block';
+}
+function onRVQKeyInline(e){
+  const drop=document.getElementById('rv-q-drop-inline');
+  const items=drop?drop.querySelectorAll('.rv-sug-item'):[];
+  if(e.key==='ArrowDown'){e.preventDefault();_rvi.qIdx=Math.min(_rvi.qIdx+1,items.length-1);highlightRVDropInline('q',_rvi.qIdx);}
+  else if(e.key==='ArrowUp'){e.preventDefault();_rvi.qIdx=Math.max(_rvi.qIdx-1,0);highlightRVDropInline('q',_rvi.qIdx);}
+  else if(e.key==='Enter'&&_rvi.qIdx>=0&&items[_rvi.qIdx]) items[_rvi.qIdx].dispatchEvent(new MouseEvent('mousedown'));
+  else if(e.key==='Escape') hideRVSuggestInline('q');
+}
+function pickRVLibInline(lib){
+  const inp=document.getElementById('rv-q-inline');
+  if(inp) inp.value=lib;
+  hideRVSuggestInline('q'); filtreRVInline();
+}
+
+// Autocomplétion montant inline
+function onRVMInputInline(){
+  const val=(document.getElementById('rv-m-inline')||{value:''}).value.trim();
+  filtreRVInline();
+  const drop=document.getElementById('rv-m-drop-inline');
+  if(!drop||!RV.length) return;
+  if(!val){drop.style.display='none';return;}
+  const series=val.replace(/\s/g,'').replace(/[,\.]/g,'');
+  if(!series||!/^\d+$/.test(series)){drop.style.display='none';return;}
+  const seen=new Set();
+  const matches=RV.filter(r=>{
+    const s=String(Math.round(r.credit));
+    if(!s.includes(series)) return false;
+    if(seen.has(r.credit)) return false;
+    seen.add(r.credit); return true;
+  }).sort((a,b)=>{
+    const as=String(Math.round(a.credit)),bs=String(Math.round(b.credit));
+    return (as.startsWith(series)?0:1)-(bs.startsWith(series)?0:1)||a.credit-b.credit;
+  }).slice(0,12);
+  if(!matches.length){drop.style.display='none';return;}
+  _rvi.mIdx=-1;
+  drop.innerHTML=matches.map((r,i)=>`
+    <div class="rv-sug-item" data-idx="${i}"
+      onmousedown="pickRVMtInline(${r.credit})"
+      onmouseover="_rvi.mIdx=${i};highlightRVDropInline('m',${i})">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--txt3);">${r.libelle}</span>
+      <span class="sug-amt">${FM(r.credit)}</span>
+      <span class="sug-date">${r.dateOp}</span>
+    </div>`).join('');
+  drop.style.display='block';
+}
+function onRVMKeyInline(e){
+  const drop=document.getElementById('rv-m-drop-inline');
+  const items=drop?drop.querySelectorAll('.rv-sug-item'):[];
+  if(e.key==='ArrowDown'){e.preventDefault();_rvi.mIdx=Math.min(_rvi.mIdx+1,items.length-1);highlightRVDropInline('m',_rvi.mIdx);}
+  else if(e.key==='ArrowUp'){e.preventDefault();_rvi.mIdx=Math.max(_rvi.mIdx-1,0);highlightRVDropInline('m',_rvi.mIdx);}
+  else if(e.key==='Enter'&&_rvi.mIdx>=0&&items[_rvi.mIdx]) items[_rvi.mIdx].dispatchEvent(new MouseEvent('mousedown'));
+  else if(e.key==='Escape') hideRVSuggestInline('m');
+}
+function pickRVMtInline(credit){
+  const inp=document.getElementById('rv-m-inline');
+  if(inp) inp.value=FM(credit);
+  hideRVSuggestInline('m'); filtreRVInline();
+}
+function highlightRVDropInline(field,idx){
+  const drop=document.getElementById('rv-'+field+'-drop-inline');
+  if(!drop)return;
+  drop.querySelectorAll('.rv-sug-item').forEach((el,i)=>{
+    el.classList.toggle('hi',i===idx);
+    if(i===idx) el.scrollIntoView({block:'nearest'});
+  });
+}
+function hideRVSuggestInline(field){
+  const d=document.getElementById('rv-'+field+'-drop-inline');
+  if(d) d.style.display='none';
+}
+
+// ── AUTOCOMPLÉTION LIBELLÉ ──────────────────────────────────────────────
+function onRVQInput(){
+  const val = (document.getElementById('rv-q')||{value:''}).value.trim();
+  filtreRV(); // mettre à jour le tableau
+  const drop = document.getElementById('rv-q-drop');
+  if(!drop || !RV.length) return;
+
+  if(!val){ drop.style.display='none'; return; }
+
+  // Collecter libellés uniques qui contiennent la valeur
+  const norm = _rvNorm(val);
+  const seenLib = new Set();
+  const matches = RV.filter(r=>{
+    if(!_rvNorm(r.libelle).includes(norm)) return false;
+    if(seenLib.has(r.libelle)) return false;
+    seenLib.add(r.libelle);
+    return true;
+  }).slice(0,12);
+
+  if(!matches.length){ drop.style.display='none'; return; }
+
+  _rv.qIdx = -1;
+  drop.innerHTML = matches.map((r,i)=>`
+    <div class="rv-sug-item" data-idx="${i}" data-lib="${r.libelle.replace(/"/g,'&quot;')}"
+      onmousedown="pickRVLib('${r.libelle.replace(/'/g,"\\'")}')"
+      onmouseover="_rv.qIdx=${i};highlightRVDrop('q',${i})">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+        ${_rvHL(r.libelle, val)}
+      </span>
+      <span class="sug-amt">${FM(r.credit)}</span>
+    </div>`).join('');
+  drop.style.display = 'block';
+}
+
+function onRVQKey(e){
+  const drop = document.getElementById('rv-q-drop');
+  const items = drop ? drop.querySelectorAll('.rv-sug-item') : [];
+  if(e.key==='ArrowDown'){ e.preventDefault(); _rv.qIdx=Math.min(_rv.qIdx+1,items.length-1); highlightRVDrop('q',_rv.qIdx); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); _rv.qIdx=Math.max(_rv.qIdx-1,0); highlightRVDrop('q',_rv.qIdx); }
+  else if(e.key==='Enter' && _rv.qIdx>=0 && items[_rv.qIdx]){ items[_rv.qIdx].dispatchEvent(new MouseEvent('mousedown')); }
+  else if(e.key==='Escape'){ hideRVSuggest('q'); }
+}
+
+function pickRVLib(lib){
+  const inp = document.getElementById('rv-q');
+  if(inp) inp.value = lib;
+  hideRVSuggest('q');
+  filtreRV();
+}
+
+// ── AUTOCOMPLÉTION MONTANT (série de chiffres) ──────────────────────────
+function onRVMInput(){
+  const val = (document.getElementById('rv-m')||{value:''}).value.trim();
+  filtreRV(); // mettre à jour le tableau
+  const drop = document.getElementById('rv-m-drop');
+  if(!drop || !RV.length) return;
+
+  if(!val){ drop.style.display='none'; return; }
+
+  // Chercher la série de chiffres bruts dans les montants disponibles
+  const series = val.replace(/\s/g,'').replace(/[,\.]/g,'');
+  if(!series || !/^\d+$/.test(series)){ drop.style.display='none'; return; }
+
+  // Montants qui contiennent la série + triés par pertinence
+  const seen = new Set();
+  const matches = RV.filter(r=>{
+    const amtStr = String(Math.round(r.credit));
+    if(!amtStr.includes(series)) return false;
+    if(seen.has(r.credit)) return false;
+    seen.add(r.credit);
+    return true;
+  }).sort((a,b)=>{
+    // Trier : commençant par la série en premier
+    const as = String(Math.round(a.credit));
+    const bs = String(Math.round(b.credit));
+    return (as.startsWith(series)?0:1) - (bs.startsWith(series)?0:1) || a.credit - b.credit;
+  }).slice(0, 15);
+
+  if(!matches.length){ drop.style.display='none'; return; }
+
+  _rv.mIdx = -1;
+  drop.innerHTML = matches.map((r,i)=>{
+    const amtStr = FM(r.credit);
+    // Surligner la série dans le montant formaté
+    const rawStr = String(Math.round(r.credit));
+    const pos = rawStr.indexOf(series);
+    let amtHL = amtStr;
+    if(pos>=0){
+      // Retrouver la position dans le montant formaté (avec espaces)
+      let fmtPos=0, rawCount=0;
+      let hlStart=-1, hlEnd=-1;
+      for(let fi=0;fi<amtStr.length;fi++){
+        if(/\d/.test(amtStr[fi])){
+          if(rawCount===pos) hlStart=fi;
+          if(rawCount===pos+series.length-1) hlEnd=fi;
+          rawCount++;
+        }
+      }
+      if(hlStart>=0 && hlEnd>=0){
+        amtHL = amtStr.slice(0,hlStart)
+          +`<span class="match-hl">${amtStr.slice(hlStart,hlEnd+1)}</span>`
+          +amtStr.slice(hlEnd+1);
+      }
+    }
+    return `<div class="rv-sug-item" data-idx="${i}"
+      onmousedown="pickRVMt(${r.credit})"
+      onmouseover="_rv.mIdx=${i};highlightRVDrop('m',${i})">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--txt3);">${r.libelle}</span>
+      <span class="sug-amt" style="font-family:var(--font-mono);font-weight:700;">${amtHL}</span>
+      <span class="sug-date">${r.dateOp}</span>
+    </div>`;
+  }).join('');
+  drop.style.display = 'block';
+}
+
+function onRVMKey(e){
+  const drop = document.getElementById('rv-m-drop');
+  const items = drop ? drop.querySelectorAll('.rv-sug-item') : [];
+  if(e.key==='ArrowDown'){ e.preventDefault(); _rv.mIdx=Math.min(_rv.mIdx+1,items.length-1); highlightRVDrop('m',_rv.mIdx); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); _rv.mIdx=Math.max(_rv.mIdx-1,0); highlightRVDrop('m',_rv.mIdx); }
+  else if(e.key==='Enter' && _rv.mIdx>=0 && items[_rv.mIdx]){ items[_rv.mIdx].dispatchEvent(new MouseEvent('mousedown')); }
+  else if(e.key==='Escape'){ hideRVSuggest('m'); }
+}
+
+function pickRVMt(credit){
+  const inp = document.getElementById('rv-m');
+  if(inp) inp.value = FM(credit);
+  hideRVSuggest('m');
+  filtreRV();
+}
+
+// ── Helpers dropdown ────────────────────────────────────────────────────
+function highlightRVDrop(field, idx){
+  const drop = document.getElementById('rv-'+field+'-drop');
+  if(!drop) return;
+  drop.querySelectorAll('.rv-sug-item').forEach((el,i)=>{
+    el.classList.toggle('hi', i===idx);
+    if(i===idx) el.scrollIntoView({block:'nearest'});
+  });
+}
+
+function hideRVSuggest(field){
+  const drop = document.getElementById('rv-'+field+'-drop');
+  if(drop) drop.style.display='none';
+}
+
+// ── selectRVLine : injecter le montant dans le champ saisie ────────────
+function selectRVLine(mt, rowEl){
+  // Marquer la ligne sélectionnée
+  document.querySelectorAll('.rv-row').forEach(r=>r.classList.remove('selected'));
+  if(rowEl) rowEl.closest('tr')?.classList.add('selected');
+
   const imt=document.getElementById('imt');
   if(imt){
     imt.value=FM(mt);
     VMT(FM(mt));
+    // Retourner sur l'onglet Saisie
     document.querySelectorAll('.tb')[0].click();
     setTimeout(()=>imt.focus(),100);
   }
