@@ -1964,6 +1964,72 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-vtab[data-view="stats"].on { background:linear-gradient(135deg,#6366f1,#4f46e5);border-color:transparent;color:#fff; }
 .stat-vtab[data-view="segment"]  { border-color:rgba(236,72,153,.35);color:#be185d; }
 .stat-vtab[data-view="segment"].on{ background:linear-gradient(135deg,#ec4899,#be185d);border-color:transparent;color:#fff; }
+.stat-vtab[data-view="insights"]  { border-color:rgba(234,179,8,.4);color:#a16207; }
+.stat-vtab[data-view="insights"].on{ background:linear-gradient(135deg,#facc15,#a16207);border-color:transparent;color:#fff; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   BI UPGRADE — Cross-filtering · Filter pane · KPI trend · Drill-through
+   (logique Power BI / Tableau / Looker Studio)
+══════════════════════════════════════════════════════════════════════ */
+
+/* ── Barre de filtres actifs (façon "Filter pane" Power BI) ─────────── */
+.stat-filterbar{display:none;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 16px;background:linear-gradient(135deg,#f0f9ff,#f8fafc);border-bottom:1.5px solid var(--bo);flex-shrink:0;}
+.stat-filterbar.on{display:flex;}
+.stat-filterbar .fb-lbl{font-size:8px;font-weight:800;color:var(--txt4);text-transform:uppercase;letter-spacing:1px;margin-right:2px;}
+.stat-fchip{display:inline-flex;align-items:center;gap:5px;padding:3px 5px 3px 10px;border-radius:11px;font-size:9px;font-weight:700;background:#fff;border:1.5px solid var(--bo-sky);color:var(--sky-deep);font-family:var(--font-mono);}
+.stat-fchip .fb-x{display:flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--sky-pale);color:var(--sky-deep);font-size:9px;font-weight:900;cursor:pointer;line-height:1;transition:.15s;}
+.stat-fchip .fb-x:hover{background:var(--red);color:#fff;}
+.stat-fchip.xfilter{border-color:rgba(220,38,38,.35);color:#b91c1c;background:#fff5f5;}
+.stat-fchip.xfilter .fb-x{background:#fee2e2;color:#b91c1c;}
+.stat-fb-reset{margin-left:auto;font-size:8.5px;font-weight:800;color:var(--txt3);background:#fff;border:1.5px solid var(--bo);border-radius:9px;padding:3px 10px;cursor:pointer;letter-spacing:.5px;}
+.stat-fb-reset:hover{border-color:var(--red);color:var(--red);}
+
+/* ── KPI · indicateur de tendance vs période de référence ────────────── */
+.stat-kpi-delta{display:none;margin-top:3px;}
+.stat-kpi-delta.on{display:block;}
+.stat-kpi-delta .stat-evo{padding:1px 6px;font-size:7.5px;}
+
+/* ── Éléments cliquables (cross-filter / drill) ───────────────────────── */
+.stat-clk{cursor:pointer;transition:.15s;}
+.stat-tbl tbody tr.stat-clk:hover{background:var(--sky-pale);}
+.stat-tbl tbody tr.stat-clk td:first-child::after{content:'';}
+.stat-tbl tbody tr.stat-clk:hover td{box-shadow:inset 2px 0 0 var(--sky);}
+.stat-br.stat-clk:hover .stat-bo,.stat-trow.stat-clk:hover .stat-to{filter:brightness(1.08);outline:1.5px dashed var(--sky);outline-offset:2px;}
+.stat-db path.stat-clk{cursor:pointer;transition:opacity .15s;}
+.stat-db path.stat-clk:hover{opacity:.82;}
+.stat-lr.stat-clk{cursor:pointer;border-radius:6px;padding:2px 4px;transition:.15s;}
+.stat-lr.stat-clk:hover{background:var(--sky-pale);}
+.stat-drill-hint{font-size:7.5px;color:var(--txt4);font-weight:600;padding:4px 16px 0;display:flex;align-items:center;gap:4px;}
+
+/* ── Panneau de Drill-through Client (Tableau-style "drill to detail") ── */
+.stat-drill-overlay{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:9000;display:none;backdrop-filter:blur(1px);}
+.stat-drill-overlay.on{display:block;animation:sFadeIn .18s ease;}
+@keyframes sFadeIn{from{opacity:0}to{opacity:1}}
+.stat-drill-panel{position:absolute;top:0;right:0;bottom:0;width:min(420px,92vw);background:#fff;box-shadow:-12px 0 36px rgba(15,23,42,.22);display:flex;flex-direction:column;transform:translateX(8px);animation:sSlideIn .22s cubic-bezier(.16,1,.3,1) forwards;}
+@keyframes sSlideIn{to{transform:translateX(0)}}
+.stat-drill-hdr{padding:16px 18px 12px;background:linear-gradient(120deg,#05101f,#0369a1);color:#fff;flex-shrink:0;position:relative;}
+.stat-drill-hdr .dh-tag{font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;font-weight:800;}
+.stat-drill-hdr .dh-name{font-size:13px;font-weight:800;margin-top:3px;line-height:1.3;padding-right:24px;}
+.stat-drill-hdr .dh-sub{font-size:8.5px;opacity:.75;margin-top:4px;font-family:var(--font-mono);}
+.stat-drill-close{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.stat-drill-close:hover{background:rgba(255,255,255,.25);}
+.stat-drill-body{flex:1;overflow-y:auto;padding:14px 18px 20px;}
+.stat-drill-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.stat-drill-kpi{background:var(--bg2);border-radius:9px;padding:9px 11px;border-left:3px solid var(--sky);}
+.stat-drill-kpi .dk-lbl{font-size:7px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;}
+.stat-drill-kpi .dk-val{font-size:13px;font-weight:900;color:var(--sky-deep);font-family:var(--font-mono);margin-top:2px;}
+.stat-drill-section-title{font-size:8.5px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;display:flex;align-items:center;gap:5px;}
+.stat-drill-action{display:block;width:100%;text-align:center;margin-top:14px;padding:9px;border-radius:9px;border:1.5px solid var(--sky);background:var(--sky-pale);color:var(--sky-deep);font-size:10px;font-weight:800;cursor:pointer;transition:.15s;}
+.stat-drill-action:hover{background:var(--sky);color:#fff;}
+
+/* ── Onglet Insights (façon "auto insights" Looker Studio / Power BI) ── */
+.stat-insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;padding:14px 16px;}
+.stat-insight-card{background:#fff;border:1.5px solid var(--bo);border-radius:12px;padding:13px 14px;border-left:4px solid var(--ic,var(--sky));box-shadow:var(--shadow-sm);}
+.stat-insight-card .ic-head{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;color:var(--ic,var(--sky-deep));text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.stat-insight-card .ic-head .ic-ico{font-size:14px;}
+.stat-insight-card .ic-body{font-size:10.5px;color:var(--txt2);line-height:1.55;}
+.stat-insight-card .ic-body b{color:var(--txt);}
+.stat-insight-card .ic-foot{margin-top:7px;font-size:8px;color:var(--txt4);font-style:italic;}
 /* ── Pareto Lorenz ─────────────────────────────────────────────────── */
 .pareto-table td,.pareto-table th{padding:4px 8px;font-size:9.5px;}
 .pareto-bar-80{background:linear-gradient(90deg,#0d9488,#14b8a6);}
@@ -2624,6 +2690,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
       <button class="tab active" id="tab-iata-btn" onclick="switchSearch('iata',this)">🔢 Code IATA</button>
       <button class="tab" id="tab-montant-btn" onclick="switchSearch('montant',this)">💰 Montant</button>
       <button class="tab" id="tab-ndcf-btn" onclick="switchSearch('ndcf',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">✈ NDC-F</button>
+      <button class="tab" id="tab-ancien-btn" onclick="switchSearch('ancien',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">📝 ANCIEN</button>
     </div>
     <div id="search-iata">
       <div class="input-group">
@@ -2735,6 +2802,28 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
                autocomplete="off" style="text-align:right;">
       </div>
     </div>
+
+<!-- MODE ANCIEN -->
+<div id="search-ancien" style="display:none">
+  <div class="input-group">
+    <label class="input-label" style="color:var(--sky);font-weight:700;">💰 Montant (DZD) — Accepte négatif</label>
+    <input type="text" inputmode="numeric" class="big-input" id="ancien-montant"
+           placeholder="Ex: 50000 ou -5000" oninput="onAncienMontantChange()" onkeydown="onAncienMontantKey(event)"
+           autocomplete="off" style="text-align:right;color:var(--sky);font-weight:700;border-color:var(--bo-sky);">
+  </div>
+  <div class="input-group" style="margin-top:12px;">
+    <label class="input-label">✈ Client (↓ ENTRÉE pour ajouter)</label>
+    <div class="ac-wrap">
+      <input type="text" id="ancien-client" placeholder="Nom ou code client..." autocomplete="off"
+        oninput="onAncienClientChange()" onkeydown="onAncienClientKey(event)" style="width:100%;">
+      <div id="ancien-ac-list" style="position:absolute;top:calc(100%+3px);left:0;right:0;background:#fff;border:1.5px solid var(--bo-sky);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(2,132,199,.15);display:none;"></div>
+    </div>
+    <div id="ancien-client-info" style="margin-top:6px;padding:7px;background:rgba(14,165,233,.07);border-radius:6px;font-size:10px;color:var(--sky);display:none;border-left:3px solid var(--sky);"></div>
+  </div>
+  <div style="margin-top:12px;">
+    <button class="btn btn-primary" id="ancien-add-btn" onclick="addAncienEntry()" disabled style="width:100%;background:var(--sky);border:none;">✈ Ajouter l'écriture ANCIEN</button>
+  </div>
+</div>
     <div class="result-box" id="result-box">
       <div class="result-ph">← Sélectionnez compagnie puis tapez</div>
     </div>
@@ -2881,6 +2970,55 @@ function openModule(mod){
   }else{
     document.getElementById('module-fac').style.display='block';
     try{if(typeof initApp==='function')initApp();}catch(e){console.error('FAC:',e);}
+  }
+}
+
+// Initialiser l'application FAC et restaurer les données sauvegardées (imports uniquement)
+function initApp(){
+  // Ne PAS charger les données hardcoded - commencer vide
+  // Restaurer SEULEMENT les données importées depuis localStorage
+  try{
+    const savedCORR=localStorage.getItem('CORR_DATA');
+    if(savedCORR){
+      const parsed=JSON.parse(savedCORR);
+      // Remplacer complètement CORR avec les données importées
+      for(let key in CORR) delete CORR[key];
+      for(let key in parsed){
+        if(parsed.hasOwnProperty(key)){
+          CORR[key]=parsed[key];
+        }
+      }
+      console.log('CORR restauré:',Object.keys(CORR).length,'clients');
+    }
+    const savedIATA=localStorage.getItem('IATA_DB_DATA');
+    if(savedIATA){
+      const parsed=JSON.parse(savedIATA);
+      for(let key in IATA_DB) delete IATA_DB[key];
+      for(let key in parsed){
+        if(parsed.hasOwnProperty(key)){
+          IATA_DB[key]=parsed[key];
+        }
+      }
+    }
+    const savedNDCF=localStorage.getItem('NDCF_CLIENTS_DATA');
+    if(savedNDCF && typeof NDCF_CLIENTS !== 'undefined'){
+      const parsed=JSON.parse(savedNDCF);
+      if(Array.isArray(parsed)){
+        NDCF_CLIENTS.splice(0,NDCF_CLIENTS.length);
+        parsed.forEach(item=>NDCF_CLIENTS.push(item));
+      }
+    }
+  }catch(e){console.log('Pas de données sauvegardées',e);}
+  // Initialiser les sélecteurs de compagnie
+  const compSelect=document.getElementById('company-select');
+  if(compSelect){
+    const companies=['TK','V7','IB','TO','AC','VY','BJ','BA'];
+    companies.forEach(c=>{
+      const opt=document.createElement('option');
+      opt.value=c;
+      opt.textContent=c;
+      compSelect.appendChild(opt);
+    });
   }
 }
 
@@ -3057,7 +3195,15 @@ const BASE=[
 {code:"411ND005",label:"LOST IN THE WORLD",type:"411"},{code:"411ND006",label:"DZAIR TOURS",type:"411"},
 {code:"411ND007",label:"EL MARSEM TOURISME",type:"411"},{code:"411ND008",label:"MINA TOURS",type:"411"},
 {code:"411ND009",label:"WALZIM",type:"411"},{code:"411ND011",label:"BOULOUIZ TOURISME ET VOYAGE",type:"411"},
-{code:"411ND012",label:"LE RELAIS VOYAGES",type:"411"},{code:"41100278",label:"YARA VOYAGES",type:"411"},{code:"411ND013",label:"KADI TOURS",type:"411"},{code:"41100314",label:" EL DIYAA",type:"411"},{code:"41100112",label:" ZENATA VOYAGES /ORAN",type:"411"},{code:"41100218",label:" ROSTOM TOURISME",type:"411"},{code:"41100378",label:"MARIMED  VOY",type:"411"},{code:"4110017",label:" ZAHIA VOYAGES",type:"411"},{code:"41100649",label:" MOURIA",type:"411"},{code:"41100123",label:" TVA CST",type:"411"},
+{code:"411ND012",label:"LE RELAIS VOYAGES",type:"411"},{code:"41100278",label:"YARA VOYAGES",type:"411"},
+{code:"411ND013",label:"KADI TOURS",type:"411"},
+{code:"41100314",label:" EL DIYAA",type:"411"},
+{code:"41100112",label:" ZENATA VOYAGES /ORAN",type:"411"},
+{code:"41100218",label:" ROSTOM TOURISME",type:"411"},
+{code:"41100378",label:"MARIMED  VOY",type:"411"},
+{code:"4110017",label:" ZAHIA VOYAGES",type:"411"},
+{code:"41100649",label:" MOURIA",type:"411"},
+{code:"41100123",label:" TVA CST",type:"411"},
 // 165
 {code:"1650001",label:"AICHA VOY",type:"165"},{code:"1650003",label:"BADR TRAVEL",type:"165"},
 {code:"1650005",label:"BARAKA",type:"165"},{code:"1650006",label:"BEJAIA TOURS",type:"165"},
@@ -3196,9 +3342,12 @@ const BASE=[
 // 411 → CODE_COM=411 / CODE_AUX=411***
 // 165 → CODE_COM=165 / CODE_AUX=165***
 // 181 → CODE_COM=181xxx / CODE_AUX=vide
+// 18*** (interunité) → CODE_COM=18*** / CODE_AUX=vide (pas d'auxiliaire)
 function getCOM(c){return c.type==='411'?'411':c.type==='165'?'165':c.code;}
 function getAUX(c){
-  if(c.type==='181')return '';
+  // 181 et comptes interunité 18*** ne prennent pas d'auxiliaire
+  if(c.type==='181') return '';
+  if(c && c.code && String(c.code).startsWith('18')) return '';
   if(c._nouveau) return '411?????'; // Nouveau client — code à affecter
   // Auxiliaires commencent toujours par le même préfixe que leur type
   return c.code; // 411*** ou 165***
@@ -4655,7 +4804,7 @@ const CORR = {
 "GFAF VOYAGES":{nom:"GFAF VOYAGES",aux:"41100670"},
 "GHARB TOURS":{nom:"GHARB TOURS",aux:"41100183"},
 "GOLDEN TULIP TOURS":{nom:"GOLDEN TULIP TOUR",aux:"41100173"},
-"GOURAYA TOURS":{nom:"GOURAYA TOURS",aux:"4110033"},
+"GOURAYA TOURS":{nom:"GOURAYA TOURS",aux:"41100758"},
 "HABIBAS":{nom:"HABIBAS VOYAGES",aux:"41100307"},
 "HABOUB VOYAGES":{nom:"HABOUB VOYAGE",aux:"41100371"},
 "HALAWAT ESSAFAR OUA SAYAHA":{nom:"HALAWAT ESSAFAR  SARL",aux:"41100356"},
@@ -4771,7 +4920,7 @@ const CORR = {
 "T ET M VOYAGES":{nom:"T&M VOYAGES",aux:"41100353"},
 "TAFSUT TRAVEL AND TOURISM":{nom:"TAFSUT TRAVEL",aux:"41100096"},
 "TAIBA TOURS BATNA":{nom:"TAIBA  VOYAGES",aux:"41100271"},
-"TAPIS ROUGE":{nom:"TAPIS ROUGE",aux:"4110005"},
+"TAPIS ROUGE":{nom:"TAPIS ROUGE",aux:"41100629"},
 "TAWHID TOURISME":{nom:"ETTAWHID",aux:"41100648"},
 "TAZMALT":{nom:"TAZMALT VOYAGES",aux:"41100159"},
 "TELL VOYAGES":{nom:"TELL  VOYAGE",aux:"41100110"},
@@ -4782,7 +4931,7 @@ const CORR = {
 "TIDIKELT TOURS":{nom:"TIDIKELT  TOUR",aux:"41100349"},
 "TIFRIT":{nom:"TIFRIT   VOYAGES",aux:"41100666"},
 "TIKJDA TOURS":{nom:"TIKJDA TOURS",aux:"41100358"},
-"TIMGAD VOYAGES BATNA":{nom:"TIMGAD VOYAGES",aux:"4110025"},
+"TIMGAD VOYAGES BATNA":{nom:"TIMGAD VOYAGES",aux:"41100279"},
 "TIPAZA TOURS":{nom:"TIPAZA TOURS",aux:"41100111"},
 "TLEMSANI TOURS ORAN":{nom:"TLEMSANI VOYAGES",aux:"41100293"},
 "TOURAF AGENCY":{nom:"TOURAF  AGENCY",aux:"41100151"},
@@ -5634,7 +5783,7 @@ function loadNDCF(inp){
   const r=new FileReader();
   r.onload=e=>{
     try{
-      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const wb=XLSX.read(e.target.result,{type:'array'});
       const ws=wb.Sheets[wb.SheetNames[0]];
       const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
       NDCF_DATA=[];
@@ -6010,12 +6159,250 @@ function ndcfMK(e){
   }
 }
 
+// ══════ MODE ANCIEN — Montant libre + Client ══════
+let ANCIEN_STATE = { montant: '', montantDisplay: '', client: null, clientIdx: -1, suggestions: [] };
+
+function onAncienMontantChange(){
+  const val = document.getElementById('ancien-montant').value;
+  // Extraire les chiffres et le signe
+  const numStr = val.replace(/[^\d.-]/g,'');
+  const numVal = parseFloat(numStr) || 0;
+  
+  // Formater avec séparateur de milliers (style français)
+  const formatted = numVal.toLocaleString('fr-DZ', {
+    minimumFractionDigits: numVal === Math.floor(numVal) ? 0 : 2,
+    maximumFractionDigits: 2
+  });
+  
+  ANCIEN_STATE.montant = numStr;
+  ANCIEN_STATE.montantDisplay = formatted;
+  
+  // Mettre à jour l'affichage
+  const inp = document.getElementById('ancien-montant');
+  if(inp.value !== formatted) inp.value = formatted;
+  updateAncienUI();
+}
+
+function onAncienMontantKey(e){
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    // Focus sur le client
+    document.getElementById('ancien-client').focus();
+  }
+  else if(e.key === 'Escape'){
+    document.getElementById('ancien-montant').value = '';
+    ANCIEN_STATE.montant = '';
+    ANCIEN_STATE.montantDisplay = '';
+    updateAncienUI();
+  }
+}
+
+function onAncienClientChange(){
+  // ─ Logique IATA/MONTANT: source FAC_DB[selectedComp] ─
+  if(!selectedComp){
+    ANCIEN_STATE.suggestions = [];
+    hideAncienList();
+    return;
+  }
+  
+  const val = document.getElementById('ancien-client').value.trim();
+  if(!val){
+    ANCIEN_STATE.suggestions = [];
+    hideAncienList();
+    return;
+  }
+  
+  const q = val.toUpperCase();
+  const seen = new Set();
+  const matches = [];
+  
+  // SOURCE 1: FAC_DB[selectedComp] (même que IATA/MONTANT)
+  if(FAC_DB && FAC_DB[selectedComp] && FAC_DB[selectedComp].length > 0){
+    const data = FAC_DB[selectedComp] || [];
+    data.forEach(e => {
+      if(e && e.client && e.client.toUpperCase().includes(q)){
+        const key = (e.client || '').toUpperCase();
+        if(!seen.has(key)){
+          seen.add(key);
+          matches.push(e);
+        }
+      }
+    });
+  }
+  
+  // SOURCE 2: IATA_REVERSE (fallback si FAC_DB pas chargée)
+  if(matches.length === 0 && typeof IATA_REVERSE !== 'undefined'){
+    for(let iata in IATA_REVERSE){
+      IATA_REVERSE[iata].forEach(name=>{
+        if(name && name.toUpperCase().includes(q)){
+          const key = (name||'').toUpperCase();
+          if(!seen.has(key)){
+            seen.add(key);
+            matches.push({ 
+              client: name, 
+              iata: iata, 
+              montant: 0,
+              codeAux: '???' 
+            });
+          }
+        }
+      });
+    }
+  }
+  
+  ANCIEN_STATE.suggestions = matches.slice(0, 12);
+  ANCIEN_STATE.clientIdx = -1;
+  renderAncienList();
+}
+
+function onAncienClientKey(e){
+  const list = ANCIEN_STATE.suggestions || [];
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    ANCIEN_STATE.clientIdx = Math.min(ANCIEN_STATE.clientIdx+1, list.length-1);
+    renderAncienList();
+  }
+  else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    ANCIEN_STATE.clientIdx = Math.max(ANCIEN_STATE.clientIdx-1, -1);
+    renderAncienList();
+  }
+  else if(e.key==='Enter'){
+    e.preventDefault();
+    if(ANCIEN_STATE.clientIdx>=0){
+      selectAncienClientByIdx(ANCIEN_STATE.clientIdx);
+      // DIRECTEMENT ajouter l'écriture après sélection
+      setTimeout(()=>addAncienEntry(), 100);
+    } else if(list.length > 0){
+      // Si aucune sélection mais suggestions exist → prendre la première
+      selectAncienClientByIdx(0);
+      setTimeout(()=>addAncienEntry(), 100);
+    }
+  }
+  else if(e.key==='Escape'){
+    hideAncienList();
+  }
+}
+
+function selectAncienClient(client){
+  // client est un objet de FAC_DB
+  ANCIEN_STATE.client = client;
+  document.getElementById('ancien-client').value = client.client || client.nomCompta || client.name;
+  updateAncienUI();
+  hideAncienList();
+}
+
+function hideAncienList(){
+  const lst = document.getElementById('ancien-ac-list');
+  if(lst) lst.style.display = 'none';
+}
+
+function renderAncienList(){
+  const lst = document.getElementById('ancien-ac-list');
+  if(!lst) return;
+  const sugg = ANCIEN_STATE.suggestions || [];
+  if(sugg.length===0){
+    lst.style.display = 'none';
+    return;
+  }
+  lst.innerHTML = sugg.map((s,i)=>`
+    <div onclick="selectAncienClientByIdx(${i})" 
+      style="padding:8px 12px;cursor:pointer;background:${i===ANCIEN_STATE.clientIdx?'#e8e8e8':'transparent'};border-bottom:1px solid #e5e5e5;font-size:11px;user-select:none;">
+      ${s.client || s.nomCompta || s.name} <span style="font-size:9px;color:#999">${s.iata||'—'}</span>
+    </div>
+  `).join('');
+  lst.style.display = 'block';
+}
+
+function selectAncienClientByIdx(idx){
+  const sugg = ANCIEN_STATE.suggestions || [];
+  if(idx>=0 && idx<sugg.length){
+    selectAncienClient(sugg[idx]);
+  }
+}
+
+function updateAncienUI(){
+  const info = document.getElementById('ancien-client-info');
+  const btn = document.getElementById('ancien-add-btn');
+  const mt = ANCIEN_STATE.montant;
+  const cl = ANCIEN_STATE.client;
+  if(mt && cl){
+    info.style.display = 'block';
+    const clientName = cl.client || cl.nomCompta || cl.name || '?';
+    const iata = cl.iata || '—';
+    const code = cl.codeAux || cl.aux || '???';
+    info.textContent = `✓ ${clientName} — ${ANCIEN_STATE.montantDisplay} DA (${iata}) — CODE: ${code}`;
+    if(btn) btn.disabled = false;
+  } else {
+    info.style.display = 'none';
+    if(btn) btn.disabled = true;
+  }
+}
+
+function addAncienEntry(){
+  if(!ANCIEN_STATE.montant || !ANCIEN_STATE.client || !selectedComp){
+    showToast('Montant et client requis','error');
+    return;
+  }
+  
+  const cl = ANCIEN_STATE.client;
+  const mt = ANCIEN_STATE.montant;
+  const clientName = cl.client || cl.nomCompta || cl.name;
+  
+  // Parse montant — accepte négatif, décimal, etc
+  const montantNum = parseFloat(mt);
+  if(isNaN(montantNum)){
+    showToast('⚠ Montant invalide','error');
+    return;
+  }
+  
+  // ─ Récupérer les codes comptables COMME LES AUTRES MODES ─
+  const nomCompta = getNomCompta(clientName);
+  const codeAux = getCodeAux(clientName);
+  const isFWTFlag = isFWT(clientName);
+  
+  // Créer l'écriture avec codes comptables
+  const ref = getRef(selectedComp);
+  entries.push({
+    id: nextId++,
+    comp: selectedComp,
+    client: clientName,
+    nomCompta: nomCompta,
+    codeAux: codeAux,
+    isFWT: isFWTFlag,
+    montant: montantNum,
+    periode: currentPeriode,
+    mois: currentMois,
+    ref,
+    isNew: false
+  });
+  
+  // Réinitialiser les champs
+  document.getElementById('ancien-montant').value = '';
+  document.getElementById('ancien-client').value = '';
+  ANCIEN_STATE.montant = '';
+  ANCIEN_STATE.montantDisplay = '';
+  ANCIEN_STATE.client = null;
+  ANCIEN_STATE.clientIdx = -1;
+  hideAncienList();
+  updateAncienUI();
+  updateStats();
+  renderTable();
+  showToast('✓ '+nomCompta+' ajouté','success');
+  setTimeout(()=>{
+    const rows=document.querySelectorAll('#entries-container tr[data-id]');
+    if(rows.length) rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'nearest'});
+    // Refocus sur montant pour saisie rapide
+    document.getElementById('ancien-montant').focus();
+  },60);
+}
+
 // switchSearch étendu pour NDC-F
 const _origSwitchSearch = typeof switchSearch !== 'undefined' ? switchSearch : null;
 function switchSearch(mode, el){
   NDCF_MODE = (mode==='ndcf');
   // Cacher tous les panneaux
-  ['iata','montant','ndcf'].forEach(m=>{
+  ['iata','montant','ndcf','ancien'].forEach(m=>{
     const p=document.getElementById('search-'+m);
     if(p)p.style.display='none';
     const b=document.getElementById('tab-'+m+'-btn');
@@ -6030,7 +6417,10 @@ function switchSearch(mode, el){
     updNDCFRef();
     setTimeout(()=>{ const fn=document.getElementById('ndcf-fac-num'); if(fn)fn.focus(); else document.getElementById('ndcf-num').focus(); },100);
   }
-  if(_origSwitchSearch && mode!=='ndcf') _origSwitchSearch(mode, el);
+  if(mode==='ancien'){
+    setTimeout(()=>{ const el=document.getElementById('ancien-montant'); if(el)el.focus(); },100);
+  }
+  if(_origSwitchSearch && mode!=='ndcf' && mode!=='ancien') _origSwitchSearch(mode, el);
 }
 
 // F1 dans NDC-F
@@ -6600,32 +6990,165 @@ function filtreEntries(){
 
 // ══ IMPORT CLIENTS IATA (v6) ═════════════════════════════════
 function importIATAClients(inp){
-  const f=inp.files[0];if(!f)return;
+  const f=inp.files[0];
+  if(!f){alert('❌ Aucun fichier sélectionné');return;}
+  
+  console.log('═══ DÉBUT IMPORT EBV ═══');
+  console.log('Fichier:',f.name,'Taille:',f.size,'bytes');
+  
   const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const wb=XLSX.read(e.target.result,{type:'binary'});
-      const ws=wb.Sheets[wb.SheetNames[0]];
-      const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-      let added=0;
-      rows.forEach(row=>{
-        const keys=Object.keys(row);
-        const iata=String(row[keys[0]]||'').trim().toUpperCase();
-        const planning=String(row[keys[1]]||'').trim();
-        const compta=String(row[keys[2]]||'').trim();
-        const aux=String(row[keys[3]]||'').trim();
-        if(!iata||!compta)return;
-        // Ajouter dans CORR ou structure équivalente
-        if(typeof CORR !== 'undefined'){
-          CORR[iata]={nomCompta:compta,codeAux:aux,planning};
-        }
-        added++;
-      });
-      if(typeof renderClientsList==='function')renderClientsList();
-      alert('✅ '+added+' clients importés');
-    }catch(ex){alert('❌ Erreur: '+ex.message);}
+  r.onerror = (err) => {
+    console.error('❌ FileReader ERROR:',err);
+    alert('❌ Erreur lecture fichier: '+err);
   };
-  r.readAsBinaryString(f);
+  
+  r.onload=e=>{
+    console.log('📄 Fichier chargé, length=',e.target.result.length);
+    
+    try{
+      // Lire le fichier
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      console.log('✅ XLSX.read() OK');
+      console.log('   Sheets disponibles:',wb.SheetNames);
+      
+      const sheetName = wb.SheetNames[0];
+      if(!sheetName){alert('❌ Pas de sheet dans le fichier');return;}
+      
+      const ws = wb.Sheets[sheetName];
+      console.log('✅ Sheet sélectionnée:',sheetName);
+      
+      // Lire JSON
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+      console.log('✅ sheet_to_json() OK');
+      console.log('   Total lignes:',rows.length);
+      
+      if(!rows.length){
+        alert('❌ Fichier vide (0 lignes)');
+        return;
+      }
+      
+      // Afficher première ligne complète
+      console.log('📋 PREMIÈRE LIGNE:');
+      console.log(rows[0]);
+      
+      const firstRowKeys = Object.keys(rows[0]||{});
+      console.log('   Keys (headers):', firstRowKeys);
+      
+      // === MATCHER LES COLONNES ===
+      const normalize = (s) => String(s||'').trim().toUpperCase().replace(/[\s\-_]/g,'');
+      
+      const findCol = (patterns, debug=false) => {
+        const result = firstRowKeys.find(key => {
+          const nkey = normalize(key);
+          const match = patterns.some(p => nkey.includes(normalize(p)));
+          if(debug) console.log('   Teste key="'+key+'" norm="'+nkey+'" → '+match);
+          return match;
+        });
+        return result;
+      };
+      
+      console.log('🔍 RECHERCHE COLONNES:');
+      const colIATA = findCol(['CODE IATA','IATA','CODE'],true);
+      const colPlanning = findCol(['NOM PLANNING','PLANNING','NOMP'],true);
+      const colCompta = findCol(['NOM COMPTABLE','COMPTABLE','NOM'],true);
+      const colAux = findCol(['AUXILIAIRE','AUX','CODEAUX'],true);
+      
+      console.log('✅ RÉSULTAT COLONNES:');
+      console.log('   IATA:',colIATA);
+      console.log('   PLANNING:',colPlanning);
+      console.log('   COMPTA:',colCompta);
+      console.log('   AUX:',colAux);
+      
+      if(!colIATA || !colPlanning || !colCompta){
+        console.error('❌ COLONNES MANQUANTES!');
+        alert('❌ Impossible de trouver les colonnes!\n\nHeaders trouvés: '+firstRowKeys.join(', '));
+        return;
+      }
+      
+      // === IMPORTER LES DONNÉES ===
+      console.log('📥 IMPORT DES DONNÉES:');
+      let added=0, updated=0, skipped=0;
+      
+      rows.forEach((row,idx)=>{
+        const iata = String(row[colIATA]||'').trim().toUpperCase();
+        const planning = String(row[colPlanning]||'').trim().toUpperCase();
+        const compta = String(row[colCompta]||'').trim();
+        const aux = String(row[colAux]||'').trim();
+        
+        // Sauter lignes vides
+        if(!iata || !planning || !compta){
+          skipped++;
+          return;
+        }
+        
+        // Vérifier si client existe déjà
+        const exists = planning in CORR;
+        
+        // Ajouter ou mettre à jour
+        CORR[planning] = {nom:compta, aux:aux||'', isFWT:false};
+        IATA_DB[planning] = iata;
+        
+        if(!IATA_REVERSE[iata]) IATA_REVERSE[iata]=[];
+        if(!IATA_REVERSE[iata].includes(planning)) IATA_REVERSE[iata].push(planning);
+        
+        if(exists) updated++;
+        else added++;
+        
+        if(idx < 3 || idx === rows.length-1){
+          console.log('   Ligne',idx+1+': '+planning+' → '+compta+' ('+iata+') ['+aux+']');
+        }
+      });
+      
+      console.log('✅ RÉSULTAT IMPORT:');
+      console.log('   Ajoutés:',added);
+      console.log('   Mis à jour:',updated);
+      console.log('   Ignorés:',skipped);
+      console.log('   TOTAL CORR:',Object.keys(CORR).length,'clients');
+      
+      // Afficher quelques exemples
+      console.log('📊 Exemples CORR:');
+      Object.entries(CORR).slice(0,3).forEach(([k,v]) => {
+        console.log('   '+k+' → '+v.nom+' ('+v.aux+')');
+      });
+      
+      // === AFFICHER LA LISTE ===
+      console.log('🎨 AFFICHAGE:');
+      setTimeout(()=>{
+        // S'assurer que le panel est visible
+        const tabPanel = document.getElementById('tab-clients-panel');
+        if(tabPanel){
+          tabPanel.style.display = 'flex';
+          console.log('   ✅ tab-clients-panel.display = flex');
+        }else{
+          console.warn('   ⚠ tab-clients-panel non trouvé!');
+        }
+        
+        // Appeler render
+        const container = document.getElementById('clients-list-container');
+        if(container){
+          console.log('   ✅ clients-list-container trouvé');
+          renderClientsList();
+          console.log('   ✅ renderClientsList() appelé');
+          console.log('   Container HTML length:',container.innerHTML.length);
+          if(container.innerHTML.length === 0){
+            console.error('   ❌ Container HTML toujours vide!');
+          }
+        }else{
+          console.error('   ❌ clients-list-container non trouvé!');
+        }
+      },50);
+      
+      console.log('═══ FIN IMPORT ═══\n');
+      alert('✅ Import réussi!\n\nAjoutés: '+added+'\nMis à jour: '+updated+'\nTotal: '+Object.keys(CORR).length+'\n\nOuvre Console (F12) pour voir les détails');
+      
+    }catch(ex){
+      console.error('❌ EXCEPTION:',ex);
+      console.error('Stack:',ex.stack);
+      alert('❌ Erreur: '+ex.message+'\n\nConsole (F12) pour le stack complet');
+    }
+  };
+  
+  r.readAsArrayBuffer(f);
 }
 
 // ══ IMPORT CLIENTS NDC-F ═════════════════════════════════════
@@ -6634,32 +7157,72 @@ function importNDCFClients(inp){
   const r=new FileReader();
   r.onload=e=>{
     try{
-      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const wb=XLSX.read(e.target.result,{type:'array'});
       const ws=wb.Sheets[wb.SheetNames[0]];
       const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-      let added=0,updated=0;
-      rows.forEach(row=>{
-        const keys=Object.keys(row);
-        // Colonnes: NOM COMMERCIAL | NOM COMPTABILITE | AUXILIAIRE
-        const ndc=String(row[keys[0]]||'').trim();
-        const compta=String(row[keys[1]]||'').trim();
-        const aux=String(row[keys[2]]||'').trim();
-        if(!ndc||!compta)return;
-        const existing=NDCF_CLIENTS.findIndex(c=>c.ndc.toUpperCase()===ndc.toUpperCase());
+      
+      console.log('NDC import - Nb lignes:',rows.length);
+      if(!rows.length){alert('❌ Fichier vide');return;}
+      
+      console.log('Première ligne NDC:',rows[0]);
+      
+      // Trouver les colonnes par header matching
+      const normalize = (s) => String(s||'').trim().toUpperCase().replace(/[\s]/g,'');
+      const keys = Object.keys(rows[0]||{});
+      
+      const findCol = (patterns) => {
+        const k = keys.find(key => 
+          patterns.some(p => normalize(key).includes(normalize(p)))
+        );
+        return k;
+      };
+      
+      const colNDC = findCol(['NOM COMERCIAL','COMMERCIAL','AGENCE','NOM']);
+      const colCompta = findCol(['NOM COMPTABILITE','COMPTABILITE','COMPTABLE','NOM']);
+      const colCode = findCol(['CODE COMPTABLE','CODE','CODECOMPTABLE']);
+      const colAux = findCol(['AUXILIAIRE','AUX']);
+      
+      console.log('Colonnes NDC trouvées:',{colNDC,colCompta,colCode,colAux});
+      
+      if(!colNDC || !colCompta){
+        alert('❌ Colonnes manquantes!\nTrouvées: NDC='+colNDC+', COMPTA='+colCompta);
+        return;
+      }
+      
+      let added=0, updated=0;
+      rows.forEach((row,idx)=>{
+        const ndc = String(row[colNDC]||'').trim();
+        const compta = String(row[colCompta]||'').trim();
+        const code = String(row[colCode]||'411').trim();
+        const aux = String(row[colAux]||'').trim();
+        
+        if(!ndc || !compta){
+          console.log('Ligne NDC',idx,'ignorée');
+          return;
+        }
+        
+        const existing = NDCF_CLIENTS.findIndex(c=>c.ndc.toUpperCase()===ndc.toUpperCase());
         if(existing>=0){
-          NDCF_CLIENTS[existing]={ndc,compta,aux};
+          NDCF_CLIENTS[existing]={ndc,compta,code,aux};
           updated++;
         }else{
-          NDCF_CLIENTS.push({ndc,compta,aux});
+          NDCF_CLIENTS.push({ndc,compta,code,aux});
           added++;
         }
       });
+      
+      console.log('✅ NDC Import: '+added+' ajoutés, '+updated+' mis à jour');
+      console.log('NDCF_CLIENTS contient:',NDCF_CLIENTS.length,'clients');
+      
       rebuildNDCFIdx();
       renderNDCFClients();
       alert('✅ '+added+' ajoutés, '+updated+' mis à jour');
-    }catch(ex){alert('❌ Erreur: '+ex.message);}
+    }catch(ex){
+      console.error('NDC import error:',ex);
+      alert('❌ Erreur: '+ex.message+'\n\nConsole (F12) pour détails');
+    }
   };
-  r.readAsBinaryString(f);
+  r.readAsArrayBuffer(f);
 }
 
 
@@ -13225,7 +13788,7 @@ function sLoad(file){
           coche  :String(cCO?r2[cCO]:'').trim(),
           debit  :parseFloat(String(cD?r2[cD]:'').replace(/\s/g,'').replace(',','.'))||0,
         };
-      }).filter(r2=>r2.debit>0&&(r2.compte.startsWith('411')||r2.compte.startsWith('18')));
+      }).filter(r2=>r2.debit!==0&&(r2.compte.startsWith('411')||r2.compte.startsWith('18')));
       
       // Extraire les annees disponibles
       const years = new Set();
@@ -13237,7 +13800,7 @@ function sLoad(file){
         if(yearInp) yearInp.value = STAT.year;
       }
 
-      if(!STAT.raw.length){sMsg('err','❌ Aucune ligne 411/18xxx avec DEBIT>0');sProgs(false);return;}
+      if(!STAT.raw.length){sMsg('err','❌ Aucune ligne 411/18xxx avec montant');sProgs(false);return;}
 
       // Nom fichier
       const fn=document.getElementById('stat-fname');
@@ -13630,6 +14193,7 @@ function statAnalyze(){
     statSetView(STAT.view);
     document.getElementById('stat-toolbar').style.display='flex';
     document.getElementById('stat-xport-btn').disabled=false;
+    document.getElementById('stat-print-btn').disabled=false;
 
     // badge header
     const pill=document.getElementById('stat-period-pill');
@@ -13653,6 +14217,7 @@ function statAnalyze(){
       pill.textContent=`${ft} · ${ct} · ${tt} ${nt}`.trim();
       pill.style.display='';
     }
+    sRenderFilterBar();
 
     btn.disabled=false;btn.textContent='⚡ ANALYSER';
   },30);
@@ -13667,7 +14232,261 @@ function sKPIs(ca,ops){
   set('sk-op',SFN(ops));
   set('sk-av',d.length?SFM(ca/d.length):'—');
   if(d.length){set('sk-t1',d[0].name);set('sk-t1v',SFM(d[0].total));}
+
+  // ── Tendance vs période de référence (Power BI "KPI visual" logic) ──
+  const dl=(id,html)=>{const e=document.getElementById(id);if(!e)return;e.innerHTML=html||'';e.classList.toggle('on',!!html);};
+  if(STAT.compareEnabled){
+    const period=statGetComparePeriod();
+    const refData=period?sFilterForPeriod(period):[];
+    const refCA=refData.reduce((s,r)=>s+r.total,0);
+    const refOps=refData.reduce((s,r)=>s+r.ops,0);
+    const refClients=refData.length;
+    const mk=v=>statEvoHTML(v)+`<span style="font-size:7px;color:var(--txt4);margin-left:3px">vs réf.</span>`;
+    dl('sk-ca-delta', mk(statCalcEvolution(refCA,ca)));
+    dl('sk-cl-delta', mk(statCalcEvolution(refClients,d.length)));
+    dl('sk-op-delta', mk(statCalcEvolution(refOps,ops)));
+    dl('sk-av-delta', mk(statCalcEvolution(refCA/Math.max(refClients,1), d.length?ca/d.length:0)));
+  }else{
+    dl('sk-ca-delta','');dl('sk-cl-delta','');dl('sk-op-delta','');dl('sk-av-delta','');
+  }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   BI UPGRADE — Filter pane (chips actifs) · Cross-filtering · Drill-through
+   Reproduit la logique Power BI (slicers synchronisés + filter pane),
+   Tableau (clic sur une marque → filtre/détail) et Looker Studio (insights)
+══════════════════════════════════════════════════════════════════════ */
+
+/* ── Barre de filtres actifs avec suppression individuelle ───────────── */
+function sRenderFilterBar(){
+  const w=document.getElementById('stat-filterbar');
+  if(!w) return;
+  if(!STAT.agg.length){w.classList.remove('on');w.innerHTML='';return;}
+  const chips=[];
+  // Période
+  if(STAT.periodMode==='folio'){
+    const moisTxt=STAT.folios.size>0?[...STAT.folios].sort((a,b)=>a-b).map(f=>SMOIS[f-1]).join(' · '):'Tous les mois';
+    chips.push({k:'periode',lbl:`📅 ${STAT.year} · ${moisTxt}`});
+  }else if(STAT.periodMode==='date'&&STAT.singleDate){
+    chips.push({k:'periode',lbl:`📅 ${new Date(STAT.singleDate).toLocaleDateString('fr-FR')}`});
+  }else if(STAT.periodMode==='range'&&STAT.dateFrom&&STAT.dateTo){
+    chips.push({k:'periode',lbl:`📅 ${new Date(STAT.dateFrom).toLocaleDateString('fr-FR')} → ${new Date(STAT.dateTo).toLocaleDateString('fr-FR')}`});
+  }
+  // Type compte
+  if(STAT.type!=='all') chips.push({k:'type',lbl:`🗂 ${STAT.type==='411'?'Agences 411':'Inter-Unité 18xxx'}`});
+  // Compagnie (= aussi le cross-filter posé en cliquant un graphique)
+  if(STAT.comp!=='ALL') chips.push({k:'comp',lbl:`✈️ ${STAT.comp}`,xfilter:true});
+  // NDC
+  if(STAT.ndc!=='all') chips.push({k:'ndc',lbl:`🔍 ${STAT.ndc==='ndc'?'Facture /NDC/':'EBV (sans /NDC/)'}`});
+
+  if(!chips.length){w.classList.remove('on');w.innerHTML='';return;}
+  w.classList.add('on');
+  w.innerHTML=`<span class="fb-lbl">Filtres actifs</span>`+
+    chips.map(c=>`<span class="stat-fchip${c.xfilter?' xfilter':''}">${c.lbl}<span class="fb-x" onclick="sClearFilterChip('${c.k}')" title="Retirer ce filtre">✕</span></span>`).join('')+
+    `<span class="stat-fb-reset" onclick="sClearAllFilterChips()">↺ Réinitialiser tout</span>`;
+}
+function sClearFilterChip(k){
+  if(k==='periode'){ sFolioAll(); }
+  else if(k==='type'){ STAT.type='all'; const sel=document.getElementById('stat-type-sel'); if(sel) sel.value='all'; }
+  else if(k==='comp'){ sSetComp('ALL', document.querySelector('.stat-chip')); }
+  else if(k==='ndc'){ sSetNDC('all', document.querySelector('.stat-ndc-btn')); }
+  if(STAT.agg.length) statAnalyze();
+}
+function sClearAllFilterChips(){
+  sFolioAll();
+  STAT.type='all'; const sel=document.getElementById('stat-type-sel'); if(sel) sel.value='all';
+  sSetComp('ALL', document.querySelector('.stat-chip'));
+  sSetNDC('all', document.querySelector('.stat-ndc-btn'));
+  if(STAT.agg.length) statAnalyze();
+}
+
+/* ── Cross-filter compagnie : clic sur une part de doughnut / légende ──
+   Filtre immédiatement tout le tableau de bord (comme un slicer Power BI) */
+function sCrossFilterComp(comp){
+  if(!STAT.raw.length) return;
+  STAT.comp=comp;
+  document.querySelectorAll('.stat-chip').forEach(b=>{
+    b.classList.remove('on');b.style.background='';b.style.borderColor='';b.style.color='';
+    if(b.textContent.trim()===(comp==='ALL'?'TOUT':comp)){
+      b.classList.add('on');
+      const col=comp==='ALL'?'#374151':(SCOL[comp]||'#374151');
+      b.style.background=col;b.style.borderColor=col;b.style.color='#fff';
+    }
+  });
+  statAnalyze();
+}
+
+/* ── Drill-through Client : ouverture du panneau détail ───────────────
+   Recalcule la ventilation mensuelle réelle de CE client en conservant
+   les filtres Type/Compagnie/NDC/Année mais sans la restriction FOLIO,
+   pour donner une vue annuelle complète façon "drill to detail" Tableau */
+function sClientMonthly(compte,aux){
+  const targetYear=STAT.year||new Date().getFullYear();
+  const mmap=new Map();
+  let ca=0,ops=0;const journals=new Set();
+  STAT.raw.forEach(r=>{
+    if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return;
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
+    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    if(STAT.comp!=='ALL'&&sym!==STAT.comp) return;
+    if(STAT.ndc!=='all'){
+      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
+      if(STAT.ndc==='ndc'&&!isNDC) return;
+      if(STAT.ndc==='std'&&isNDC)  return;
+    }
+    if(r.year&&r.year!==targetYear) return;
+    ca+=r.debit;ops++;journals.add(sym||'AUT');
+    if(r.folio>=1&&r.folio<=12) mmap.set(r.folio,(mmap.get(r.folio)||0)+r.debit);
+  });
+  return{ca,ops,journals,monthly:mmap,year:targetYear};
+}
+function sOpenClientDrill(compte,aux){
+  const key=compte+'|'+(aux||compte);
+  const row=STAT.agg.find(r=>(r.compte+'|'+(r.aux||r.compte))===key);
+  const name=row?row.name:sResolveName(aux,compte,'');
+  const data=sClientMonthly(compte,aux);
+  document.getElementById('sd-name').textContent=name;
+  document.getElementById('sd-sub').textContent=`${compte} · ${aux||'—'} · Année ${data.year}`;
+
+  const months=[...Array(12)].map((_,i)=>i+1);
+  const vals=months.map(m=>data.monthly.get(m)||0);
+  const max=Math.max(...vals,1);
+  const activeMonths=vals.filter(v=>v>0).length;
+  const W=300,H=90,bw=(W/12)-3;
+  const bars=vals.map((v,i)=>{
+    const h=Math.max(1,Math.round((H-16)*v/max));
+    const x=i*(W/12)+1.5,y=H-16-h;
+    const isCur=STAT.folios.size===0||STAT.folios.has(i+1);
+    return `<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="2" fill="${v>0?(isCur?'#0284c7':'#94a3b8'):'#e2e8f0'}" opacity="${v>0?.92:.5}"><title>${SMOIS[i]} : ${SFM(v)}</title></rect>
+      <text x="${x+bw/2}" y="${H-4}" text-anchor="middle" font-size="6.5" fill="#94a3b8">${SMOIS[i][0]}</text>`;
+  }).join('');
+  const svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${bars}</svg>`;
+
+  const journalsHTML=[...data.journals].map(j=>`<span class="sbdg" style="background:${SCOL[j]||'#6b7280'};color:#fff">${j}</span>`).join(' ')||'—';
+
+  document.getElementById('sd-body').innerHTML=`
+    <div class="stat-drill-kpis">
+      <div class="stat-drill-kpi"><div class="dk-lbl">CA Total (année)</div><div class="dk-val">${SFM(data.ca)}</div></div>
+      <div class="stat-drill-kpi"><div class="dk-lbl">Opérations</div><div class="dk-val">${SFN(data.ops)}</div></div>
+      <div class="stat-drill-kpi"><div class="dk-lbl">Moyenne / Opération</div><div class="dk-val">${SFM(data.ca/Math.max(data.ops,1))}</div></div>
+      <div class="stat-drill-kpi"><div class="dk-lbl">Mois actifs</div><div class="dk-val">${activeMonths} / 12</div></div>
+    </div>
+    <div class="stat-drill-section-title">📅 Ventilation mensuelle ${data.year}</div>
+    <div style="background:var(--bg2);border-radius:9px;padding:10px">${svg}</div>
+    <div class="stat-drill-section-title">✈️ Compagnies / Journaux</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">${journalsHTML}</div>
+    <button class="stat-drill-action" onclick="sGotoClientEvol('${compte}','${(aux||compte).replace(/'/g,"\\'")}')">📈 Voir dans Évolution Client →</button>
+  `;
+  document.getElementById('stat-drill-overlay').classList.add('on');
+}
+function sCloseClientDrill(e){
+  if(e&&e.target!==e.currentTarget&&e.type==='click'&&e.currentTarget.id!=='stat-drill-overlay'&&e.target.tagName!=='BUTTON') return;
+  document.getElementById('stat-drill-overlay').classList.remove('on');
+}
+function sGotoClientEvol(compte,aux){
+  _cliEvolSelected=new Set([compte+'|'+aux]);
+  document.getElementById('stat-drill-overlay').classList.remove('on');
+  statSetView('clievol');
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ONGLET INSIGHTS — Auto-narration façon "Explain the data" Looker Studio
+   / "Key influencers" Power BI : synthèse texte générée depuis l'agrégat
+══════════════════════════════════════════════════════════════════════ */
+function sInsights(c){
+  if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">💡</div><div class="msg">Aucune donnée</div><div class="sub">Lancez une analyse pour générer les insights</div></div>`;return;}
+  const d=[...STAT.agg].sort((a,b)=>b.total-a.total);
+  const n=d.length;
+  const totCA=d.reduce((s,r)=>s+r.total,0);
+  const totOps=d.reduce((s,r)=>s+r.ops,0);
+
+  // Concentration (Pareto rapide)
+  let cum=0,n80=n;
+  for(let i=0;i<n;i++){cum+=d[i].total;if(cum/totCA>=0.8){n80=i+1;break;}}
+  const top3Share=d.slice(0,3).reduce((s,r)=>s+r.total,0)/totCA*100;
+  const top10Share=d.slice(0,10).reduce((s,r)=>s+r.total,0)/totCA*100;
+
+  // Moyenne vs médiane (asymétrie)
+  const sorted=[...d].map(r=>r.total).sort((a,b)=>a-b);
+  const mean=totCA/n;
+  const median=sorted.length%2?sorted[(sorted.length-1)/2]:(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+  const aboveMean=d.filter(r=>r.total>mean).length;
+
+  // Répartition compagnies
+  const cm=new Map();
+  sRawFiltered().forEach(r=>{const sym=SJMAP[r.journal]||(r.journal?'AUT':null);cm.set(sym,(cm.get(sym)||0)+r.debit);});
+  const compSorted=[...cm.entries()].sort((a,b)=>b[1]-a[1]);
+  const leadComp=compSorted[0];
+
+  // NDC vs EBV
+  const rawAll=sRawFiltered();
+  const ndcTotal=rawAll.filter(r=>(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'')).reduce((s,r)=>s+r.debit,0);
+
+  // Mouvements (si comparaison active) — façon "Key influencers" Power BI
+  let moversHTML='';
+  if(STAT.compareEnabled){
+    const period=statGetComparePeriod();
+    const refData=period?sFilterForPeriod(period):[];
+    const refMap=new Map(refData.map(r=>[r.compte+'|'+r.aux,r.total]));
+    const movers=d.map(r=>{
+      const key=r.compte+'|'+(r.aux||r.compte);
+      const ref=refMap.get(key)||0;
+      return{name:r.name,delta:r.total-ref,pct:statCalcEvolution(ref,r.total)};
+    });
+    const gainer=[...movers].sort((a,b)=>b.delta-a.delta)[0];
+    const loser=[...movers].sort((a,b)=>a.delta-b.delta)[0];
+    moversHTML=`
+    <div class="stat-insight-card" style="--ic:#059669">
+      <div class="ic-head"><span class="ic-ico">📈</span>Plus forte progression</div>
+      <div class="ic-body"><b>${gainer.name}</b> a généré <b>${SFM(Math.abs(gainer.delta))}</b> de plus que sur la période de référence (${statEvoHTML(gainer.pct)}).</div>
+      <div class="ic-foot">Comparaison activée · vs période de référence</div>
+    </div>
+    <div class="stat-insight-card" style="--ic:#dc2626">
+      <div class="ic-head"><span class="ic-ico">📉</span>Plus forte baisse</div>
+      <div class="ic-body"><b>${loser.name}</b> ${loser.delta<0?`a reculé de <b>${SFM(Math.abs(loser.delta))}</b>`:'progresse également'} par rapport à la période de référence (${statEvoHTML(loser.pct)}).</div>
+      <div class="ic-foot">Comparaison activée · vs période de référence</div>
+    </div>`;
+  }else{
+    moversHTML=`
+    <div class="stat-insight-card" style="--ic:#94a3b8">
+      <div class="ic-head"><span class="ic-ico">🔄</span>Mouvements clients</div>
+      <div class="ic-body">Activez <b>« Comparer les périodes »</b> dans la barre latérale pour détecter automatiquement les plus fortes progressions et baisses client par client.</div>
+    </div>`;
+  }
+
+  c.innerHTML=`<div style="height:100%;overflow-y:auto">
+    <div style="padding:14px 16px 0;font-size:10px;font-weight:800;color:#a16207;letter-spacing:1px">💡 INSIGHTS AUTOMATIQUES — synthèse générée à partir de l'agrégat courant</div>
+    <div class="stat-insight-grid">
+      <div class="stat-insight-card" style="--ic:#dc2626">
+        <div class="ic-head"><span class="ic-ico">🎯</span>Concentration du portefeuille</div>
+        <div class="ic-body"><b>${n80} client${n80>1?'s':''}</b> (${(n80/n*100).toFixed(0)}% du portefeuille) génèrent <b>80%</b> du CA total. Le Top 3 représente <b>${top3Share.toFixed(1)}%</b> et le Top 10 <b>${top10Share.toFixed(1)}%</b> du CA.</div>
+        <div class="ic-foot">${top3Share>50?'Forte dépendance à quelques comptes clés — risque de concentration':'Portefeuille relativement diversifié'}</div>
+      </div>
+      <div class="stat-insight-card" style="--ic:#7c3aed">
+        <div class="ic-head"><span class="ic-ico">📊</span>Asymétrie de la distribution</div>
+        <div class="ic-body">CA moyen <b>${SFM(mean)}</b> contre une médiane de <b>${SFM(median)}</b>. Seuls <b>${aboveMean}</b> client${aboveMean>1?'s':''} (${(aboveMean/n*100).toFixed(0)}%) dépassent la moyenne.</div>
+        <div class="ic-foot">${mean>median*1.5?'Distribution tirée vers le haut par quelques très gros comptes':'Distribution relativement homogène'}</div>
+      </div>
+      <div class="stat-insight-card" style="--ic:${SCOL[leadComp?.[0]]||'#0284c7'}">
+        <div class="ic-head"><span class="ic-ico">✈️</span>Compagnie dominante</div>
+        <div class="ic-body">${leadComp?`<b>${leadComp[0]}</b> représente <b>${(leadComp[1]/totCA*100).toFixed(1)}%</b> du CA filtré (${SFM(leadComp[1])}) sur ${compSorted.length} compagnie${compSorted.length>1?'s':''} actives.`:'Aucune donnée compagnie disponible.'}</div>
+        <div class="ic-foot">Cliquez une part du graphique « Compagnies » pour filtrer le tableau de bord</div>
+      </div>
+      <div class="stat-insight-card" style="--ic:#00b3e0">
+        <div class="ic-head"><span class="ic-ico">🔍</span>Facturation /NDC/</div>
+        <div class="ic-body">Les opérations marquées <b>/NDC/</b> représentent <b>${totCA>0?(ndcTotal/totCA*100).toFixed(1):'0'}%</b> du CA filtré, soit <b>${SFM(ndcTotal)}</b>.</div>
+        <div class="ic-foot">Utilisez le filtre FACTURE / EBV pour isoler ces flux</div>
+      </div>
+      <div class="stat-insight-card" style="--ic:#0d9488">
+        <div class="ic-head"><span class="ic-ico">⚙️</span>Activité opérationnelle</div>
+        <div class="ic-body"><b>${SFN(totOps)}</b> opérations enregistrées pour <b>${SFN(n)}</b> clients, soit une moyenne de <b>${(totOps/n).toFixed(1)}</b> opérations par client et un panier moyen de <b>${SFM(totCA/totOps)}</b> par opération.</div>
+      </div>
+      ${moversHTML}
+    </div>
+  </div>`;
+}
+
 
 /* ══ VUES ════════════════════════════════════════════════════════════ */
 function statSetView(v){
@@ -13687,6 +14506,7 @@ function statSetView(v){
   else if(v==='pareto')  sPareto(c);
   else if(v==='stats')   sStatsDesc(c);
   else if(v==='segment') sSegment(c);
+  else if(v==='insights') sInsights(c);
 }
 function statSetSort(s){
   STAT.sort=s;
@@ -13706,7 +14526,7 @@ function sRank(c){
   const top=d.slice(0,20);
   const maxCA=top.length?top[0].total:1;
   const totCA=STAT.agg.reduce((s,r)=>s+r.total,0);
-  let h=`<div class="stat-tw"><table class="stat-tbl">
+  let h=`<div class="stat-tw"><div class="stat-drill-hint">🔎 Cliquez une ligne pour ouvrir la fiche client (drill-through)</div><table class="stat-tbl">
   <thead><tr>
     <th style="width:34px">#</th>
     <th>COMPTE</th><th>AUXILIAIRE</th>
@@ -13726,7 +14546,8 @@ function sRank(c){
     ).join(' ');
     const foTxt=[...r.folios].sort((a,b)=>a-b).map(f=>SMOIS[f-1]||f).join(' ');
     const col=SCOL[[...r.journals][0]]||'var(--sky)';
-    h+=`<tr class="${rk<=3?'top3':''}">
+    const cq=String(r.compte).replace(/'/g,"\\'"), aq=String(r.aux||r.compte).replace(/'/g,"\\'");
+    h+=`<tr class="stat-clk ${rk<=3?'top3':''}" onclick="sOpenClientDrill('${cq}','${aq}')" title="Clic pour le détail de ${r.name}">
       <td><span class="srk ${rc}">${rk}</span></td>
       <td class="m" style="font-size:9.5px;color:var(--sky-deep)">${r.compte}</td>
       <td class="m" style="font-size:9.5px;color:var(--txt3)">${r.aux||'—'}</td>
@@ -13751,14 +14572,15 @@ function sChart(c){
   const top=[...STAT.agg].sort((a,b)=>b.total-a.total).slice(0,10).reverse();
   const max=top.length?top[top.length-1].total:1;
   const medals=['','🥇','🥈','🥉'];
-  let h=`<div class="stat-ca"><div class="stat-ct">🏆 Top 10 Clients — CA Débit <span class="stat-cs">Plan comptable FWS · Libellés officiels</span></div><div class="stat-bc">`;
+  let h=`<div class="stat-ca"><div class="stat-ct">🏆 Top 10 Clients — CA Débit <span class="stat-cs">Plan comptable FWS · Libellés officiels · Cliquez une barre pour le détail client</span></div><div class="stat-bc">`;
   top.forEach((r,i)=>{
     const rk=top.length-i;
     const pct=Math.round(r.total/max*100);
     const col=SCOL[[...r.journals][0]||'AUT']||'#0284c7';
     const isOut=pct<22;
     const med=medals[rk]||('#'+rk);
-    h+=`<div class="stat-br">
+    const cq=String(r.compte).replace(/'/g,"\\'"), aq=String(r.aux||r.compte).replace(/'/g,"\\'");
+    h+=`<div class="stat-br stat-clk" onclick="sOpenClientDrill('${cq}','${aq}')" title="Clic pour le détail de ${r.name}">
       <div class="stat-brk" style="font-size:${rk<=3?'14px':'9px'};font-weight:800">${med}</div>
       <div class="stat-bl" title="${r.name}">${r.name}</div>
       <div class="stat-bo">
@@ -13777,7 +14599,12 @@ function sChart(c){
 /* ── Vue Compagnies (Doughnut SVG) ──────────────────────────────── */
 function sComp(c){
   const cm=new Map();
-  STAT.agg.forEach(r=>r.journals.forEach(j=>cm.set(j,(cm.get(j)||0)+r.total)));
+  // Calculer directement depuis les données brutes filtrées (ligne par ligne)
+  sRawFiltered().forEach(r=>{
+    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    if(!cm.has(sym)) cm.set(sym,0);
+    cm.set(sym,cm.get(sym)+r.debit);
+  });
   const tot=[...cm.values()].reduce((s,v)=>s+v,0);
   if(!tot){c.innerHTML=`<div class="stat-empty"><div class="big">✈️</div><div class="msg">Aucune donnée</div></div>`;return;}
   const sz=180,cx=90,cy=90,ro=78,ri=50;
@@ -13791,18 +14618,18 @@ function sComp(c){
     const xi2=cx+ri*Math.cos(a+sw),yi2=cy+ri*Math.sin(a+sw);
     const lg=sw>Math.PI?1:0;
     const col=SCOL[comp]||'#6b7280';
-    paths+=`<path d="M${xi1},${yi1}L${x1},${y1}A${ro},${ro} 0 ${lg},1 ${x2},${y2}L${xi2},${yi2}A${ri},${ri} 0 ${lg},0 ${xi1},${yi1}Z" fill="${col}" stroke="#fff" stroke-width="2.5"><title>${comp}: ${(val/tot*100).toFixed(1)}%</title></path>`;
+    paths+=`<path class="stat-clk" onclick="sCrossFilterComp('${comp.replace(/'/g,"\\'")}')" d="M${xi1},${yi1}L${x1},${y1}A${ro},${ro} 0 ${lg},1 ${x2},${y2}L${xi2},${yi2}A${ri},${ri} 0 ${lg},0 ${xi1},${yi1}Z" fill="${col}" stroke="#fff" stroke-width="2.5"><title>${comp}: ${(val/tot*100).toFixed(1)}% — clic pour filtrer</title></path>`;
     a+=sw;
   });
   const legH=ents.map(([comp,val])=>`
-    <div class="stat-lr">
+    <div class="stat-lr stat-clk" onclick="sCrossFilterComp('${comp.replace(/'/g,"\\'")}')" title="Clic pour filtrer le tableau de bord sur ${comp}">
       <div class="stat-ld" style="background:${SCOL[comp]||'#6b7280'}"></div>
       <span class="stat-ln">${comp}</span>
       <span class="stat-lv">${SFM(val)}</span>
       <span class="stat-lp">${(val/tot*100).toFixed(1)}%</span>
     </div>`).join('');
   c.innerHTML=`<div class="stat-dw">
-    <div class="stat-dt">✈️ Répartition du CA par Compagnie / Journal</div>
+    <div class="stat-dt">✈️ Répartition du CA par Compagnie / Journal <span class="stat-cs">Cliquez une part ou la légende pour filtrer (cross-filter)</span></div>
     <div class="stat-db">
       <svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" style="flex-shrink:0">
         ${paths}
@@ -13818,12 +14645,8 @@ function sComp(c){
 /* ── Vue Timeline par FOLIO (mois) ──────────────────────────────── */
 function sTL(c){
   const fm=new Map();
-  STAT.raw.forEach(r=>{
+  sRawFiltered().forEach(r=>{
     if(r.folio<1||r.folio>12) return;
-    if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
-    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
-    if(STAT.comp!=='ALL'&&sym!==STAT.comp) return;
     if(!fm.has(r.folio)) fm.set(r.folio,{ca:0,ops:0});
     fm.get(r.folio).ca+=r.debit;fm.get(r.folio).ops++;
   });
@@ -14659,14 +15482,18 @@ function sCompare(c){
   let refClients = Math.round(currentClients * 0.95);
   
   // Si les données brutes permettent le calcul réel
+  let refData=[];
   if(comparePeriod && (comparePeriod.folios || comparePeriod.dateFrom)){
-    const refData = sFilterForPeriod(comparePeriod);
+    refData = sFilterForPeriod(comparePeriod);
     if(refData.length > 0){
       refCA = refData.reduce((s,r) => s + r.total, 0);
       refOps = refData.reduce((s,r) => s + r.ops, 0);
       refClients = refData.length;
     }
   }
+  // Carte client → CA période de référence (calcul réel, plus de simulation aléatoire)
+  const refMap = new Map(refData.map(r=>[r.compte+'|'+r.aux, r.total]));
+  const refOf = item => refMap.has(item.compte+'|'+(item.aux||item.compte)) ? refMap.get(item.compte+'|'+(item.aux||item.compte)) : 0;
   
   const evoCA = statCalcEvolution(refCA, currentCA);
   const evoOps = statCalcEvolution(refOps, currentOps);
@@ -14726,7 +15553,7 @@ function sCompare(c){
   const maxVal = top10.length ? top10[0].total : 1;
   
   top10.forEach((item, i) => {
-    const oldVal = item.total * (0.7 + Math.random() * 0.5); // Simulation données P1
+    const oldVal = refOf(item); // Donnée réelle de la période de référence (plus de simulation)
     const evo = statCalcEvolution(oldVal, item.total);
     const pct1 = Math.round(oldVal / maxVal * 100);
     const pct2 = Math.round(item.total / maxVal * 100);
@@ -14780,7 +15607,7 @@ function sCompare(c){
           <tbody>`;
   
   currentData.slice(0, 20).forEach((item, i) => {
-    const oldVal = item.total * (0.7 + Math.random() * 0.5);
+    const oldVal = refOf(item); // Donnée réelle de la période de référence (plus de simulation)
     const evo = statCalcEvolution(oldVal, item.total);
     const medal = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
     
@@ -16339,6 +17166,115 @@ function sProgs(show){
   if(show){p.style.display='block';if(f){f.style.width='0%';requestAnimationFrame(()=>f.style.width='80%');}}
   else{if(f)f.style.width='100%';setTimeout(()=>p.style.display='none',400);}
 }
+
+// 🖨 IMPRESSION INTELLIGENTE — Imprime ce que tu VOIS!
+function printCurrentSegment(){
+  const view = STAT.view || 'rank';
+  console.log('Print view:',view);
+  
+  const printMap = {
+    'rank': printClassement,
+    'chart': printChartView,
+    'top': printTopVendeurs,
+    'comp': printCompagnies,
+    'tl': printParFolio,
+    'evol': printEvolution,
+    'clievol': printEvolClient,
+    'heat': printHeatmap,
+    'compare': printComparaison,
+    'pareto': printPareto,
+    'stats': printStatistiques,
+    'segment': printSegmentation,
+    'insights': printInsights
+  };
+  
+  const fn = printMap[view];
+  if(fn) fn();
+  else alert('❌ Impression non disponible pour ce segment');
+}
+
+// ══ Classement ══
+function printClassement(){
+  if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
+  const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Classement</title><style>body{font-family:Arial;color:#1a1a1a;}.page{max-width:1000px;margin:0 auto;padding:40px;}.header{border-bottom:3px solid #0066cc;padding-bottom:20px;margin-bottom:30px;}.title{font-size:24px;font-weight:700;color:#0066cc;margin-bottom:5px;}.date{font-size:11px;color:#999;margin-top:10px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#e8eef7;padding:10px;text-align:left;font-weight:600;border-bottom:2px solid #0066cc;}td{padding:8px;border-bottom:1px solid #eee;}tr:nth-child(even){background:#f9f9f9;}</style></head><body><div class="page"><div class="header"><div class="title">📋 CLASSEMENT COMPLET</div><div class="date">Généré le ${new Date().toLocaleDateString('fr-FR')}</div></div><table><tr><th>Rang</th><th>Client</th><th>CA</th><th>Opérations</th><th>Moyenne/Op</th></tr>${STAT.agg.map((r,i)=>`<tr><td><strong>${i+1}</strong></td><td>${(r.name||'—').substring(0,50)}</td><td>${FM(r.total)}</td><td>${r.ops}</td><td>${FM(r.total/Math.max(r.ops,1))}</td></tr>`).join('')}</table></div></body></html>`;
+  const w=window.open('','Print','width=1200,height=800');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ══ Top Vendeurs ══
+function printTopVendeurs(){
+  if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
+  const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
+  const top20=STAT.agg.slice(0,20);
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Top Vendeurs</title><style>body{font-family:Arial;color:#1a1a1a;}.page{max-width:900px;margin:0 auto;padding:40px;}.header{border-bottom:3px solid #059669;padding-bottom:20px;margin-bottom:30px;}.title{font-size:24px;font-weight:700;color:#059669;}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:30px;}.metric{background:#f0fdf4;border:1px solid #86efac;padding:15px;border-radius:5px;text-align:center;}.metric-val{font-size:20px;font-weight:700;color:#059669;}.metric-lbl{font-size:10px;color:#666;text-transform:uppercase;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#e8f5e9;padding:10px;text-align:left;font-weight:600;border-bottom:2px solid #059669;}td{padding:8px;border-bottom:1px solid #eee;}tr:nth-child(odd){background:#f9f9f9;}</style></head><body><div class="page"><div class="header"><div class="title">🏆 TOP 20 VENDEURS</div></div><div class="metric-grid"><div class="metric"><div class="metric-val">${top20.length}</div><div class="metric-lbl">Top Clients</div></div><div class="metric"><div class="metric-val">${FM(top20.reduce((s,r)=>s+r.total,0))}</div><div class="metric-lbl">CA Total</div></div><div class="metric"><div class="metric-val">${FM(top20.reduce((s,r)=>s+r.total,0)/top20.length)}</div><div class="metric-lbl">Moyenne</div></div></div><table><tr><th>Rang</th><th>Client</th><th>CA</th><th>Opérations</th></tr>${top20.map((r,i)=>`<tr><td><strong style="color:#059669;">${i+1}</strong></td><td><strong>${(r.name||'—').substring(0,50)}</strong></td><td style="font-weight:700;color:#059669;">${FM(r.total)}</td><td>${r.ops}</td></tr>`).join('')}</table></div></body></html>`;
+  const w=window.open('','Print','width=1000,height=800');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ══ Pareto 80/20 ══
+function printPareto(){
+  if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
+  const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
+  const totCA=STAT.agg.reduce((s,r)=>s+r.total,0);
+  let cumP=0;
+  const paretoData=STAT.agg.map((r,i)=>{
+    cumP+=r.total;
+    return{rank:i+1,name:r.name||'—',total:r.total,cumPct:Math.round(cumP/totCA*10000)/100,ops:r.ops};
+  });
+  const n80=paretoData.filter(p=>p.cumPct<=80).length;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pareto</title><style>body{font-family:Arial;color:#1a1a1a;}.page{max-width:1000px;margin:0 auto;padding:40px;}.header{border-bottom:3px solid #dc2626;padding-bottom:20px;margin-bottom:30px;}.title{font-size:24px;font-weight:700;color:#dc2626;}.info{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:30px;}.info-box{background:#fef2f2;border:1px solid #fca5a5;padding:15px;border-radius:5px;text-align:center;}.info-val{font-size:18px;font-weight:700;color:#dc2626;}.info-lbl{font-size:10px;color:#666;text-transform:uppercase;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#ffe8e8;padding:10px;text-align:left;font-weight:600;border-bottom:2px solid #dc2626;}td{padding:8px;border-bottom:1px solid #eee;}tr:nth-child(even){background:#faf9f9;}.pct-col{color:#dc2626;font-weight:700;text-align:right;}</style></head><body><div class="page"><div class="header"><div class="title">📐 ANALYSE PARETO 80/20</div></div><div class="info"><div class="info-box"><div class="info-val">${n80}</div><div class="info-lbl">Clients = 80% CA</div></div><div class="info-box"><div class="info-val">${Math.round(n80/STAT.agg.length*100)}%</div><div class="info-lbl">% du Total</div></div><div class="info-box"><div class="info-val">${FM(paretoData.find(p=>p.cumPct>=80)?.total||0)}</div><div class="info-lbl">CA Seuil</div></div></div><table><tr><th>Rang</th><th>Client</th><th>CA</th><th>Ops</th><th class="pct-col">% Cumulé</th></tr>${paretoData.slice(0,30).map(p=>`<tr><td>${p.rank}</td><td><strong>${(p.name||'—').substring(0,45)}</strong></td><td>${FM(p.total)}</td><td>${p.ops}</td><td class="pct-col">${p.cumPct}%</td></tr>`).join('')}</table></div></body></html>`;
+  const w=window.open('','Print','width=1100,height=800');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ══ Heatmap ══
+function printHeatmap(){
+  const container=document.getElementById('stat-hm-cont');
+  if(!container || !container.innerHTML){alert('❌ Pas de heatmap à afficher');return;}
+  const svg=container.querySelector('svg');
+  if(!svg){alert('❌ Impossible d\'extraire la heatmap');return;}
+  const svgStr=new XMLSerializer().serializeToString(svg);
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Heatmap</title><style>body{font-family:Arial;background:#f5f5f5;margin:0;padding:20px;}.page{max-width:1200px;margin:0 auto;background:#fff;padding:30px;border-radius:5px;box-shadow:0 2px 10px rgba(0,0,0,.1);}.header{border-bottom:3px solid #7c3aed;padding-bottom:15px;margin-bottom:30px;}.title{font-size:22px;font-weight:700;color:#7c3aed;}.date{font-size:11px;color:#999;margin-top:10px;}svg{width:100%;height:auto;border:1px solid #ddd;border-radius:5px;margin-bottom:20px;}@media print{body{background:#fff;padding:0;}.page{max-width:100%;box-shadow:none;}}</style></head><body><div class="page"><div class="header"><div class="title">🔥 HEATMAP — Vue Mensuelle</div><div class="date">Généré le ${new Date().toLocaleDateString('fr-FR')}</div></div>${svgStr}</div></body></html>`;
+  const w=window.open('','Print','width=1400,height=900');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ══ Statistiques Descriptives ══
+function printStatistiques(){
+  if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
+  const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
+  const vals=STAT.agg.map(r=>r.total).sort((a,b)=>a-b);
+  const _mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+  const _median=a=>{const s=[...a].sort((x,y)=>x-y);const m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;};
+  const _std=a=>{const m=_mean(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/a.length);};
+  const _q=(a,p)=>{const s=[...a].sort((x,y)=>x-y);const i=(s.length-1)*p;const lo=Math.floor(i),hi=Math.ceil(i);return s[lo]+(s[hi]-s[lo])*(i-lo);};
+  const m=_mean(vals);const med=_median(vals);const std=_std(vals);const q1=_q(vals,.25);const q3=_q(vals,.75);
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Stats</title><style>body{font-family:Arial;color:#1a1a1a;}.page{max-width:900px;margin:0 auto;padding:40px;}.header{border-bottom:3px solid #0891b2;padding-bottom:20px;margin-bottom:30px;}.title{font-size:24px;font-weight:700;color:#0891b2;}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:30px;}.card{background:#f0f9fc;border:1px solid #a5f3fc;padding:15px;border-radius:5px;}.card-val{font-size:18px;font-weight:700;color:#0891b2;}.card-lbl{font-size:10px;color:#666;text-transform:uppercase;margin-top:5px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#e0f2fe;padding:10px;text-align:left;font-weight:600;border-bottom:2px solid #0891b2;}td{padding:8px;border-bottom:1px solid #eee;}tr:nth-child(even){background:#f9fafb;}</style></head><body><div class="page"><div class="header"><div class="title">🧮 STATISTIQUES DESCRIPTIVES</div></div><div class="grid"><div class="card"><div class="card-val">${STAT.agg.length}</div><div class="card-lbl">Nombre Clients</div></div><div class="card"><div class="card-val">${FM(STAT.agg.reduce((s,r)=>s+r.total,0))}</div><div class="card-lbl">CA Total</div></div><div class="card"><div class="card-val">${FM(m)}</div><div class="card-lbl">Moyenne</div></div><div class="card"><div class="card-val">${FM(med)}</div><div class="card-lbl">Médiane</div></div><div class="card"><div class="card-val">${FM(std)}</div><div class="card-lbl">Écart-Type</div></div><div class="card"><div class="card-val">${FM(vals[0])}</div><div class="card-lbl">Min</div></div></div><table><tr><th>Métrique</th><th>Valeur</th></tr><tr><td>Moyenne</td><td>${FM(m)}</td></tr><tr><td>Médiane</td><td>${FM(med)}</td></tr><tr><td>Écart-Type</td><td>${FM(std)}</td></tr><tr><td>Q1 (25%)</td><td>${FM(q1)}</td></tr><tr><td>Q3 (75%)</td><td>${FM(q3)}</td></tr><tr><td>Minimum</td><td>${FM(vals[0])}</td></tr><tr><td>Maximum</td><td>${FM(vals[vals.length-1])}</td></tr></table></div></body></html>`;
+  const w=window.open('','Print','width=1000,height=800');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ══ Segments RFM ══
+function printSegmentation(){
+  const container=document.getElementById('stat-seg-list');
+  if(!container || !container.innerHTML){alert('❌ Pas de données');return;}
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Segments</title><style>body{font-family:Arial;color:#1a1a1a;}.page{max-width:1100px;margin:0 auto;padding:40px;}.header{border-bottom:3px solid #8b5cf6;padding-bottom:20px;margin-bottom:30px;}.title{font-size:24px;font-weight:700;color:#8b5cf6;}.seg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px;}.seg-box{border:2px solid #ddd;border-radius:5px;padding:20px;}.seg-title{font-size:14px;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #8b5cf6;}.seg-list{font-size:11px;line-height:1.8;}</style></head><body><div class="page"><div class="header"><div class="title">🎯 SEGMENTATION RFM</div></div><div class="seg-grid">${container.innerHTML}</div></div></body></html>`;
+  const w=window.open('','Print','width=1200,height=900');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// Stubs pour autres views
+function printChartView(){alert('📊 Impression graphique via screenshot');printClassement();}
+function printCompagnies(){alert('✈️ À implémenter');printClassement();}
+function printParFolio(){alert('📅 À implémenter');printClassement();}
+function printEvolution(){alert('📈 À implémenter');printClassement();}
+function printEvolClient(){alert('👤 À implémenter');printClassement();}
+function printComparaison(){alert('🔄 À implémenter');printClassement();}
+
+// ══ Insights ══
+function printInsights(){
+  const container=document.getElementById('stat-content');
+  const grid=container?container.querySelector('.stat-insight-grid'):null;
+  if(!grid || !grid.innerHTML){alert('❌ Ouvrez l\'onglet Insights avant d\'imprimer');return;}
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Insights</title><style>body{font-family:Arial;color:#1a1a1a;background:#f5f5f5;margin:0;padding:20px;}.page{max-width:1100px;margin:0 auto;background:#fff;padding:30px;border-radius:5px;}.header{border-bottom:3px solid #a16207;padding-bottom:15px;margin-bottom:25px;}.title{font-size:22px;font-weight:700;color:#a16207;}.date{font-size:11px;color:#999;margin-top:8px;}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}.card{border:1px solid #ddd;border-left:4px solid #a16207;border-radius:6px;padding:14px;font-size:11px;line-height:1.6;}@media print{body{background:#fff;padding:0;}.page{max-width:100%;}}</style></head><body><div class="page"><div class="header"><div class="title">💡 INSIGHTS AUTOMATIQUES</div><div class="date">Généré le ${new Date().toLocaleDateString('fr-FR')}</div></div><div class="grid">${grid.innerHTML}</div></div></body></html>`;
+  const w=window.open('','Print','width=1200,height=900');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
 function statHideProg(){ sProgs(false); }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -17246,18 +18182,22 @@ function fluxCreateEcriture() {
         <div class="stat-kpi kb">
           <div class="kv" id="sk-ca">—</div>
           <div class="kl">CA Total (DÉBIT)</div>
+          <div class="stat-kpi-delta" id="sk-ca-delta"></div>
         </div>
         <div class="stat-kpi kg">
           <div class="kv" id="sk-cl">—</div>
           <div class="kl">Clients / Unités</div>
+          <div class="stat-kpi-delta" id="sk-cl-delta"></div>
         </div>
         <div class="stat-kpi ka">
           <div class="kv" id="sk-op">—</div>
           <div class="kl">Opérations</div>
+          <div class="stat-kpi-delta" id="sk-op-delta"></div>
         </div>
         <div class="stat-kpi kp">
           <div class="kv" id="sk-av">—</div>
           <div class="kl">Panier Moyen</div>
+          <div class="stat-kpi-delta" id="sk-av-delta"></div>
         </div>
         <div class="stat-kpi kr">
           <div class="kv" id="sk-t1" style="font-size:11px;white-space:normal;line-height:1.2">—</div>
@@ -17265,6 +18205,9 @@ function fluxCreateEcriture() {
           <div class="ks" id="sk-t1v"></div>
         </div>
       </div>
+
+      <!-- Barre de filtres actifs — cross-filter / filter pane (Power BI) -->
+      <div class="stat-filterbar" id="stat-filterbar"></div>
 
       <!-- Tabs -->
       <div class="stat-tabbar">
@@ -17280,7 +18223,9 @@ function fluxCreateEcriture() {
         <button class="stat-vtab"    data-view="pareto"  onclick="statSetView('pareto')">📐 Pareto 80/20</button>
         <button class="stat-vtab"    data-view="stats"   onclick="statSetView('stats')">🧮 Stats Desc.</button>
         <button class="stat-vtab"    data-view="segment" onclick="statSetView('segment')">🎯 Segments</button>
+        <button class="stat-vtab"    data-view="insights" onclick="statSetView('insights')">💡 Insights</button>
         <button class="stat-xport-btn" id="stat-xport-btn" disabled onclick="statExport()">⬇ Export Excel</button>
+        <button class="stat-xport-btn" id="stat-print-btn" disabled onclick="printCurrentSegment()" style="background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 3px 10px rgba(8,145,178,.22);">🖨 Imprimer Segment</button>
       </div>
 
       <!-- Toolbar recherche + tri -->
@@ -17307,6 +18252,19 @@ function fluxCreateEcriture() {
       </div>
 
     </main>
+  </div>
+
+  <!-- ══ DRILL-THROUGH CLIENT (façon Tableau "drill to detail") ══════ -->
+  <div class="stat-drill-overlay" id="stat-drill-overlay" onclick="sCloseClientDrill(event)">
+    <div class="stat-drill-panel" id="stat-drill-panel" onclick="event.stopPropagation()">
+      <div class="stat-drill-hdr">
+        <button class="stat-drill-close" onclick="sCloseClientDrill(event)">✕</button>
+        <div class="dh-tag">🔎 Drill-through · Fiche client</div>
+        <div class="dh-name" id="sd-name">—</div>
+        <div class="dh-sub" id="sd-sub">—</div>
+      </div>
+      <div class="stat-drill-body" id="sd-body"></div>
+    </div>
   </div>
 </div><!-- /module-stat -->
 
