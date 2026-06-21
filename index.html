@@ -77,7 +77,106 @@
   --r-md: 12px;
   --r-lg: 16px;
   --r-xl: 20px;
+
+  /* ══ SIGNATURE BILLETTERIE — Carte d'embarquement / Tableau aéroport ══ */
+  --gold:       #d4a13d;   /* Liseré "classe affaires" */
+  --gold-deep:  #a87a1f;
+  --gold-pale:  #fdf3df;
+  --radar:      #00e0a8;   /* Vert radar / piste */
+  --runway:     #0a1628;   /* Bleu nuit piste */
+  --paper:      #fffdf8;   /* Blanc papier billet (chaud, jamais pur) */
+
+  --perfo: radial-gradient(circle, var(--bo2) 1.6px, transparent 1.7px);
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   DARK MODE — "Vol de Nuit" — surcharge les tokens utilisés
+   dans tout le système de design (cascade automatique)
+══════════════════════════════════════════════════════════════════ */
+html.dark-mode {
+  --bg:        #0b1320;
+  --bg2:       #121d30;
+  --bg3:       #1b2840;
+  --surface:   #101a2c;
+  --surface2:  #0d1727;
+  --txt:       #eef3fb;
+  --txt2:      #c7d2e4;
+  --txt3:      #8ea0bf;
+  --txt4:      #5d7093;
+  --bo:        #233252;
+  --bo2:       #314368;
+  --bo-sky:    rgba(56,189,248,.30);
+  --sky-pale:  #142133;
+  --green2:    #0e2f28;
+  --red2:      #3a1418;
+  --amber2:    #3a2a0c;
+  --c411-bg:   #11243a;
+  --c165-bg:   #2e2210;
+  --c181-bg:   #221a3a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.45);
+  --shadow-md: 0 6px 18px rgba(0,0,0,.55);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.6);
+}
+html.dark-mode body{ background: var(--bg); }
+/* Documents/relevés/exports restent "papier" même en mode nuit, comme un billet imprimé */
+html.dark-mode .stat-drill-panel,
+html.dark-mode #stat-content table,
+html.dark-mode .login-box{ background: var(--surface); }
+
+/* ── Le choix Jour/Nuit se fait une seule fois, sur l'écran d'entrée (voir .theme-pick) ── */
+
+/* ══════════════════════════════════════════════════════════════════
+   VOL DE NUIT — décor interactif du mode sombre (ciel étoilé + avion)
+   Purement décoratif, pointer-events:none, visible uniquement en dark-mode
+══════════════════════════════════════════════════════════════════ */
+#fwt-night-sky{
+  position:fixed; inset:-2% -2%; z-index:0; pointer-events:none;
+  opacity:0; transition:opacity .6s ease;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1px 1px at 28% 42%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.6px 1.6px at 47% 8%, rgba(255,255,255,.75), transparent),
+    radial-gradient(1px 1px at 63% 36%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.3px 1.3px at 78% 64%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 91% 22%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1.5px 1.5px at 18% 73%, rgba(255,255,255,.65), transparent),
+    radial-gradient(1px 1px at 36% 88%, rgba(255,255,255,.45), transparent),
+    radial-gradient(1.4px 1.4px at 56% 78%, rgba(125,211,252,.6), transparent),
+    radial-gradient(1px 1px at 72% 92%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.6px 1.6px at 85% 48%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 6% 55%, rgba(255,255,255,.4), transparent);
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  animation: starTwinkle 4.5s ease-in-out infinite alternate;
+  will-change: transform;
+}
+html.dark-mode #fwt-night-sky{ opacity:1; }
+@keyframes starTwinkle{ from{ opacity:.55; } to{ opacity:1; } }
+
+/* ── Signature : Carte d'embarquement (boarding pass) ── */
+.bp-card{
+  position:relative;
+  background:var(--paper);
+  border-radius:14px;
+  box-shadow:var(--shadow-md);
+  overflow:visible;
+}
+.bp-perfo{
+  position:relative;
+  border-top:2px dashed var(--bo2);
+}
+.bp-perfo::before, .bp-perfo::after{
+  content:''; position:absolute; top:-9px; width:18px; height:18px;
+  background:var(--bg); border-radius:50%;
+}
+.bp-perfo::before{ left:-9px; }
+.bp-perfo::after{ right:-9px; }
+.bp-barcode{
+  height:18px;
+  background:repeating-linear-gradient(90deg, var(--txt) 0 2px, transparent 2px 5px, var(--txt) 5px 6px, transparent 6px 11px);
+  opacity:.5; border-radius:2px;
+}
+html.dark-mode .bp-barcode{ opacity:.35; }
 
 /* ─── RESET ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -104,123 +203,187 @@ body {
 .al-IB { background: linear-gradient(135deg,#1d4ed8,#1e3a8a); color: #bfdbfe; }
 .al-BA { background: linear-gradient(135deg,#1e3a8a,#312e81); color: #c7d2fe; }
 
-/* ═══ SPLASH SCREEN ═══ */
-#splash-screen {
-  position: fixed; inset: 0; z-index: 99999;
-  background: linear-gradient(135deg, #0c1a2e 0%, #0369a1 50%, #0ea5e9 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 1s ease;
-}
+/* ═══ SPLASH — voir styles fusionnés avec l'écran d'entrée (body) ═══ */
 
-/* ═══ LOGIN SCREEN ═══ */
-#login-screen {
-  position: fixed; inset: 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f0f9ff 100%);
-  z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
-}
-
-#login-screen::before {
-  content: '';
-  position: absolute; inset: 0;
-  background-image:
-    radial-gradient(600px circle at 20% 30%, rgba(2,132,199,.06) 0%, transparent 60%),
-    radial-gradient(400px circle at 80% 70%, rgba(14,165,233,.05) 0%, transparent 60%);
-  pointer-events: none;
-}
+/* ═══ LOGIN SCREEN — voir styles complets injectés avec le markup fusionné (body) ═══ */
 
 .login-box {
-  background: #ffffff;
+  background:var(--surface);
   border: 1px solid var(--bo);
   border-radius: var(--r-xl);
-  padding: 52px 44px;
+  padding: 0 0 28px;
   text-align: center;
-  width: 400px;
+  width: 228px;
   box-shadow: var(--shadow-lg), 0 0 0 1px rgba(2,132,199,.06);
   position: relative; z-index: 1;
+  overflow:hidden;
 }
+.login-box .lb-strip{
+  height:6px;
+  background:linear-gradient(90deg,#0ea5e9,var(--radar),var(--gold),#0ea5e9);
+}
+.login-box .lb-head{
+  padding:22px 16px 16px;
+  background:linear-gradient(160deg, var(--runway) 0%, #0c2d52 100%);
+  position:relative;
+}
+.login-box .lb-pnr{
+  position:absolute; top:10px; right:10px;
+  font-family:var(--font-mono); font-size:6.5px; letter-spacing:1.5px;
+  color:rgba(255,255,255,.4);
+}
+.login-box .lb-body{ padding:20px 16px 0; }
 
-.login-logo { font-size: 56px; margin-bottom: 18px; animation: float 4s ease-in-out infinite; }
+.login-logo { font-size: 32px; margin-bottom: 6px; animation: float 4s ease-in-out infinite; filter:drop-shadow(0 0 14px rgba(125,211,252,.5)); }
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 .login-title {
-  font-size: 32px; font-weight: 800; letter-spacing: 8px;
-  background: linear-gradient(135deg, var(--sky-deep), var(--sky), var(--sky-light));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  margin-bottom: 6px;
+  font-size: 20px; font-weight: 800; letter-spacing: 5px;
+  color:#fff;
+  margin-bottom: 3px;
 }
 
-.login-sub { font-size: 10px; color: var(--txt3); letter-spacing: 3px; margin-bottom: 36px; font-weight: 600; text-transform: uppercase; }
+.login-sub { font-size: 7px; color: rgba(255,255,255,.55); letter-spacing: 1.5px; margin-bottom: 0; font-weight: 600; text-transform: uppercase; }
 
 .login-box input {
   width: 100%;
   background: var(--bg2);
   border: 2px solid var(--bo);
   border-radius: var(--r-md);
-  padding: 16px;
+  padding: 12px;
   color: var(--txt);
   font-family: var(--font-mono);
-  font-size: 22px;
+  font-size: 16px;
   text-align: center;
-  letter-spacing: 10px;
-  margin-bottom: 16px;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
   transition: all .25s;
   outline: none;
 }
 .login-box input:focus { border-color: var(--sky); box-shadow: 0 0 0 4px rgba(2,132,199,.12); }
 
 .login-btn {
-  width: 100%; padding: 16px;
+  width: 100%; padding: 12px;
   background: linear-gradient(135deg, var(--sky-light), var(--sky-deep));
   border: none; border-radius: var(--r-md); color: #fff;
-  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
-  cursor: pointer; letter-spacing: 5px; text-transform: uppercase;
+  font-family: var(--font-ui); font-size: 10px; font-weight: 700;
+  cursor: pointer; letter-spacing: 3px; text-transform: uppercase;
   transition: all .25s; box-shadow: var(--shadow-sky);
 }
-.login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(2,132,199,.3); }
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(2,132,199,.3); background:linear-gradient(135deg,var(--gold),var(--gold-deep)); }
 .login-btn:active { transform: translateY(0); }
-.login-err { color: var(--red); font-size: 12px; min-height: 20px; margin-top: 10px; font-weight: 500; }
+.login-err { color: var(--red); font-size: 10px; min-height: 16px; margin-top: 8px; font-weight: 500; }
 
-/* ═══ MODULE SCREEN ═══ */
+/* ═══ MODULE SCREEN — Salle d'embarquement ═══ */
 #module-screen {
   position: fixed; inset: 0;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
+  background:
+    radial-gradient(900px circle at 15% -10%, rgba(14,165,233,.12) 0%, transparent 60%),
+    radial-gradient(700px circle at 100% 110%, rgba(212,161,61,.10) 0%, transparent 60%),
+    linear-gradient(165deg, #060d1a 0%, #0c1f38 45%, #0a1628 100%);
   z-index: 9998;
   display: none; align-items: center; justify-content: center; flex-direction: column;
 }
+#module-screen::before{
+  content:'';
+  position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image: var(--perfo);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,.18), transparent 65%);
+  mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,.18), transparent 65%);
+}
 
-.mod-title { font-size: 11px; letter-spacing: 8px; color: var(--txt3); font-weight: 700; margin-bottom: 52px; text-transform: uppercase; }
+.mod-eyebrow{
+  display:flex; align-items:center; gap:10px;
+  color: rgba(125,211,252,.85); font-family:var(--font-mono);
+  font-size:10px; letter-spacing:3px; margin-bottom:14px; text-transform:uppercase;
+}
+.mod-eyebrow .sep{ width:5px; height:5px; border-radius:50%; background:var(--gold); }
 
-.mod-choices { display: flex; gap: 32px; }
+.mod-title { font-size: 11px; letter-spacing: 8px; color: rgba(255,255,255,.55); font-weight: 700; margin-bottom: 44px; text-transform: uppercase; position:relative; z-index:1; }
 
+.mod-choices { display: flex; gap: 26px; position:relative; z-index:1; flex-wrap:wrap; justify-content:center; max-width: 1100px; }
+
+/* Carte = billet d'embarquement complet : souche + talon perforé */
 .mod-btn {
-  background: #ffffff;
-  border: 2px solid var(--bo);
-  border-radius: 28px;
-  padding: 52px 60px;
-  text-align: center;
+  position:relative;
+  display:flex; flex-direction:column;
+  background: var(--paper);
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  text-align: left;
   cursor: pointer;
   transition: all .35s cubic-bezier(.4,0,.2,1);
-  width: 260px;
-  box-shadow: var(--shadow-md);
+  width: 252px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 .mod-btn:hover {
-  border-color: var(--sky);
-  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(2,132,199,.15);
+  transform: translateY(-8px);
+  box-shadow: 0 22px 44px rgba(0,0,0,.45), 0 0 0 1px rgba(212,161,61,.4);
 }
 
-.mod-ico { font-size: 60px; margin-bottom: 20px; transition: transform .35s; }
-.mod-btn:hover .mod-ico { transform: scale(1.1) translateY(-4px); }
+.mod-btn .mod-top{
+  padding: 26px 22px 18px;
+  border-bottom: 2px dashed #d8cfb8;
+  position:relative;
+}
+.mod-btn .mod-top::before, .mod-btn .mod-top::after{
+  content:''; position:absolute; bottom:-9px; width:18px; height:18px;
+  background:#0a1628; border-radius:50%;
+}
+.mod-btn .mod-top::before{ left:-9px; }
+.mod-btn .mod-top::after{ right:-9px; }
+
+.mod-route{
+  display:flex; align-items:baseline; justify-content:space-between;
+  font-family:var(--font-mono); color:#0a1628; margin-bottom:16px;
+}
+.mod-route .gate{
+  font-size:30px; font-weight:800; letter-spacing:1px; color:var(--sky-deep);
+}
+.mod-route .seq{ font-size:9px; color:#94a3b8; letter-spacing:2px; }
+
+.mod-ico { font-size: 34px; margin-bottom: 10px; transition: transform .35s; }
+.mod-btn:hover .mod-ico { transform: scale(1.08) translateY(-2px); }
 
 .mod-lbl {
-  font-size: 14px; font-weight: 800; letter-spacing: 4px;
-  color: var(--sky);
-  margin-bottom: 10px;
+  font-size: 13px; font-weight: 800; letter-spacing: 2.5px;
+  color: #0a1628;
+  margin-bottom: 6px;
 }
 
-.mod-sub { font-size: 11px; color: var(--txt3); line-height: 1.7; }
+.mod-sub { font-size: 10.5px; color: #64748b; line-height: 1.6; }
+
+.mod-btn .mod-stub{
+  padding: 14px 22px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 10px;
+}
+.mod-btn .mod-stub .barcode{
+  flex:1; height:16px;
+  background:repeating-linear-gradient(90deg,#0a1628 0 2px, transparent 2px 5px, #0a1628 5px 6px, transparent 6px 10px);
+  opacity:.55;
+}
+.mod-btn .mod-stub .go{
+  font-family:var(--font-mono); font-size:9px; font-weight:800; letter-spacing:1.5px;
+  color:#fff; background:var(--sky-deep); padding:6px 10px; border-radius:6px;
+  white-space:nowrap;
+}
+.mod-btn:hover .mod-stub .go{ background:var(--gold-deep); }
+
+/* Liseré couleur par module (façon classe de vol) */
+.mod-btn[data-line]{ border-top:5px solid; border-radius:16px 16px 0 0 / 5px; }
+.mod-btn[data-line="ebv"]{ border-top-color:#0ea5e9; }
+.mod-btn[data-line="jbr"]{ border-top-color:#10b981; }
+.mod-btn[data-line="rap"]{ border-top-color:#a855f7; }
+.mod-btn[data-line="stat"]{ border-top-color:var(--gold); }
+
+#module-screen .deco-plane{
+  position:absolute; top:18%; left:8%; font-size:22px; opacity:.18;
+  animation: driftPlane 14s linear infinite;
+}
+@keyframes driftPlane{ 0%{transform:translateX(0) translateY(0) rotate(8deg);} 50%{transform:translateX(40px) translateY(-14px) rotate(8deg);} 100%{transform:translateX(0) translateY(0) rotate(8deg);} }
 
 #module-jbr, #module-fac { display: none; height: 100vh; overflow: hidden; position: relative; }
 
@@ -242,7 +405,7 @@ body {
 
 /* ═══ TOPBAR JBR ═══ */
 #top {
-  background: #ffffff;
+  background:var(--surface);
   border-bottom: 1px solid var(--bo);
   padding: 0 16px;
   display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
@@ -252,9 +415,9 @@ body {
 }
 #top::after {
   content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--sky), transparent);
-  opacity: .4;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2.5px;
+  background: linear-gradient(90deg, #0ea5e9, var(--radar), var(--gold));
+  opacity: .55;
 }
 
 .logo { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
@@ -286,7 +449,7 @@ body {
   transition: all .2s;
   width: auto;
 }
-.hfi:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background: #fff; }
+.hfi:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background:var(--surface); }
 
 #ipc { width: 62px; color: var(--sky-deep); font-weight: 700; }
 #idat { width: 136px; }
@@ -400,7 +563,7 @@ body {
 }
 #itot {
   width: 100%;
-  background: #fff;
+  background:var(--surface);
   border: 1.5px solid rgba(2,132,199,.3);
   border-radius: var(--r-sm);
   padding: 8px 12px;
@@ -425,11 +588,11 @@ body {
   font-family: var(--font-ui); font-size: 13px;
   outline: none; transition: all .2s;
 }
-#isrc:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background: #fff; }
+#isrc:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background:var(--surface); }
 
 #acd {
   display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: #fff;
+  background:var(--surface);
   border: 1.5px solid var(--bo2);
   border-radius: var(--r-md);
   z-index: 400;
@@ -470,7 +633,7 @@ body {
   font-family: var(--font-mono); font-size: 20px; font-weight: 700;
   outline: none; transition: all .2s;
 }
-#imt:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(5,150,105,.1); background: #fff; }
+#imt:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(5,150,105,.1); background:var(--surface); }
 #vst { font-size: 10px; margin-top: 5px; min-height: 14px; }
 .vok { color: var(--green); font-weight: 600; }
 .vko { color: var(--red); font-weight: 600; }
@@ -605,7 +768,7 @@ body {
   padding: 10px 16px;
   border-bottom: 1px solid var(--bo);
   display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
-  background: #ffffff;
+  background:var(--surface);
   box-shadow: var(--shadow-sm);
 }
 
@@ -644,7 +807,7 @@ body {
 
 /* ÉCRITURE VALIDÉE */
 .ecard {
-  background: #ffffff;
+  background:var(--surface);
   border: 1.5px solid var(--bo);
   border-radius: var(--r-md);
   margin-bottom: 10px;
@@ -683,7 +846,7 @@ body {
 .opan { height: calc(100vh - 52px); overflow-y: auto; padding: 16px; max-width: 980px; margin: 0 auto; }
 
 .card {
-  background: #ffffff;
+  background:var(--surface);
   border: 1.5px solid var(--bo);
   border-radius: var(--r-md);
   padding: 16px 18px;
@@ -714,8 +877,8 @@ input, select {
   font-family: var(--font-ui); font-size: 12px;
   outline: none; transition: all .2s;
 }
-input:focus, select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background: #fff; }
-select option { background: #fff; color: var(--txt); }
+input:focus, select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); background:var(--surface); }
+select option { background:var(--surface); color: var(--txt); }
 
 .tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
 .tbl th {
@@ -758,7 +921,7 @@ select option { background: #fff; color: var(--txt); }
 #mov { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.4); backdrop-filter: blur(6px); z-index: 500; align-items: center; justify-content: center; }
 #mov.on { display: flex; }
 #mbox {
-  background: #ffffff;
+  background:var(--surface);
   border: 1.5px solid var(--bo);
   border-radius: var(--r-xl);
   padding: 28px 32px;
@@ -783,7 +946,7 @@ select option { background: #fff; color: var(--txt); }
 /* SUGGESTION MONTANT */
 #mt-suggest, #mt-suggest-tot, #mt-sug-fac {
   display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: #fff; border: 1.5px solid var(--bo2);
+  background:var(--surface); border: 1.5px solid var(--bo2);
   border-radius: var(--r-md); z-index: 400;
   max-height: 240px; overflow-y: auto;
   box-shadow: var(--shadow-lg);
@@ -819,7 +982,7 @@ select option { background: #fff; color: var(--txt); }
 
 /* HEADER module FAC */
 .header {
-  background: #ffffff;
+  background:var(--surface);
   border-bottom: 1px solid var(--bo);
   padding: 10px 22px;
   display: flex; align-items: center; justify-content: space-between;
@@ -844,7 +1007,7 @@ select option { background: #fff; color: var(--txt); }
 
 /* MAIN FAC */
 .main { display: grid; grid-template-columns: 1fr 1fr 1fr; height: calc(100vh - 52px); }
-.left-panel { background: #ffffff; border-right: 1px solid var(--bo); display: flex; flex-direction: column; overflow-y: hidden; }
+.left-panel { background:var(--surface); border-right: 1px solid var(--bo); display: flex; flex-direction: column; overflow-y: hidden; }
 .right-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--bg2); grid-column: span 2; }
 .section { padding: 12px 16px; border-bottom: 1px solid var(--bo); }
 .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--txt3); margin-bottom: 8px; }
@@ -884,7 +1047,7 @@ select option { background: #fff; color: var(--txt); }
   font-size: 20px; font-weight: 700; color: var(--txt);
   outline: none; transition: border-color .15s; text-align: right;
 }
-.big-input:focus { border-color: var(--sky); background: #fff; box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
+.big-input:focus { border-color: var(--sky); background:var(--surface); box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
 .big-input.found    { border-color: var(--green); }
 .big-input.multi    { border-color: var(--amber); }
 .big-input.notfound { border-color: var(--red); }
@@ -895,7 +1058,7 @@ select option { background: #fff; color: var(--txt); }
   padding: 8px 12px; font-size: 12px; color: var(--txt);
   outline: none; font-family: var(--font-ui); transition: all .15s;
 }
-.text-input:focus { border-color: var(--sky); background: #fff; box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
+.text-input:focus { border-color: var(--sky); background:var(--surface); box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
 .text-input.iata { font-family: var(--font-mono); font-size: 17px; font-weight: 700; letter-spacing: .18em; text-align: center; }
 
 /* RESULT BOX */
@@ -939,7 +1102,7 @@ select option { background: #fff; color: var(--txt); }
 
 /* RIGHT PANEL FAC */
 .right-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--bg2); }
-.table-header { padding: 12px 20px; background: #ffffff; border-bottom: 1px solid var(--bo); display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); }
+.table-header { padding: 12px 20px; background:var(--surface); border-bottom: 1px solid var(--bo); display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); }
 .table-title { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; color: var(--txt); }
 .table-title::before { content: '🧾'; font-size: 14px; }
 .table-sub { font-size: 10px; color: var(--txt3); margin-top: 1px; }
@@ -949,7 +1112,7 @@ select option { background: #fff; color: var(--txt); }
 table { width: 100%; border-collapse: collapse; font-size: 11px; }
 thead { position: sticky; top: 0; z-index: 10; }
 thead th {
-  background: #ffffff;
+  background:var(--surface);
   padding: 9px 12px;
   text-align: left;
   font-size: 9px; font-weight: 700;
@@ -975,6 +1138,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .tag-NDCTK  { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
 .tag-NEW    { background: var(--amber2); color: var(--amber); border: 1px solid rgba(217,119,6,.3); }
 .tag-DUP    { background: #fef3c7; color: var(--amber); font-size: 8px; border: 1px solid rgba(217,119,6,.2); }
+.tag-REDR   { background: var(--red2); color: var(--red); font-size: 8px; border: 1px solid rgba(220,38,38,.3); }
 
 .amt { font-family: var(--font-mono); font-weight: 700; text-align: right; }
 .pos { color: var(--green); }
@@ -991,7 +1155,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 /* TOAST */
 .toast {
   position: fixed; bottom: 22px; right: 22px;
-  background: #ffffff; border: 1.5px solid var(--bo);
+  background:var(--surface); border: 1.5px solid var(--bo);
   border-radius: var(--r-md); padding: 12px 20px;
   font-size: 12px; color: var(--txt);
   transform: translateY(70px); opacity: 0;
@@ -1019,8 +1183,8 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 /* COMPANY SELECT */
 #company-select { color: var(--txt); }
 #company-select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(2,132,199,.1); }
-#company-select option { font-weight: 700; font-family: var(--font-mono); color: var(--txt); background: #fff; }
-.comp-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: contain; background: #fff; vertical-align: middle; }
+#company-select option { font-weight: 700; font-family: var(--font-mono); color: var(--txt); background:var(--surface); }
+.comp-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: contain; background:var(--surface); vertical-align: middle; }
 
 /* COMP BADGE */
 #comp-badge { display: none; }
@@ -1147,7 +1311,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* HEADER */
 .rap-header {
-  height:56px; background:#fff; border-bottom:1.5px solid var(--bo);
+  height:56px; background:var(--surface); border-bottom:1.5px solid var(--bo);
   display:flex; align-items:center; gap:12px; padding:0 18px;
   box-shadow:var(--shadow-sm); flex-shrink:0; position:relative; z-index:10;
 }
@@ -1186,7 +1350,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* PANNEAU IMPORT (GAUCHE) */
 .rap-import {
-  width:320px; flex-shrink:0; background:#fff;
+  width:320px; flex-shrink:0; background:var(--surface);
   border-right:1.5px solid var(--bo); display:flex;
   flex-direction:column; overflow-y:auto;
 }
@@ -1259,7 +1423,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* TOOLBAR RÉSULTATS */
 .rap-toolbar {
-  padding:9px 16px; background:#fff; border-bottom:1px solid var(--bo);
+  padding:9px 16px; background:var(--surface); border-bottom:1px solid var(--bo);
   display:flex; align-items:center; gap:8px; flex-shrink:0;
 }
 .rap-search-inp {
@@ -1268,7 +1432,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
   color:var(--txt); font-family:var(--font-ui); font-size:11px;
   outline:none; transition:all .2s; position:relative;
 }
-.rap-search-inp:focus { border-color:var(--sky); background:#fff; box-shadow:0 0 0 3px rgba(2,132,199,.1); }
+.rap-search-inp:focus { border-color:var(--sky); background:var(--surface); box-shadow:0 0 0 3px rgba(2,132,199,.1); }
 .rap-search-wrap { position:relative; flex:1; max-width:260px; }
 .rap-search-ico { position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;pointer-events:none; }
 
@@ -1355,7 +1519,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .comm-impute-btn:hover { background:#f59e0b; color:#fff; border-color:#f59e0b; }
 .comm-impute-btn.done { background:#d1fae5; color:#065f46; border-color:rgba(5,150,105,.3); cursor:default; }
 .comm-compte-input {
-  width:110px; background:#fff; border:1.5px solid rgba(217,119,6,.3);
+  width:110px; background:var(--surface); border:1.5px solid rgba(217,119,6,.3);
   border-radius:4px; padding:3px 7px; font-size:10px; font-family:var(--font-mono);
   color:#78350f; outline:none; transition:border-color .15s;
 }
@@ -1369,7 +1533,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .rap-table thead th {
   padding:8px 12px; text-align:left; font-size:8px; font-weight:700;
   letter-spacing:.1em; text-transform:uppercase; color:var(--txt3);
-  border-bottom:1.5px solid var(--bo); background:#fff;
+  border-bottom:1.5px solid var(--bo); background:var(--surface);
   white-space:nowrap;
 }
 .rap-table thead th.r { text-align:right; }
@@ -1437,7 +1601,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .rap-modal-overlay { position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:600;display:none;align-items:center;justify-content:center; }
 .rap-modal-overlay.on { display:flex; }
 .rap-modal {
-  background:#fff; border:1.5px solid var(--bo); border-radius:var(--r-xl,20px);
+  background:var(--surface); border:1.5px solid var(--bo); border-radius:var(--r-xl,20px);
   padding:28px 32px; width:560px; max-width:95vw; max-height:85vh;
   overflow-y:auto; box-shadow:0 20px 60px rgba(15,23,42,.2);
 }
@@ -1479,7 +1643,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* SIDEBAR IMPORT COM */
 .com-sidebar {
-  width:300px; flex-shrink:0; background:#fff;
+  width:300px; flex-shrink:0; background:var(--surface);
   border-right:1.5px solid var(--bo);
   display:flex; flex-direction:column; overflow-y:auto;
 }
@@ -1543,7 +1707,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* TOOLBAR */
 .com-toolbar {
-  padding:9px 16px; background:#fff; border-bottom:1px solid var(--bo);
+  padding:9px 16px; background:var(--surface); border-bottom:1px solid var(--bo);
   display:flex; align-items:center; gap:8px; flex-shrink:0; flex-wrap:wrap;
 }
 .com-search-wrap { position:relative; flex:1; max-width:260px; }
@@ -1554,7 +1718,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
   color:var(--txt); font-family:var(--font-ui); font-size:11px;
   outline:none; transition:all .2s;
 }
-.com-search-inp:focus { border-color:var(--sky); background:#fff; box-shadow:0 0 0 3px rgba(2,132,199,.1); }
+.com-search-inp:focus { border-color:var(--sky); background:var(--surface); box-shadow:0 0 0 3px rgba(2,132,199,.1); }
 
 /* FILTRE STATUT */
 .com-filter-grp { display:flex; gap:4px; }
@@ -1589,7 +1753,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* RÉSUMÉ TOTAUX */
 .com-totaux {
-  padding:7px 16px; background:#fff; border-bottom:1px solid var(--bo);
+  padding:7px 16px; background:var(--surface); border-bottom:1px solid var(--bo);
   display:flex; gap:18px; align-items:center; flex-shrink:0;
   flex-wrap:wrap;
 }
@@ -1614,7 +1778,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .com-table thead th {
   padding:8px 12px; text-align:left; font-size:8px; font-weight:700;
   letter-spacing:.1em; text-transform:uppercase; color:var(--txt3);
-  border-bottom:1.5px solid var(--bo); background:#fff; white-space:nowrap;
+  border-bottom:1.5px solid var(--bo); background:var(--surface); white-space:nowrap;
 }
 .com-table thead th.r { text-align:right; }
 .com-table tbody tr { border-bottom:1px solid var(--bg3); transition:background .1s; cursor:pointer; }
@@ -1649,7 +1813,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .com-modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(4px); z-index:700; display:none; align-items:center; justify-content:center; }
 .com-modal-overlay.on { display:flex; }
 .com-modal {
-  background:#fff; border:1.5px solid var(--bo); border-radius:var(--r-xl,20px);
+  background:var(--surface); border:1.5px solid var(--bo); border-radius:var(--r-xl,20px);
   padding:24px 28px; width:520px; max-width:95vw; max-height:80vh; overflow-y:auto;
   box-shadow:0 20px 60px rgba(15,23,42,.2);
 }
@@ -1661,7 +1825,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
   border-radius:var(--r-sm); padding:8px 12px; font-family:var(--font-mono);
   font-size:13px; font-weight:700; color:var(--sky-deep); outline:none; transition:border-color .2s;
 }
-.com-modal-field input:focus { border-color:var(--sky); background:#fff; }
+.com-modal-field input:focus { border-color:var(--sky); background:var(--surface); }
 .com-modal-field input.gl-inp { color:var(--green); }
 .com-modal-info { font-size:10px; color:var(--txt3); margin-bottom:10px; padding:7px 10px; background:var(--sky-pale); border-radius:var(--r-sm); border:1px solid var(--bo-sky); line-height:1.6; }
 .com-modal-btns { display:flex; gap:9px; margin-top:16px; justify-content:flex-end; }
@@ -1682,27 +1846,47 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* ─ HEADER ────────────────────────────────────────────────────────── */
 .stat-hdr{height:54px;background:linear-gradient(120deg,#05101f 0%,#0c2d52 60%,#0369a1 100%);display:flex;align-items:center;gap:10px;padding:0 14px;flex-shrink:0;position:relative;box-shadow:0 3px 12px rgba(0,0,0,.35);}
-.stat-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,#0ea5e9,#34d399,#fbbf24);}
+.stat-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,#0ea5e9,var(--radar),var(--gold));}
 .stat-hdr-ico{font-size:22px;filter:drop-shadow(0 0 8px rgba(56,189,248,.55));}
 .stat-hdr-title{font-size:11.5px;font-weight:900;letter-spacing:4px;color:#fff;text-shadow:0 0 24px rgba(56,189,248,.4);}
 .stat-hdr-sub{font-size:9px;color:rgba(255,255,255,.5);margin-top:1px;}
+.stat-live{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:99px;font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.65);text-transform:uppercase;}
+.stat-live .dot{width:6px;height:6px;border-radius:50%;background:var(--radar);box-shadow:0 0 7px var(--radar);animation:liveBlink 1.6s ease-in-out infinite;}
+@keyframes liveBlink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
 .stat-period-pill{padding:3px 11px;border-radius:12px;font-size:8.5px;font-weight:700;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);letter-spacing:.5px;max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* ─ LAYOUT ─────────────────────────────────────────────────────────── */
 .stat-body{display:flex;height:calc(100vh - 54px);overflow:hidden;}
 
 /* ─ SIDEBAR ─────────────────────────────────────────────────────────── */
-.stat-sidebar{width:246px;background:#fff;border-right:1px solid var(--bo);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.stat-sidebar{width:246px;background:var(--surface);border-right:1px solid var(--bo);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
 .stat-sect{padding:9px 11px;border-bottom:1px solid var(--bg3);}
 .stat-sect-title{font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt3);letter-spacing:2px;margin-bottom:7px;display:flex;align-items:center;gap:4px;}
 
 /* ─ DROPZONE ─────────────────────────────────────────────────────────── */
-.stat-dz{border:2px dashed #cbd5e1;border-radius:8px;padding:12px 10px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg2);position:relative;}
+.stat-dz{border:2px dashed var(--bo2);border-radius:8px;padding:12px 10px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg2);position:relative;}
 .stat-dz:hover,.stat-dz.drag{border-color:var(--sky);background:var(--sky-pale);box-shadow:0 0 0 3px rgba(2,132,199,.08);}
 .stat-dz input{display:none;}
 .stat-dz .dz-ico{font-size:22px;display:block;margin-bottom:3px;}
 .stat-dz .dz-lbl{font-size:10px;font-weight:600;color:var(--txt3);line-height:1.4;}
 .stat-dz .dz-hint{font-size:8px;color:var(--txt4);margin-top:3px;line-height:1.4;}
+
+/* ── Recherche client globale (autocomplete base EBV) ── */
+.stat-gcs-wrap{position:relative;}
+.stat-gcs-inp{width:100%;padding:9px 11px;border:1.5px solid var(--bo);border-radius:8px;background:var(--bg2);color:var(--txt);font-family:var(--font-ui);font-size:11px;outline:none;transition:.15s;}
+.stat-gcs-inp:focus{border-color:var(--sky);background:var(--surface);box-shadow:0 0 0 3px var(--bo-sky);}
+.stat-gcs-inp::placeholder{color:var(--txt4);}
+.stat-gcs-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:9px;z-index:60;max-height:240px;overflow-y:auto;box-shadow:var(--shadow-lg);display:none;}
+.stat-gcs-list.on{display:block;}
+.stat-gcs-item{display:flex;align-items:center;gap:8px;padding:8px 11px;cursor:pointer;border-bottom:1px solid var(--bo);transition:.1s;}
+.stat-gcs-item:last-child{border-bottom:none;}
+.stat-gcs-item:hover,.stat-gcs-item.hi{background:var(--sky-pale);}
+.stat-gcs-item .gcs-ico{font-size:13px;flex-shrink:0;}
+.stat-gcs-item .gcs-name{flex:1;font-size:10.5px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stat-gcs-item .gcs-code{font-size:8px;font-family:var(--font-mono);color:var(--txt4);}
+.stat-gcs-item .gcs-empty{font-size:9px;color:var(--txt4);}
+.stat-gcs-empty{padding:10px 11px;font-size:9.5px;color:var(--txt4);text-align:center;}
+.stat-gcs-hint{font-size:7.5px;color:var(--txt4);margin-top:5px;line-height:1.5;text-align:center;}
 .stat-fname{margin-top:6px;font-size:9px;font-weight:700;color:var(--green);padding:4px 8px;background:#ecfdf5;border-radius:4px;border:1px solid rgba(5,150,105,.2);display:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .stat-status{margin-top:6px;padding:5px 8px;border-radius:5px;font-size:9px;font-weight:600;display:none;}
 .stat-status.ok{background:#ecfdf5;border:1px solid rgba(5,150,105,.2);color:var(--green);display:block;}
@@ -1713,15 +1897,15 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* ─ FORM ELEMENTS ────────────────────────────────────────────────────── */
 .stat-lbl{font-size:8px;color:var(--txt3);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:3px;}
-.stat-sel,.stat-inp{width:100%;padding:5px 7px;border:1px solid var(--bo);border-radius:5px;font-size:10.5px;background:#fff;color:var(--txt);outline:none;margin-bottom:5px;transition:.15s;-webkit-appearance:none;}
+.stat-sel,.stat-inp{width:100%;padding:5px 7px;border:1px solid var(--bo);border-radius:5px;font-size:10.5px;background:var(--surface);color:var(--txt);outline:none;margin-bottom:5px;transition:.15s;-webkit-appearance:none;}
 .stat-sel:focus,.stat-inp:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(2,132,199,.1);}
 
 /* ─ FOLIO GRID ──────────────────────────────────────────────────────── */
 .stat-folio-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:3px;}
-.stat-folio-btn{padding:4px 2px;border:1.5px solid var(--bo);border-radius:4px;font-size:8.5px;font-weight:700;cursor:pointer;background:#fff;color:var(--txt3);transition:.15s;text-align:center;font-family:var(--font-mono);}
+.stat-folio-btn{padding:4px 2px;border:1.5px solid var(--bo);border-radius:4px;font-size:8.5px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--txt3);transition:.15s;text-align:center;font-family:var(--font-mono);}
 .stat-folio-btn.on{background:linear-gradient(135deg,#0c4a6e,var(--sky));border-color:transparent;color:#fff;box-shadow:0 2px 6px rgba(2,132,199,.25);}
 .stat-folio-btn:hover:not(.on){border-color:var(--sky);color:var(--sky);}
-.stat-folio-all{margin-bottom:4px;padding:3px 8px;border:1.5px solid var(--bo);border-radius:4px;font-size:8.5px;font-weight:700;cursor:pointer;background:#fff;color:var(--txt3);transition:.15s;width:100%;}
+.stat-folio-all{margin-bottom:4px;padding:3px 8px;border:1.5px solid var(--bo);border-radius:4px;font-size:8.5px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--txt3);transition:.15s;width:100%;}
 .stat-folio-all.on{background:var(--txt);border-color:var(--txt);color:#fff;}
 
 /* ─ CHIPS COMPAGNIES ──────────────��─────────────────────────────────── */
@@ -1732,42 +1916,48 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* ─ NDC TOGGLE ───────────────────────────────────────────────────────── */
 .stat-ndc-grp{display:flex;gap:3px;margin-top:4px;}
-.stat-ndc-btn{flex:1;padding:4px 4px;border:1.5px solid var(--bo);border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;background:#fff;color:var(--txt3);transition:.15s;text-align:center;}
+.stat-ndc-btn{flex:1;padding:4px 4px;border:1.5px solid var(--bo);border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--txt3);transition:.15s;text-align:center;}
 .stat-ndc-btn.on{background:linear-gradient(135deg,#0c4a6e,var(--sky));border-color:transparent;color:#fff;}
 
 /* ─ RUN BUTTON ────────────────────────────────────────────────────────── */
-.stat-run-btn{margin:10px 11px;padding:10px 0;border:none;border-radius:8px;background:linear-gradient(135deg,#0c4a6e,#0284c7);color:#fff;font-size:11px;font-weight:900;cursor:pointer;transition:.2s;letter-spacing:2px;box-shadow:0 4px 16px rgba(2,132,199,.3);display:block;width:calc(100% - 22px);}
-.stat-run-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(2,132,199,.4);}
+.stat-run-btn{margin:10px 11px;padding:11px 0;border:none;border-radius:8px;background:linear-gradient(135deg,#0c4a6e,#0284c7);color:#fff;font-size:11px;font-weight:900;cursor:pointer;transition:.2s;letter-spacing:2px;box-shadow:0 4px 16px rgba(2,132,199,.3);display:block;width:calc(100% - 22px);position:relative;}
+.stat-run-btn::before{content:'';position:absolute;inset:3px;border:1px dashed rgba(255,255,255,.35);border-radius:6px;pointer-events:none;}
+.stat-run-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(2,132,199,.4);background:linear-gradient(135deg,var(--gold-deep),var(--gold));}
 .stat-run-btn:disabled{background:var(--bg3);color:var(--txt4);cursor:not-allowed;box-shadow:none;transform:none;}
+.stat-run-btn:disabled::before{display:none;}
 .stat-run-hint{padding:0 11px 10px;font-size:8px;color:var(--txt4);text-align:center;line-height:1.6;}
 
 /* ─ MAIN ─────────────────────────────────────────────────────────────── */
 .stat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg2);}
 
 /* ─ KPI STRIP ────────────────────────────────────────────────────────── */
-.stat-kpis{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-bottom:1.5px solid var(--bo);flex-shrink:0;}
-.stat-kpi{padding:10px 13px;border-right:1px solid var(--bg3);position:relative;overflow:hidden;}
+.stat-kpis{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-bottom:1.5px solid var(--bo);flex-shrink:0;}
+.stat-kpi{padding:12px 15px 13px;border-right:2px dashed var(--bo2);position:relative;overflow:hidden;transition:background .2s;}
 .stat-kpi:last-child{border-right:none;}
-.stat-kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:var(--kc,var(--sky));}
-.stat-kpi .kv{font-size:15px;font-weight:900;font-family:var(--font-mono);color:var(--kc,var(--sky-deep));margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stat-kpi:hover{background:var(--bg2);}
+.stat-kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:5px;background:repeating-linear-gradient(90deg, var(--kc,var(--sky)) 0 3px, transparent 3px 6px);opacity:.6;animation:kpiScan 6s linear infinite;}
+@keyframes kpiScan{ from{ background-position-x:0; } to{ background-position-x:60px; } }
+.stat-kpi::before{content:'✦';position:absolute;top:9px;right:11px;font-size:8px;color:var(--kc,var(--sky));opacity:.45;}
+.stat-kpi .kv{font-size:16.5px;font-weight:900;font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:.3px;color:var(--kc,var(--sky-deep));margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .stat-kpi .kl{font-size:7.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;font-weight:700;}
 .stat-kpi .ks{font-size:8px;color:var(--txt4);margin-top:2px;font-family:var(--font-mono);}
 .stat-kpi.kb{--kc:#0284c7;}.stat-kpi.kg{--kc:#059669;}.stat-kpi.ka{--kc:#d97706;}.stat-kpi.kp{--kc:#7c3aed;}.stat-kpi.kr{--kc:#e11d48;}
 
 /* ─ TABBAR ────────────────────────────────────────────────────────────── */
-.stat-tabbar{display:flex;align-items:center;gap:4px;padding:6px 11px;background:#fff;border-bottom:1px solid var(--bo);flex-shrink:0;}
-.stat-vtab{padding:4px 11px;border:1.5px solid var(--bo);border-radius:6px;font-size:9px;font-weight:700;cursor:pointer;transition:.15s;background:#fff;color:var(--txt3);display:flex;align-items:center;gap:4px;}
+.stat-tabbar{display:flex;align-items:center;gap:4px;padding:6px 11px;background:var(--surface);border-bottom:1px solid var(--bo);flex-shrink:0;}
+.stat-vtab{padding:4px 11px;border:1.5px solid var(--bo);border-radius:6px;font-size:9px;font-weight:700;cursor:pointer;transition:.15s;background:var(--surface);color:var(--txt3);display:flex;align-items:center;gap:4px;position:relative;}
 .stat-vtab.on{background:var(--sky);border-color:var(--sky);color:#fff;box-shadow:0 3px 10px rgba(2,132,199,.22);}
-.stat-vtab:hover:not(.on){border-color:var(--sky);color:var(--sky);background:var(--sky-pale);}
+.stat-vtab.on::before{content:'✈';margin-right:1px;font-size:8px;}
+.stat-vtab:hover:not(.on){border-color:var(--sky);color:var(--sky);background:var(--sky-pale);transform:translateY(-1px);}
 
 /* ─ TOOLBAR ────────────────────────────────────────────────────────────── */
-.stat-toolbar{display:flex;align-items:center;gap:7px;padding:6px 11px;background:#fafafa;border-bottom:1px solid var(--bo);flex-shrink:0;}
+.stat-toolbar{display:flex;align-items:center;gap:7px;padding:6px 11px;background:var(--bg2);border-bottom:1px solid var(--bo);flex-shrink:0;}
 .stat-srch-wrap{position:relative;flex:1;max-width:280px;}
 .stat-srch-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none;color:var(--txt4);}
-.stat-srch-inp{width:100%;padding:5px 8px 5px 26px;border:1px solid var(--bo);border-radius:5px;font-size:10.5px;background:#fff;color:var(--txt);outline:none;transition:.15s;}
+.stat-srch-inp{width:100%;padding:5px 8px 5px 26px;border:1px solid var(--bo);border-radius:5px;font-size:10.5px;background:var(--surface);color:var(--txt);outline:none;transition:.15s;}
 .stat-srch-inp:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(2,132,199,.1);}
 .stat-sort-grp{display:flex;gap:3px;}
-.stat-sort-btn{padding:4px 9px;border:1.5px solid var(--bo);border-radius:5px;background:#fff;color:var(--txt3);font-size:8.5px;font-weight:700;cursor:pointer;transition:.15s;}
+.stat-sort-btn{padding:4px 9px;border:1.5px solid var(--bo);border-radius:5px;background:var(--surface);color:var(--txt3);font-size:8.5px;font-weight:700;cursor:pointer;transition:.15s;}
 .stat-sort-btn.on{background:var(--sky);border-color:var(--sky);color:#fff;}
 .stat-xport-btn{margin-left:auto;padding:5px 11px;border:none;border-radius:6px;background:linear-gradient(135deg,#059669,#047857);color:#fff;font-size:9px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 3px 10px rgba(5,150,105,.22);display:flex;align-items:center;gap:4px;letter-spacing:.5px;}
 .stat-xport-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(5,150,105,.3);}
@@ -1781,9 +1971,10 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-tbl thead th.r{text-align:right;}
 .stat-tbl tbody tr{border-bottom:1px solid var(--bg3);transition:background .1s;}
 .stat-tbl tbody tr:hover{background:var(--sky-pale);}
-.stat-tbl tbody tr.top3{background:linear-gradient(90deg,rgba(251,191,36,.06),transparent);}
+.stat-tbl tbody tr.top3{background:linear-gradient(90deg,var(--gold-pale),transparent 70%);box-shadow:inset 3px 0 0 var(--gold);}
+html.dark-mode .stat-tbl tbody tr.top3{background:linear-gradient(90deg,rgba(212,161,61,.14),transparent 70%);}
 .stat-tbl tbody td{padding:7px 11px;vertical-align:middle;color:var(--txt2);}
-.stat-tbl tbody td.r{text-align:right;}.stat-tbl tbody td.m{font-family:var(--font-mono);}
+.stat-tbl tbody td.r{text-align:right;}.stat-tbl tbody td.m{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
 .stat-tbl tfoot td{background:linear-gradient(120deg,#05101f,#0369a1);color:#fff;font-weight:800;padding:7px 11px;font-family:var(--font-mono);font-size:10px;}
 
 /* ─ MÉDAILLES ─────────────────────────────────────────────────────────── */
@@ -1866,12 +2057,12 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 /* ─ DATE INPUTS ─────────────────────────────────────────────────────── */
 .stat-date-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
 .stat-date-lbl{font-size:8px;color:var(--txt3);font-weight:700;width:35px;flex-shrink:0;}
-.stat-date-inp{flex:1;padding:6px 8px;border:1.5px solid var(--bo);border-radius:5px;font-size:10px;font-family:var(--font-mono);background:#fff;color:var(--txt);outline:none;transition:.15s;}
+.stat-date-inp{flex:1;padding:6px 8px;border:1.5px solid var(--bo);border-radius:5px;font-size:10px;font-family:var(--font-mono);background:var(--surface);color:var(--txt);outline:none;transition:.15s;}
 .stat-date-inp:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(2,132,199,.1);}
 
 /* ─ QUICK PRESETS ─────────────────────────────────────────────────── */
 .stat-quick-presets{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
-.stat-quick-btn{padding:3px 8px;border:1px solid var(--bo);border-radius:4px;font-size:7.5px;font-weight:700;cursor:pointer;transition:.15s;background:#fff;color:var(--txt3);}
+.stat-quick-btn{padding:3px 8px;border:1px solid var(--bo);border-radius:4px;font-size:7.5px;font-weight:700;cursor:pointer;transition:.15s;background:var(--surface);color:var(--txt3);}
 .stat-quick-btn:hover{border-color:var(--sky);color:var(--sky);background:var(--sky-pale);}
 .stat-quick-btn.on{background:var(--sky);border-color:var(--sky);color:#fff;}
 
@@ -1889,7 +2080,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-compare-toggle:hover{border-color:var(--sky);background:var(--sky-pale);}
 .stat-compare-toggle.on{background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(168,85,247,.08));border-color:rgba(124,58,237,.3);}
 .stat-compare-switch{width:32px;height:18px;border-radius:9px;background:var(--bg3);position:relative;transition:.2s;flex-shrink:0;}
-.stat-compare-switch::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.stat-compare-switch::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--surface);top:2px;left:2px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
 .stat-compare-toggle.on .stat-compare-switch{background:linear-gradient(135deg,#8b5cf6,#a855f7);}
 .stat-compare-toggle.on .stat-compare-switch::after{left:16px;}
 .stat-compare-lbl{font-size:9px;font-weight:700;color:var(--txt2);flex:1;}
@@ -1902,15 +2093,16 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-compare-title::before{content:'📊';font-size:11px;}
 
 /* ─ ÉVOLUTION INDICATORS ─────────────────────────────────────────── */
-.stat-evo{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:8px;font-weight:800;font-family:var(--font-mono);}
-.stat-evo.up{background:rgba(5,150,105,.12);color:#047857;border:1px solid rgba(5,150,105,.25);}
-.stat-evo.down{background:rgba(220,38,38,.1);color:#dc2626;border:1px solid rgba(220,38,38,.25);}
+#module-stat, #stat-content{ font-variant-numeric: tabular-nums; }
+.stat-evo{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:8px;font-weight:800;font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:.2px;}
+.stat-evo.up{background:rgba(5,150,105,.12);color:#047857;border:1px solid rgba(5,150,105,.25);box-shadow:0 0 0 1px rgba(5,150,105,.05) inset;}
+.stat-evo.down{background:rgba(220,38,38,.1);color:#dc2626;border:1px solid rgba(220,38,38,.25);box-shadow:0 0 0 1px rgba(220,38,38,.05) inset;}
 .stat-evo.same{background:var(--bg3);color:var(--txt3);border:1px solid var(--bo);}
 .stat-evo-arrow{font-size:10px;}
 
 /* ─ COMPARE KPI STRIP ─────────────────────────────────────────────── */
 .stat-compare-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px;background:linear-gradient(135deg,rgba(124,58,237,.03),rgba(168,85,247,.03));border-bottom:1.5px solid rgba(124,58,237,.15);flex-shrink:0;}
-.stat-compare-kpi{background:#fff;border:1.5px solid var(--bo);border-radius:8px;padding:10px 12px;text-align:center;position:relative;overflow:hidden;transition:.2s;}
+.stat-compare-kpi{background:var(--surface);border:1.5px solid var(--bo);border-radius:8px;padding:10px 12px;text-align:center;position:relative;overflow:hidden;transition:.2s;}
 .stat-compare-kpi:hover{border-color:var(--sky);box-shadow:0 4px 12px rgba(2,132,199,.1);}
 .stat-compare-kpi-icon{font-size:18px;margin-bottom:4px;}
 .stat-compare-kpi-label{font-size:7px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:6px;}
@@ -1927,7 +2119,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-tbl td.compare-evo{text-align:center;}
 
 /* ─ COMPARE CHART ─────────────────────────────────────────────────── */
-.stat-compare-chart{padding:16px;background:#fff;border-radius:10px;border:1.5px solid var(--bo);margin:12px 16px;}
+.stat-compare-chart{padding:16px;background:var(--surface);border-radius:10px;border:1.5px solid var(--bo);margin:12px 16px;}
 .stat-compare-chart-title{font-size:10px;font-weight:800;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
 .stat-compare-chart-title::before{content:'📈';font-size:14px;}
 .stat-compare-bars{display:flex;flex-direction:column;gap:10px;}
@@ -1973,15 +2165,17 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 ══════════════════════════════════════════════════════════════════════ */
 
 /* ── Barre de filtres actifs (façon "Filter pane" Power BI) ─────────── */
-.stat-filterbar{display:none;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 16px;background:linear-gradient(135deg,#f0f9ff,#f8fafc);border-bottom:1.5px solid var(--bo);flex-shrink:0;}
+.stat-filterbar{display:none;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 16px;background:linear-gradient(135deg,var(--sky-pale),var(--bg2));border-bottom:1.5px solid var(--bo);flex-shrink:0;}
 .stat-filterbar.on{display:flex;}
 .stat-filterbar .fb-lbl{font-size:8px;font-weight:800;color:var(--txt4);text-transform:uppercase;letter-spacing:1px;margin-right:2px;}
-.stat-fchip{display:inline-flex;align-items:center;gap:5px;padding:3px 5px 3px 10px;border-radius:11px;font-size:9px;font-weight:700;background:#fff;border:1.5px solid var(--bo-sky);color:var(--sky-deep);font-family:var(--font-mono);}
+.stat-fchip{display:inline-flex;align-items:center;gap:5px;padding:3px 5px 3px 9px;border-radius:11px;font-size:9px;font-weight:700;background:var(--surface);border:1.5px solid var(--bo-sky);color:var(--sky-deep);font-family:var(--font-mono);position:relative;}
+.stat-fchip::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sky-deep);opacity:.4;flex-shrink:0;}
 .stat-fchip .fb-x{display:flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--sky-pale);color:var(--sky-deep);font-size:9px;font-weight:900;cursor:pointer;line-height:1;transition:.15s;}
 .stat-fchip .fb-x:hover{background:var(--red);color:#fff;}
-.stat-fchip.xfilter{border-color:rgba(220,38,38,.35);color:#b91c1c;background:#fff5f5;}
+.stat-fchip.xfilter{border-color:rgba(220,38,38,.35);color:#b91c1c;background:var(--red2);}
+.stat-fchip.xfilter::before{background:#b91c1c;}
 .stat-fchip.xfilter .fb-x{background:#fee2e2;color:#b91c1c;}
-.stat-fb-reset{margin-left:auto;font-size:8.5px;font-weight:800;color:var(--txt3);background:#fff;border:1.5px solid var(--bo);border-radius:9px;padding:3px 10px;cursor:pointer;letter-spacing:.5px;}
+.stat-fb-reset{margin-left:auto;font-size:8.5px;font-weight:800;color:var(--txt3);background:var(--surface);border:1.5px solid var(--bo);border-radius:9px;padding:3px 10px;cursor:pointer;letter-spacing:.5px;}
 .stat-fb-reset:hover{border-color:var(--red);color:var(--red);}
 
 /* ── KPI · indicateur de tendance vs période de référence ────────────── */
@@ -2005,26 +2199,28 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-drill-overlay{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:9000;display:none;backdrop-filter:blur(1px);}
 .stat-drill-overlay.on{display:block;animation:sFadeIn .18s ease;}
 @keyframes sFadeIn{from{opacity:0}to{opacity:1}}
-.stat-drill-panel{position:absolute;top:0;right:0;bottom:0;width:min(420px,92vw);background:#fff;box-shadow:-12px 0 36px rgba(15,23,42,.22);display:flex;flex-direction:column;transform:translateX(8px);animation:sSlideIn .22s cubic-bezier(.16,1,.3,1) forwards;}
+.stat-drill-panel{position:absolute;top:0;right:0;bottom:0;width:min(420px,92vw);background:var(--surface);box-shadow:-12px 0 36px rgba(15,23,42,.22);display:flex;flex-direction:column;transform:translateX(8px);animation:sSlideIn .22s cubic-bezier(.16,1,.3,1) forwards;}
 @keyframes sSlideIn{to{transform:translateX(0)}}
-.stat-drill-hdr{padding:16px 18px 12px;background:linear-gradient(120deg,#05101f,#0369a1);color:#fff;flex-shrink:0;position:relative;}
+.stat-drill-hdr{padding:18px 18px 16px;background:linear-gradient(120deg,#05101f,#0369a1);color:#fff;flex-shrink:0;position:relative;border-bottom:2px dashed rgba(255,255,255,.3);}
+.stat-drill-hdr::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2.5px;background:linear-gradient(90deg,#0ea5e9,var(--radar),var(--gold));}
 .stat-drill-hdr .dh-tag{font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;font-weight:800;}
-.stat-drill-hdr .dh-name{font-size:13px;font-weight:800;margin-top:3px;line-height:1.3;padding-right:24px;}
+.stat-drill-hdr .dh-name{font-size:14px;font-weight:800;margin-top:4px;line-height:1.3;padding-right:24px;font-family:var(--font-mono);}
 .stat-drill-hdr .dh-sub{font-size:8.5px;opacity:.75;margin-top:4px;font-family:var(--font-mono);}
 .stat-drill-close{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
 .stat-drill-close:hover{background:rgba(255,255,255,.25);}
 .stat-drill-body{flex:1;overflow-y:auto;padding:14px 18px 20px;}
 .stat-drill-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
-.stat-drill-kpi{background:var(--bg2);border-radius:9px;padding:9px 11px;border-left:3px solid var(--sky);}
+.stat-drill-kpi{background:var(--bg2);border-radius:9px;padding:9px 11px;border-left:3px solid var(--sky);position:relative;overflow:hidden;}
+.stat-drill-kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:repeating-linear-gradient(90deg,var(--sky) 0 2px,transparent 2px 4px);opacity:.35;}
 .stat-drill-kpi .dk-lbl{font-size:7px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;}
 .stat-drill-kpi .dk-val{font-size:13px;font-weight:900;color:var(--sky-deep);font-family:var(--font-mono);margin-top:2px;}
 .stat-drill-section-title{font-size:8.5px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;display:flex;align-items:center;gap:5px;}
-.stat-drill-action{display:block;width:100%;text-align:center;margin-top:14px;padding:9px;border-radius:9px;border:1.5px solid var(--sky);background:var(--sky-pale);color:var(--sky-deep);font-size:10px;font-weight:800;cursor:pointer;transition:.15s;}
-.stat-drill-action:hover{background:var(--sky);color:#fff;}
+.stat-drill-action{display:block;width:100%;text-align:center;margin-top:14px;padding:10px;border-radius:9px;border:1.5px dashed var(--sky);background:var(--sky-pale);color:var(--sky-deep);font-size:10px;font-weight:800;cursor:pointer;transition:.15s;letter-spacing:.5px;}
+.stat-drill-action:hover{background:var(--sky);color:#fff;border-style:solid;}
 
 /* ── Onglet Insights (façon "auto insights" Looker Studio / Power BI) ── */
 .stat-insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;padding:14px 16px;}
-.stat-insight-card{background:#fff;border:1.5px solid var(--bo);border-radius:12px;padding:13px 14px;border-left:4px solid var(--ic,var(--sky));box-shadow:var(--shadow-sm);}
+.stat-insight-card{background:var(--surface);border:1.5px solid var(--bo);border-radius:12px;padding:13px 14px;border-left:4px solid var(--ic,var(--sky));box-shadow:var(--shadow-sm);}
 .stat-insight-card .ic-head{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;color:var(--ic,var(--sky-deep));text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
 .stat-insight-card .ic-head .ic-ico{font-size:14px;}
 .stat-insight-card .ic-body{font-size:10.5px;color:var(--txt2);line-height:1.55;}
@@ -2032,11 +2228,11 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .stat-insight-card .ic-foot{margin-top:7px;font-size:8px;color:var(--txt4);font-style:italic;}
 /* ── Pareto Lorenz ─────────────────────────────────────────────────── */
 .pareto-table td,.pareto-table th{padding:4px 8px;font-size:9.5px;}
-.pareto-bar-80{background:linear-gradient(90deg,#0d9488,#14b8a6);}
-.pareto-bar-20{background:linear-gradient(90deg,#6366f1,#8b5cf6);}
+.pareto-bar-80{background:linear-gradient(90deg,#0d9488,#14b8a6);box-shadow:0 1px 4px rgba(13,148,136,.35);border-radius:3px;}
+.pareto-bar-20{background:linear-gradient(90deg,#6366f1,#8b5cf6);box-shadow:0 1px 4px rgba(99,102,241,.3);border-radius:3px;}
 /* ── Stats descriptives ────────────────────────────────────────────── */
 .ds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:12px 16px;}
-.ds-card{background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:12px 14px;}
+.ds-card{background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:12px 14px;}
 .ds-card-title{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:8px;}
 .ds-stat{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid var(--bg3);}
 .ds-stat:last-child{border-bottom:none;}
@@ -2045,7 +2241,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 .ds-stat-val.red{color:#dc2626;} .ds-stat-val.green{color:#059669;} .ds-stat-val.orange{color:#d97706;}
 /* ── Segmentation ──────────────────────────────────────────────────── */
 .seg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:12px 16px;}
-.seg-card{background:#fff;border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;}
+.seg-card{background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;}
 .seg-card-hdr{padding:10px 14px;font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#fff;}
 .seg-card-body{padding:10px 14px;}
 .seg-client{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px dashed var(--bg3);font-size:9px;}
@@ -2061,76 +2257,232 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
 
 /* ─ ANNÉE SELECTOR ─────────────────────────────────────────────────── */
 .stat-year-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
-.stat-year-inp{width:80px;padding:5px 8px;border:1.5px solid var(--bo);border-radius:5px;font-size:11px;font-family:var(--font-mono);font-weight:700;background:#fff;color:var(--sky-deep);outline:none;text-align:center;transition:.15s;}
+.stat-year-inp{width:80px;padding:5px 8px;border:1.5px solid var(--bo);border-radius:5px;font-size:11px;font-family:var(--font-mono);font-weight:700;background:var(--surface);color:var(--sky-deep);outline:none;text-align:center;transition:.15s;}
 .stat-year-inp:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(2,132,199,.1);}
 
 </style>
 </head>
 <body>
-<!-- ═══ SPLASH SCREEN ═══ -->
-<div id="splash-screen" style="
-  position:fixed;inset:0;z-index:99999;
-  background:linear-gradient(135deg,#060d1a 0%,#0369a1 50%,#0ea5e9 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity 1s ease;
-">
-  <div style="text-align:center;animation:splashIn .8s ease forwards;">
-    <div style="font-size:72px;margin-bottom:20px;animation:planeFly 2.5s ease forwards;">✈️</div>
-    <div style="font-size:13px;letter-spacing:6px;color:rgba(255,255,255,.5);margin-bottom:8px;font-family:'Inter',sans-serif;">FOUR WINDS TRAVELS</div>
-    <div id="splash-msg" style="font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;font-family:'Inter',sans-serif;"></div>
-    <div style="margin-top:28px;width:180px;height:2px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;margin-left:auto;margin-right:auto;">
-      <div style="height:100%;background:linear-gradient(90deg,#7dd3fc,#f59e0b);animation:loadBar 2.2s ease forwards;border-radius:2px;"></div>
+<!-- ══════════════════════════════════════════
+     ÉCRAN D'ENTRÉE — Animation (8s) + Accès session
+══════════════════════════════════════════ -->
+<div id="login-screen">
+  <!-- Anneaux radar (décor plein écran) -->
+  <div class="entry-rings">
+    <svg class="globe-svg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="globeGlow" cx="48%" cy="42%" r="62%">
+          <stop offset="0%" stop-color="rgba(56,189,248,.20)"/>
+          <stop offset="100%" stop-color="rgba(56,189,248,0)"/>
+        </radialGradient>
+        <clipPath id="globeClip"><circle cx="260" cy="260" r="259"/></clipPath>
+      </defs>
+
+      <circle cx="260" cy="260" r="259" fill="url(#globeGlow)"/>
+
+      <g clip-path="url(#globeClip)">
+        <!-- Parallèles (latitudes) -->
+        <line x1="0" y1="115" x2="520" y2="115" stroke="rgba(125,211,252,.14)"/>
+        <line x1="0" y1="188" x2="520" y2="188" stroke="rgba(125,211,252,.18)"/>
+        <line x1="0" y1="260" x2="520" y2="260" stroke="rgba(125,211,252,.24)"/>
+        <line x1="0" y1="332" x2="520" y2="332" stroke="rgba(125,211,252,.18)"/>
+        <line x1="0" y1="405" x2="520" y2="405" stroke="rgba(125,211,252,.14)"/>
+
+        <!-- Méridiens (longitudes) — balayage animé simulant la rotation du globe -->
+        <ellipse cx="260" cy="260" ry="259" rx="259" fill="none" stroke="rgba(125,211,252,.22)" stroke-width="1"/>
+        <ellipse cx="260" cy="260" ry="259" rx="259" fill="none" stroke="rgba(125,211,252,.22)" stroke-width="1">
+          <animate attributeName="rx" values="259;0;259" dur="9s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="260" cy="260" ry="259" rx="0" fill="none" stroke="rgba(125,211,252,.20)" stroke-width="1">
+          <animate attributeName="rx" values="0;259;0" dur="9s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="260" cy="260" ry="259" rx="130" fill="none" stroke="rgba(125,211,252,.16)" stroke-width="1">
+          <animate attributeName="rx" values="130;259;0;130" dur="13s" repeatCount="indefinite"/>
+        </ellipse>
+
+        <!-- Routes aériennes — lumière voyageant entre les villes -->
+        <path id="rt1" d="M205,238 Q300,150 372,196" fill="none" stroke="rgba(212,161,61,.32)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt2" d="M205,238 Q160,300 230,358" fill="none" stroke="rgba(212,161,61,.28)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt3" d="M372,196 Q420,260 388,330" fill="none" stroke="rgba(125,211,252,.26)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt4" d="M205,238 Q300,230 388,330" fill="none" stroke="rgba(125,211,252,.22)" stroke-width="1" stroke-dasharray="3 5"/>
+
+        <circle r="2.6" fill="#fff"><animateMotion dur="4.2s" repeatCount="indefinite" path="M205,238 Q300,150 372,196"/></circle>
+        <circle r="2.4" fill="#fff"><animateMotion dur="5.5s" repeatCount="indefinite" path="M205,238 Q160,300 230,358"/></circle>
+        <circle r="2.4" fill="#fff"><animateMotion dur="4.8s" repeatCount="indefinite" path="M372,196 Q420,260 388,330"/></circle>
+        <circle r="2.2" fill="#fff"><animateMotion dur="6.2s" repeatCount="indefinite" path="M205,238 Q300,230 388,330"/></circle>
+      </g>
+
+      <circle cx="260" cy="260" r="259" fill="none" stroke="rgba(125,211,252,.4)" stroke-width="1.2"/>
+
+      <!-- Villes (points lumineux qui scintillent) -->
+      <g>
+        <circle cx="205" cy="238" r="3.4" fill="var(--gold)"><animate attributeName="opacity" values=".4;1;.4" dur="2.2s" repeatCount="indefinite"/></circle>
+        <circle cx="372" cy="196" r="3"   fill="var(--radar)"><animate attributeName="opacity" values=".4;1;.4" dur="2.6s" repeatCount="indefinite" begin=".4s"/></circle>
+        <circle cx="230" cy="358" r="2.8" fill="#7dd3fc"><animate attributeName="opacity" values=".4;1;.4" dur="2.4s" repeatCount="indefinite" begin=".8s"/></circle>
+        <circle cx="388" cy="330" r="3"   fill="var(--gold)"><animate attributeName="opacity" values=".4;1;.4" dur="2.8s" repeatCount="indefinite" begin="1.1s"/></circle>
+        <circle cx="150" cy="170" r="2.4" fill="#7dd3fc"><animate attributeName="opacity" values=".35;.9;.35" dur="3.1s" repeatCount="indefinite" begin="1.6s"/></circle>
+        <circle cx="320" cy="380" r="2.4" fill="var(--radar)"><animate attributeName="opacity" values=".35;.9;.35" dur="2.9s" repeatCount="indefinite" begin=".6s"/></circle>
+      </g>
+    </svg>
+  </div>
+
+  <div class="entry-wrap">
+
+    <!-- Côté gauche : animation de vol -->
+    <div class="entry-anim">
+      <div style="font-size:10px;letter-spacing:5px;color:var(--radar);margin-bottom:20px;font-family:var(--font-mono);text-transform:uppercase;text-align:center;">● EN VOL — SYSTÈME ACTIF</div>
+      <div style="font-size:58px;margin-bottom:8px;text-align:center;animation:planeFly 2.5s ease forwards;filter:drop-shadow(0 0 18px rgba(125,211,252,.55));">✈️</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:16px auto 8px;font-family:var(--font-mono);width:100%;">
+        <span style="font-size:26px;font-weight:800;color:#fff;letter-spacing:3px;">FWT</span>
+        <span style="color:var(--gold);font-size:18px;line-height:1;">✈ ─ ─ ─ ─</span>
+        <span style="font-size:26px;font-weight:800;color:#fff;letter-spacing:3px;">OPS</span>
+      </div>
+      <div style="font-size:11px;letter-spacing:6px;color:rgba(255,255,255,.45);font-family:'Inter',sans-serif;text-transform:uppercase;text-align:center;">Four Winds Travels</div>
     </div>
+
+    <!-- Bas centré : message de bienvenue + chargement (séparé de la carte d'accès) -->
+    <div class="entry-bottom">
+      <div id="splash-msg" style="font-size:17px;font-weight:600;color:#fff;letter-spacing:.3px;font-family:'Inter',sans-serif;min-height:24px;text-align:center;line-height:1.4;max-width:420px;margin:0 auto;"></div>
+      <div style="margin-top:18px;width:240px;height:3px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;margin-left:auto;margin-right:auto;position:relative;">
+        <div style="height:100%;background:linear-gradient(90deg,#7dd3fc,var(--gold));animation:loadBar 8s ease forwards;border-radius:3px;"></div>
+      </div>
+      <div style="margin-top:10px;font-size:8.5px;letter-spacing:2px;color:rgba(255,255,255,.3);font-family:var(--font-mono);text-align:center;">CHARGEMENT DU PLAN COMPTABLE…</div>
+    </div>
+
+    <!-- Côté droit : carte d'accès session -->
+    <div class="login-box entry-card">
+      <div class="lb-strip"></div>
+      <div class="lb-head">
+        <div class="lb-pnr">ACCÈS · FWT-OPS</div>
+        <div class="login-logo">✈️</div>
+        <div class="login-title">FWT</div>
+        <div class="login-sub">Four Winds Travels · Comptabilité</div>
+      </div>
+      <div class="lb-body">
+        <input type="password" id="login-pwd" placeholder="••••••" maxlength="20"
+          onkeydown="if(event.key==='Enter')checkPwd()">
+        <button class="login-btn" onclick="checkPwd()">CONNEXION</button>
+        <div class="login-err" id="login-err"></div>
+
+        <div class="theme-pick">
+          <div class="tp-lbl">Affichage pour cette session</div>
+          <div class="tp-opts">
+            <button type="button" class="tp-opt" id="tp-light" onclick="fwtSetSessionTheme('light')">☀️ Jour</button>
+            <button type="button" class="tp-opt" id="tp-dark" onclick="fwtSetSessionTheme('dark')">🌙 Nuit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 <style>
 @keyframes splashIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes planeFly{0%{transform:translateX(-30px) rotate(-5deg);opacity:0}30%{opacity:1;transform:translateX(0) rotate(0deg)}70%{transform:translateX(0) rotate(0deg)}100%{transform:translateX(20px) rotate(5deg)}}
 @keyframes loadBar{from{width:0}to{width:100%}}
+@keyframes cardIn{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes animIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
+
+#login-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:radial-gradient(circle at 50% 42%, #0c2d52 0%, #060d1a 62%, #03070d 100%);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.entry-rings{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+.globe-svg{ width:520px; height:520px; animation:globeFadeIn 1.2s ease forwards; }
+@keyframes globeFadeIn{ from{ opacity:0; transform:scale(.92); } to{ opacity:1; transform:scale(1); } }
+
+.entry-wrap{
+  position:absolute; inset:0; z-index:2;
+  pointer-events:none; /* le wrap lui-même ne capte rien, seuls ses enfants interactifs le font */
+}
+.entry-anim{
+  position:absolute; right:calc(50% + 284px); top:50%;
+  transform:translateY(-50%);
+  width:420px;
+  text-align:center; animation: animIn .8s ease forwards;
+  pointer-events:none;
+}
+.entry-bottom{
+  position:absolute; left:50%; bottom:6%;
+  transform:translateX(-50%);
+  text-align:center; animation: animIn .9s ease .15s backwards;
+  pointer-events:none;
+  z-index:1; /* sous la carte d'accès, jamais au-dessus */
+}
+.entry-card{
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  animation: cardIn .7s cubic-bezier(.16,1,.3,1) .35s backwards;
+  pointer-events:auto; /* seule la carte reste cliquable */
+  z-index:3;
+}
+
+@media (max-width: 1060px){
+  .entry-anim{ right:auto; left:50%; top:16%; transform:translate(-50%,-50%) scale(.72); }
+  .entry-bottom{ left:50%; top:46%; bottom:auto; transform:translateX(-50%); }
+  .entry-card{ left:50%; top:auto; bottom:3%; transform:translateX(-50%); }
+}
+
+/* ── Sélecteur de thème (unique, à l'entrée de session) ── */
+.theme-pick{ margin-top:14px; padding-top:12px; border-top:1px dashed var(--bo2); }
+.tp-lbl{ font-size:6.5px; letter-spacing:1px; text-transform:uppercase; color:var(--txt4); font-weight:700; margin-bottom:6px; }
+.tp-opts{ display:flex; gap:6px; }
+.tp-opt{
+  flex:1; padding:7px 0; border-radius:7px; border:1.5px solid var(--bo);
+  background:var(--bg2); color:var(--txt3); font-size:9px; font-weight:700;
+  cursor:pointer; transition:.15s; font-family:var(--font-ui); letter-spacing:.2px;
+}
+.tp-opt:hover{ border-color:var(--sky); color:var(--sky-deep); }
+.tp-opt.on{ background:linear-gradient(135deg,var(--sky-light),var(--sky-deep)); border-color:transparent; color:#fff; box-shadow:0 3px 10px rgba(2,132,199,.3); }
+.tp-opt#tp-dark.on{ background:linear-gradient(135deg,#1e293b,#0c1a2e); box-shadow:0 3px 10px rgba(0,0,0,.4); }
 </style>
 
 
 <!-- ══════════════════════════════════════════
-     ÉCRAN DE CONNEXION
-══════════════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">✈️</div>
-    <div class="login-title">FWT</div>
-    <div class="login-sub">FOUR WINDS TRAVELS · COMPTABILITÉ</div>
-    <input type="password" id="login-pwd" placeholder="••••••" maxlength="20"
-      onkeydown="if(event.key==='Enter')checkPwd()">
-    <button class="login-btn" onclick="checkPwd()">CONNEXION</button>
-    <div class="login-err" id="login-err"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SÉLECTION MODULE
+     SÉLECTION MODULE — Salle d'embarquement
 ══════════════════════════════════════════ -->
 <div id="module-screen">
+  <div class="deco-plane">✈️</div>
+  <div class="mod-eyebrow"><span>FOUR WINDS TRAVELS</span><span class="sep"></span><span>SALLE D'EMBARQUEMENT</span></div>
   <div class="mod-title">SÉLECTIONNER UN MODULE</div>
-  <button onclick="deconnexion()" style="position:absolute;top:18px;right:22px;background:var(--bg2);border:1px solid var(--bo2);border-radius:8px;padding:6px 16px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;letter-spacing:1px;backdrop-filter:blur(10px);" title="Retour écran mot de passe">🔒 DÉCONNEXION</button>
+  <button onclick="deconnexion()" style="position:absolute;top:18px;right:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 16px;color:rgba(255,255,255,.8);font-family:var(--font-ui);font-size:10px;cursor:pointer;letter-spacing:1px;backdrop-filter:blur(10px);" title="Retour écran mot de passe">🔒 DÉCONNEXION</button>
   <div class="mod-choices">
-    <div class="mod-btn" onclick="openModule('fac')">
-      <div class="mod-ico">🧾</div>
-      <div class="mod-lbl">EBV</div>
-      <div class="mod-sub">Saisie EBV<br>compagnies aériennes</div>
+    <div class="mod-btn" data-line="ebv" onclick="openModule('fac')">
+      <div class="mod-top">
+        <div class="mod-route"><span class="gate">EBV</span><span class="seq">01 · TICKETING</span></div>
+        <div class="mod-ico">🧾</div>
+        <div class="mod-lbl">EBV</div>
+        <div class="mod-sub">Saisie EBV<br>compagnies aériennes</div>
+      </div>
+      <div class="mod-stub"><div class="barcode"></div><span class="go">EMBARQUER →</span></div>
     </div>
-    <div class="mod-btn" onclick="openModule('jbr')">
-      <div class="mod-ico">📑</div>
-      <div class="mod-lbl">JOURNAL</div>
-      <div class="mod-sub">Journal Banque<br>Recettes BNA</div>
+    <div class="mod-btn" data-line="jbr" onclick="openModule('jbr')">
+      <div class="mod-top">
+        <div class="mod-route"><span class="gate">JBR</span><span class="seq">02 · BANQUE</span></div>
+        <div class="mod-ico">📑</div>
+        <div class="mod-lbl">JOURNAL</div>
+        <div class="mod-sub">Journal Banque<br>Recettes BNA</div>
+      </div>
+      <div class="mod-stub"><div class="barcode"></div><span class="go">EMBARQUER →</span></div>
     </div>
-    <div class="mod-btn" onclick="openModule('rap')">
-      <div class="mod-ico">⚖️</div>
-      <div class="mod-lbl">RAPPROCHEMENT</div>
-      <div class="mod-sub">Comptable / Relevé BNA<br>Grand Livre · 512214 · v30</div>
+    <div class="mod-btn" data-line="rap" onclick="openModule('rap')">
+      <div class="mod-top">
+        <div class="mod-route"><span class="gate">RAP</span><span class="seq">03 · CONTRÔLE</span></div>
+        <div class="mod-ico">⚖️</div>
+        <div class="mod-lbl">RAPPROCHEMENT</div>
+        <div class="mod-sub">Comptable / Relevé BNA<br>Grand Livre · 512214 · v30</div>
+      </div>
+      <div class="mod-stub"><div class="barcode"></div><span class="go">EMBARQUER →</span></div>
     </div>
-    <div class="mod-btn" onclick="openModule('stat')">
-      <div class="mod-ico">📈</div>
-      <div class="mod-lbl">STATISTIQUES</div>
-      <div class="mod-sub">Meilleurs vendeurs<br>Par compagnie · Période</div>
+    <div class="mod-btn" data-line="stat" onclick="openModule('stat')">
+      <div class="mod-top">
+        <div class="mod-route"><span class="gate">STA</span><span class="seq">04 · ANALYTICS</span></div>
+        <div class="mod-ico">📈</div>
+        <div class="mod-lbl">STATISTIQUES</div>
+        <div class="mod-sub">Meilleurs vendeurs<br>Par compagnie · Période</div>
+      </div>
+      <div class="mod-stub"><div class="barcode"></div><span class="go">EMBARQUER →</span></div>
     </div>
   </div>
 </div>
@@ -2580,7 +2932,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
     <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
   </div>
   <div id="ndcf-right-panel" style="display:none;position:fixed;right:0;top:0;width:380px;height:100vh;
-    background:#fff;border-left:1px solid var(--bo2);overflow-y:auto;z-index:200;padding:14px;">
+    background:var(--surface);border-left:1px solid var(--bo2);overflow-y:auto;z-index:200;padding:14px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--bo2);">
       <span style="font-size:10px;letter-spacing:3px;color:var(--sky);font-weight:700;">ÉCRITURES NDC-F</span>
       <div style="display:flex;gap:6px;">
@@ -2650,7 +3002,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
       <div class="section-label">Compagnie</div>
       <div style="position:relative;">
         <select id="company-select" onchange="selectComp(this.value)"
-          style="width:100%;padding:9px 36px 9px 12px;background:#fff;border:2px solid var(--bo);border-radius:var(--r-sm);color:var(--txt);font-family:var(--font-mono);font-size:13px;font-weight:700;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s;box-shadow:var(--shadow-sm);">
+          style="width:100%;padding:9px 36px 9px 12px;background:var(--surface);border:2px solid var(--bo);border-radius:var(--r-sm);color:var(--txt);font-family:var(--font-mono);font-size:13px;font-weight:700;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s;box-shadow:var(--shadow-sm);">
           <option value="">— Sélectionner une compagnie —</option>
         </select>
         <div style="pointer-events:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--sky);font-size:10px;">▼</div>
@@ -2691,6 +3043,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
       <button class="tab" id="tab-montant-btn" onclick="switchSearch('montant',this)">💰 Montant</button>
       <button class="tab" id="tab-ndcf-btn" onclick="switchSearch('ndcf',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">✈ NDC-F</button>
       <button class="tab" id="tab-ancien-btn" onclick="switchSearch('ancien',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">📝 ANCIEN</button>
+      <button class="tab" id="tab-redressement-btn" onclick="switchSearch('redressement',this)" style="background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.35);color:var(--red);font-weight:700;">⚖ REDRESSEMENT</button>
     </div>
     <div id="search-iata">
       <div class="input-group">
@@ -2741,7 +3094,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
     <div style="position:relative;margin-top:4px;">
       <input id="ndcf-fac-num" placeholder="Ex: 12, 045..." oninput="onNDCFFac(this.value)" onkeydown="ndcfFacMK(event)"
         style="width:100%;background:var(--bg2);border:1.5px solid rgba(217,119,6,.25);border-radius:6px;padding:7px;color:var(--amber);font-family:var(--font-mono);font-size:13px;font-weight:700;" autocomplete="off">
-      <div id="ndcf-fac-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:#fff;border:1.5px solid rgba(217,119,6,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
+      <div id="ndcf-fac-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid rgba(217,119,6,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
     </div>
   </div>
 
@@ -2750,7 +3103,7 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
     <div style="position:relative;margin-top:4px;">
       <input id="ndcf-mt" placeholder="0" oninput="onNDCFMt(this.value)" onkeydown="ndcfMK(event)"
         style="width:100%;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;padding:8px;color:var(--green-f);font-family:var(--font-mono);font-size:14px;font-weight:700;">
-      <div id="ndcf-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:#fff;border:1.5px solid var(--bo-sky);border-radius:8px;z-index:400;max-height:220px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
+      <div id="ndcf-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:8px;z-index:400;max-height:220px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
     </div>
   </div>
 
@@ -2816,12 +3169,68 @@ tbody td { padding: 7px 12px; vertical-align: middle; color: var(--txt2); }
     <div class="ac-wrap">
       <input type="text" id="ancien-client" placeholder="Nom ou code client..." autocomplete="off"
         oninput="onAncienClientChange()" onkeydown="onAncienClientKey(event)" style="width:100%;">
-      <div id="ancien-ac-list" style="position:absolute;top:calc(100%+3px);left:0;right:0;background:#fff;border:1.5px solid var(--bo-sky);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(2,132,199,.15);display:none;"></div>
+      <div id="ancien-ac-list" style="position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(2,132,199,.15);display:none;"></div>
     </div>
     <div id="ancien-client-info" style="margin-top:6px;padding:7px;background:rgba(14,165,233,.07);border-radius:6px;font-size:10px;color:var(--sky);display:none;border-left:3px solid var(--sky);"></div>
   </div>
   <div style="margin-top:12px;">
     <button class="btn btn-primary" id="ancien-add-btn" onclick="addAncienEntry()" disabled style="width:100%;background:var(--sky);border:none;">✈ Ajouter l'écriture ANCIEN</button>
+  </div>
+</div>
+
+<!-- MODE REDRESSEMENT -->
+<div id="search-redressement" style="display:none">
+  <div style="background:rgba(220,38,38,.06);border:1.5px solid rgba(220,38,38,.25);border-radius:9px;padding:9px 12px;margin-bottom:12px;">
+    <div style="font-size:9px;color:var(--red);font-weight:700;letter-spacing:1px;">⚖ REDRESSEMENT BILLETTERIE</div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:3px;line-height:1.4;">Saisie depuis l'état de redressement (anomalie billetterie) — règlement client après contrôle commercial.</div>
+  </div>
+
+  <div class="input-group">
+    <label class="input-label" style="color:var(--red);font-weight:700;">💰 Montant total (DZD)</label>
+    <input type="text" inputmode="numeric" class="big-input" id="redr-montant"
+           placeholder="Ex: 50000 ou -5000" oninput="onRedrMontantChange()" onkeydown="onRedrMontantKey(event)"
+           autocomplete="off" style="text-align:right;color:var(--red);font-weight:700;border-color:rgba(220,38,38,.3);">
+  </div>
+
+  <div class="input-group" style="margin-top:12px;">
+    <label class="input-label">✈ Client / Agence (nom ou code IATA)</label>
+    <div class="ac-wrap">
+      <input type="text" id="redr-client" placeholder="Nom client ou code IATA (4 chiffres)..." autocomplete="off"
+        oninput="onRedrClientChange()" onkeydown="onRedrClientKey(event)" style="width:100%;">
+      <div id="redr-ac-list" style="position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid rgba(220,38,38,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(220,38,38,.12);display:none;"></div>
+    </div>
+    <div id="redr-client-info" style="margin-top:6px;padding:7px;background:rgba(220,38,38,.06);border-radius:6px;font-size:10px;color:var(--red);display:none;border-left:3px solid var(--red);"></div>
+  </div>
+
+  <div style="margin-top:14px;padding:11px 12px;background:var(--bg2);border:1.5px solid var(--bo);border-radius:9px;">
+    <div style="font-size:9px;color:var(--txt3);letter-spacing:1px;font-weight:700;margin-bottom:8px;">📋 RÉFÉRENCE DU REDRESSEMENT</div>
+    <div style="display:grid;grid-template-columns:1.3fr .8fr .7fr;gap:6px;">
+      <div>
+        <label style="font-size:9px;color:var(--txt3);">Préfixe (selon Cie)</label>
+        <select id="redr-prefix" onchange="onRedrRefPartChange()"
+          style="width:100%;margin-top:3px;padding:7px;background:var(--surface);border:1.5px solid var(--bo);border-radius:6px;color:var(--txt);font-family:var(--font-mono);font-size:11px;font-weight:700;"></select>
+      </div>
+      <div>
+        <label style="font-size:9px;color:var(--txt3);">N° (variant)</label>
+        <input id="redr-num" type="text" inputmode="numeric" placeholder="39" oninput="onRedrRefPartChange()" onkeydown="onRedrFieldEnterValidate(event)"
+          style="width:100%;margin-top:3px;padding:7px;background:var(--surface);border:1.5px solid var(--bo);border-radius:6px;color:var(--txt);font-family:var(--font-mono);font-size:12px;font-weight:700;text-align:center;">
+      </div>
+      <div>
+        <label style="font-size:9px;color:var(--txt3);">Année</label>
+        <input id="redr-annee" type="text" inputmode="numeric" maxlength="4" oninput="onRedrRefPartChange()" onkeydown="onRedrFieldEnterValidate(event)"
+          style="width:100%;margin-top:3px;padding:7px;background:var(--surface);border:1.5px solid var(--bo);border-radius:6px;color:var(--txt);font-family:var(--font-mono);font-size:12px;font-weight:700;text-align:center;">
+      </div>
+    </div>
+    <div style="margin-top:8px;">
+      <label style="font-size:9px;color:var(--txt3);">Suffixe (par défaut REGLE, modifiable)</label>
+      <input id="redr-suffixe" type="text" placeholder="REGLE" oninput="onRedrRefPartChange()" onkeydown="onRedrFieldEnterValidate(event)"
+        style="width:100%;margin-top:3px;padding:7px;background:var(--surface);border:1.5px solid var(--bo);border-radius:6px;color:var(--txt);font-family:var(--font-mono);font-size:11px;font-weight:600;text-transform:uppercase;">
+    </div>
+    <div id="redr-ref-preview" style="margin-top:9px;padding:7px 10px;background:rgba(220,38,38,.08);border-radius:6px;font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--red);text-align:center;letter-spacing:.5px;">RED N°—/—</div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button class="btn btn-primary" id="redr-add-btn" onclick="addRedrEntry()" disabled style="width:100%;background:var(--red);border:none;">⚖ Ajouter le redressement</button>
   </div>
 </div>
     <div class="result-box" id="result-box">
@@ -5000,6 +5409,17 @@ function isFWT(planningName){
   return c && c.isFWT === true;
 }
 
+// ══════ MODE REDRESSEMENT — état précoce (avant init() pour éviter le TDZ) ══════
+// Réf = PRÉFIXE (constant, dépend Cie) + N° (variant) + /ANNÉE (défaut = année en cours) + SUFFIXE (défaut "REGLE", modifiable)
+//   TK : "RED N°"
+//   VY : "RED CHR N°" ou "RED N°"
+const REDR_PREFIXES = {
+  'TK': ['RED N°'],
+  'VY': ['RED CHR N°','RED N°'],
+  '_default': ['RED N°']
+};
+let REDR_STATE = { montant:'', montantDisplay:'', client:null, clientIdx:-1, suggestions:[] };
+
 const COMPANY_ACCOUNTS = {
   "TK":    {credit:"4674111",  label:"COMMETTANT TURKISH AIRLINES"},
   "NDC TK":{credit:"46741111", label:"COMMETTANT TURKISH AIRLINES NDC"},
@@ -5126,6 +5546,7 @@ function selectComp(comp){
   const expBtn = document.getElementById('export-btn');
   if(expBtn) expBtn.textContent = '⬇ Export '+comp;
   renderTable();
+  if(typeof updateRedrPrefixOptions==='function') updateRedrPrefixOptions();
   const inp = searchMode==='iata'?document.getElementById('iata-input'):document.getElementById('montant-input');
   inp.focus();
 }
@@ -5184,7 +5605,7 @@ function resetDisplay(){
 function onMontantChange(){
   if(!selectedComp||!FAC_DB)return;
   const rawStr=document.getElementById('montant-input').value;
-  const val=parseFloat(rawStr.replace(/[^0-9.]/g,''));
+  const val=parseFloat(rawStr.replace(/[^0-9.\-]/g,''));
   if(isNaN(val)||rawStr===''){resetDisplay();hideMtSuggestFAC();return;}
   const data=FAC_DB[selectedComp]||[];
   const matches=data.filter(e=>Math.abs(e.montant-val)<0.01);
@@ -5231,7 +5652,7 @@ function showMtSuggestFAC(digits){
   if(!box){
     box=document.createElement('div');
     box.id='mt-sug-fac';
-    box.style.cssText='position:absolute;top:calc(100%+2px);left:0;right:0;background:#fff;border:1.5px solid var(--bo2);border-radius:var(--r-md);z-index:400;max-height:200px;overflow-y:auto;box-shadow:var(--shadow-lg);';
+    box.style.cssText='position:absolute;top:calc(100%+2px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo2);border-radius:var(--r-md);z-index:400;max-height:200px;overflow-y:auto;box-shadow:var(--shadow-lg);';
     const wrap=document.getElementById('montant-input').parentNode;
     wrap.style.position='relative';
     wrap.appendChild(box);
@@ -5497,6 +5918,13 @@ function deleteEntry(id){entries=entries.filter(e=>e.id!==id);updateStats();rend
 function clearAll(){if(confirm('Effacer toutes les écritures ?')){entries=[];updateStats();renderTable();}}
 
 // ─── PIECES (35 lignes max, equilibre D=C) ─────────────────────────────────
+// Libellé "nom compagnie" propre (sans préfixe COMMETTANT) — utilisé pour la ligne 4674xxx des redressements
+function getCompLibelle(comp){
+  const acc = COMPANY_ACCOUNTS[comp];
+  if(!acc) return comp||'';
+  return acc.label.replace(/^COMMETTANT\s+/i,'').trim();
+}
+
 function buildPieces(rows, startNum){
   // Each piece: max 34 client lines + 1 commettant line = 35
   const MAX_CLIENTS = 34;
@@ -5543,7 +5971,7 @@ function renderTable(){
       const credit=0; // négatif reste au débit
       html+=`<tr${dup?' class="dup-warn"':''}>
         <td style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">${globalIdx++}</td>
-        <td><span class="tag tag-${cls}" style="display:inline-flex;align-items:center;gap:4px;">${getAirLogo(e.comp)}</span>${e.isNew?` <span class="tag tag-NEW">NEW</span>`:''}</td>
+        <td><span class="tag tag-${cls}" style="display:inline-flex;align-items:center;gap:4px;">${getAirLogo(e.comp)}</span>${e.isNew?` <span class="tag tag-NEW">NEW</span>`:''}${e.isRedressement?` <span class="tag tag-REDR">⚖REDR</span>`:''}</td>
         <td style="font-size:11px;font-weight:600;color:var(--txt)">${e.nomCompta}${dup?' <span class="tag tag-DUP">⚠DUP</span>':''}</td>
         <td style="font-family:var(--font-mono);font-size:10px;color:var(--green);font-weight:700">${iata}</td>
         <td style="font-family:var(--font-mono);font-size:10px;color:${e.isFWT?'var(--amber)':'var(--txt3)'}">${e.codeAux}</td>
@@ -5558,13 +5986,17 @@ function renderTable(){
     if(acc){
       const tDebit=piece.total<0?Math.abs(piece.total):0;
       const tCredit=piece.total>=0?piece.total:0;
+      // Pièce 100% redressement → libellé = nom compagnie, réf = "RED"
+      const isRedrPiece = piece.rows.length>0 && piece.rows.every(r=>r.isRedressement);
+      const commLib = isRedrPiece ? getCompLibelle(selectedComp) : acc.label;
+      const commRef = isRedrPiece ? 'RED' : getRef(selectedComp||'');
       html+=`<tr style="background:var(--bg2)">
         <td style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">${globalIdx++}</td>
         <td></td>
-        <td style="font-size:11px;font-style:italic;color:var(--txt2)">${acc.label}</td>
+        <td style="font-size:11px;font-style:italic;color:var(--txt2)">${commLib}</td>
         <td></td>
         <td style="font-family:var(--font-mono);font-size:10px;color:var(--sky-deep);font-weight:700">${acc.credit}</td>
-        <td style="font-size:10px;color:var(--txt3)">${getRef(selectedComp||'')}</td>
+        <td style="font-size:10px;color:var(--txt3)">${commRef}</td>
         <td class="amt neg">${tDebit>0?fmtAmt(tDebit):''}</td>
         <td class="amt pos">${tCredit>0?fmtAmt(tCredit):''}</td>
         <td></td>
@@ -5632,7 +6064,11 @@ function exportXLS(){
     if(acc){
       const tDebit = piece.total<0 ? Math.abs(piece.total) : 0;
       const tCredit = piece.total>=0 ? piece.total : 0;
-      sheetData.push([currentMois,pieceNum,dateStr,`${currentPeriode}/15 ${moisNom} ${selectedComp}`,acc.label,'',acc.credit,'','','','',tDebit,tCredit,'','','','']);
+      // Pièce 100% redressement → libellé = nom compagnie sélectionnée, réf comptable = "RED"
+      const isRedrPiece = piece.rows.length>0 && piece.rows.every(r=>r.isRedressement);
+      const commLib = isRedrPiece ? getCompLibelle(selectedComp) : acc.label;
+      const commRef = isRedrPiece ? 'RED' : `${currentPeriode}/15 ${moisNom} ${selectedComp}`;
+      sheetData.push([currentMois,pieceNum,dateStr,commRef,commLib,'',acc.credit,'','','','',tDebit,tCredit,'','','','']);
     }
   });
   const ws = XLSX.utils.aoa_to_sheet(sheetData);
@@ -5886,7 +6322,7 @@ function renderNDCFSug(){
   const box=document.getElementById('ndcf-suggest');
   const year=new Date().getFullYear();
   box.innerHTML=ndcfSugList.map((d,i)=>{
-    const hi=i===ndcfSugIdx?'background:var(--sky-pale);':'background:#fff;';
+    const hi=i===ndcfSugIdx?'background:var(--sky-pale);':'background:var(--surface);';
     const clientOk=d.client?`<span style="color:var(--green);font-size:9px;font-weight:700;">${d.client.compta}</span>`:`<span style="color:var(--red);font-size:9px;">⚠️ ${d.agence}</span>`;
     const mtColor=d._neg?'var(--red)':'var(--green)';
     const mtSign=d._neg?'(AVOIR) ':'';
@@ -6163,12 +6599,24 @@ function ndcfMK(e){
 let ANCIEN_STATE = { montant: '', montantDisplay: '', client: null, clientIdx: -1, suggestions: [] };
 
 function onAncienMontantChange(){
-  const val = document.getElementById('ancien-montant').value;
-  // Extraire les chiffres et le signe
+  const inp = document.getElementById('ancien-montant');
+  const val = inp.value;
+  // Extraire les chiffres, le point et le signe moins
   const numStr = val.replace(/[^\d.-]/g,'');
+
+  // 🛫 Cas spécial : l'utilisateur vient de taper "-" seul (montant négatif en cours de saisie)
+  // → ne PAS reformater tout de suite, sinon le signe est effacé avant d'avoir pu taper le chiffre
+  if(numStr === '-' || numStr === ''){
+    ANCIEN_STATE.montant = numStr;
+    ANCIEN_STATE.montantDisplay = numStr;
+    if(inp.value !== numStr) inp.value = numStr;
+    updateAncienUI();
+    return;
+  }
+
   const numVal = parseFloat(numStr) || 0;
-  
-  // Formater avec séparateur de milliers (style français)
+
+  // Formater avec séparateur de milliers (style français) — toLocaleString gère déjà le signe négatif
   const formatted = numVal.toLocaleString('fr-DZ', {
     minimumFractionDigits: numVal === Math.floor(numVal) ? 0 : 2,
     maximumFractionDigits: 2
@@ -6178,7 +6626,6 @@ function onAncienMontantChange(){
   ANCIEN_STATE.montantDisplay = formatted;
   
   // Mettre à jour l'affichage
-  const inp = document.getElementById('ancien-montant');
   if(inp.value !== formatted) inp.value = formatted;
   updateAncienUI();
 }
@@ -6307,8 +6754,8 @@ function renderAncienList(){
   }
   lst.innerHTML = sugg.map((s,i)=>`
     <div onclick="selectAncienClientByIdx(${i})" 
-      style="padding:8px 12px;cursor:pointer;background:${i===ANCIEN_STATE.clientIdx?'#e8e8e8':'transparent'};border-bottom:1px solid #e5e5e5;font-size:11px;user-select:none;">
-      ${s.client || s.nomCompta || s.name} <span style="font-size:9px;color:#999">${s.iata||'—'}</span>
+      style="padding:8px 12px;cursor:pointer;background:${i===ANCIEN_STATE.clientIdx?'var(--sky-pale)':'transparent'};border-bottom:1px solid var(--bo);font-size:11px;user-select:none;color:var(--txt);">
+      ${s.client || s.nomCompta || s.name} <span style="font-size:9px;color:var(--txt3)">${s.iata||'—'}</span>
     </div>
   `).join('');
   lst.style.display = 'block';
@@ -6397,12 +6844,311 @@ function addAncienEntry(){
   },60);
 }
 
+// ══════ MODE REDRESSEMENT — Anomalie billetterie → règlement client ══════
+// (REDR_PREFIXES / REDR_STATE déclarés plus haut, avant init(), pour éviter le TDZ)
+function updateRedrPrefixOptions(){
+  const sel = document.getElementById('redr-prefix');
+  if(!sel) return;
+  const prev = sel.value;
+  const opts = REDR_PREFIXES[selectedComp] || REDR_PREFIXES['_default'];
+  sel.innerHTML = opts.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(opts.includes(prev)) sel.value = prev;
+  onRedrRefPartChange();
+}
+
+function onRedrMontantChange(){
+  const inp = document.getElementById('redr-montant');
+  const val = inp.value;
+  const numStr = val.replace(/[^\d.-]/g,'');
+  if(numStr === '-' || numStr === ''){
+    REDR_STATE.montant = numStr;
+    REDR_STATE.montantDisplay = numStr;
+    if(inp.value !== numStr) inp.value = numStr;
+    updateRedrUI();
+    return;
+  }
+  const numVal = parseFloat(numStr) || 0;
+  const formatted = numVal.toLocaleString('fr-DZ', {
+    minimumFractionDigits: numVal === Math.floor(numVal) ? 0 : 2,
+    maximumFractionDigits: 2
+  });
+  REDR_STATE.montant = numStr;
+  REDR_STATE.montantDisplay = formatted;
+  if(inp.value !== formatted) inp.value = formatted;
+  updateRedrUI();
+}
+
+function onRedrMontantKey(e){
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    document.getElementById('redr-client').focus();
+  } else if(e.key === 'Escape'){
+    document.getElementById('redr-montant').value = '';
+    REDR_STATE.montant = '';
+    REDR_STATE.montantDisplay = '';
+    updateRedrUI();
+  }
+}
+
+function onRedrClientChange(){
+  const val = document.getElementById('redr-client').value.trim();
+  if(!val){
+    REDR_STATE.suggestions = [];
+    hideRedrList();
+    updateRedrUI();
+    return;
+  }
+
+  // ─ Saisie code IATA (4 chiffres) → LOGIQUE EXACTE du module "Code IATA" ─
+  if(/^\d{4}$/.test(val)){
+    const code = val;
+    const agencyNames = IATA_REVERSE[code] || [];
+    if(!agencyNames.length){
+      REDR_STATE.suggestions = [];
+      REDR_STATE.client = null;
+      hideRedrList();
+      updateRedrUI();
+      return;
+    }
+    let matches = [];
+    if(selectedComp && FAC_DB && FAC_DB[selectedComp] && FAC_DB[selectedComp].length > 0){
+      const compData = FAC_DB[selectedComp] || [];
+      agencyNames.forEach(name=>{
+        const norm = name.toUpperCase().trim();
+        compData.forEach(e=>{
+          const en = e.client.toUpperCase().trim();
+          if(en===norm || en.includes(norm) || norm.includes(en)) matches.push({...e, matchedName:name});
+        });
+      });
+      matches = matches.filter((m,i,a)=>a.findIndex(x=>x.client===m.client)<=i);
+    }
+    // Fallback : pas (ou pas encore) de FAC_DB pour cette Cie → on propose quand même le(s) nom(s) IATA
+    if(matches.length === 0){
+      matches = agencyNames.map(name=>({client:name, iata:code, montant:0, codeAux:'???'}));
+    }
+    REDR_STATE.suggestions = matches.slice(0, 12);
+    if(matches.length === 1){
+      // Auto-sélection — exactement comme le mode Code IATA
+      selectRedrClientByIdx0Silent(matches);
+    } else {
+      REDR_STATE.clientIdx = -1;
+      renderRedrList();
+    }
+    return;
+  }
+
+  // ─ Saisie NOM client → recherche texte ─
+  if(!selectedComp){
+    REDR_STATE.suggestions = [];
+    hideRedrList();
+    return;
+  }
+  const q = val.toUpperCase();
+  const seen = new Set();
+  const matches = [];
+  // SOURCE 1: FAC_DB[selectedComp]
+  if(FAC_DB && FAC_DB[selectedComp] && FAC_DB[selectedComp].length > 0){
+    const data = FAC_DB[selectedComp] || [];
+    data.forEach(e => {
+      if(e && e.client && e.client.toUpperCase().includes(q)){
+        const key = (e.client || '').toUpperCase();
+        if(!seen.has(key)){ seen.add(key); matches.push(e); }
+      }
+    });
+  }
+  // SOURCE 2: IATA_REVERSE (fallback)
+  if(matches.length === 0 && typeof IATA_REVERSE !== 'undefined'){
+    for(let iata in IATA_REVERSE){
+      IATA_REVERSE[iata].forEach(name=>{
+        if(name && name.toUpperCase().includes(q)){
+          const key = (name||'').toUpperCase();
+          if(!seen.has(key)){
+            seen.add(key);
+            matches.push({ client:name, iata:iata, montant:0, codeAux:'???' });
+          }
+        }
+      });
+    }
+  }
+  REDR_STATE.suggestions = matches.slice(0, 12);
+  REDR_STATE.clientIdx = -1;
+  renderRedrList();
+}
+
+// Sélection silencieuse (sans toucher la liste affichée) utilisée par l'auto-résolution IATA exacte
+function selectRedrClientByIdx0Silent(matches){
+  REDR_STATE.suggestions = matches;
+  REDR_STATE.clientIdx = 0;
+  selectRedrClient(matches[0]);
+}
+
+function onRedrClientKey(e){
+  const list = REDR_STATE.suggestions || [];
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    REDR_STATE.clientIdx = Math.min(REDR_STATE.clientIdx+1, list.length-1);
+    renderRedrList();
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    REDR_STATE.clientIdx = Math.max(REDR_STATE.clientIdx-1, -1);
+    renderRedrList();
+  } else if(e.key==='Enter'){
+    e.preventDefault();
+    if(REDR_STATE.clientIdx>=0){
+      selectRedrClientByIdx(REDR_STATE.clientIdx); // saute déjà au N° (variant)
+    } else if(list.length > 0){
+      selectRedrClientByIdx(0); // saute déjà au N° (variant)
+    } else if(REDR_STATE.client){
+      // Client déjà résolu (ex: auto-sélection code IATA exact) → on saute juste au N°
+      const n=document.getElementById('redr-num'); if(n) n.focus();
+    }
+  } else if(e.key==='Escape'){
+    hideRedrList();
+  }
+}
+
+function selectRedrClient(client){
+  REDR_STATE.client = client;
+  document.getElementById('redr-client').value = client.client || client.nomCompta || client.name;
+  updateRedrUI();
+  hideRedrList();
+  // Focus direct sur le N° de référence pour enchaîner la saisie
+  setTimeout(()=>{ const n=document.getElementById('redr-num'); if(n) n.focus(); },80);
+}
+
+function hideRedrList(){
+  const lst = document.getElementById('redr-ac-list');
+  if(lst) lst.style.display = 'none';
+}
+
+function renderRedrList(){
+  const lst = document.getElementById('redr-ac-list');
+  if(!lst) return;
+  const sugg = REDR_STATE.suggestions || [];
+  if(sugg.length===0){ lst.style.display = 'none'; return; }
+  lst.innerHTML = sugg.map((s,i)=>`
+    <div onclick="selectRedrClientByIdx(${i})"
+      style="padding:8px 12px;cursor:pointer;background:${i===REDR_STATE.clientIdx?'rgba(220,38,38,.08)':'transparent'};border-bottom:1px solid var(--bo);font-size:11px;user-select:none;color:var(--txt);">
+      ${s.client || s.nomCompta || s.name} <span style="font-size:9px;color:var(--txt3)">${s.iata||'—'}</span>
+    </div>
+  `).join('');
+  lst.style.display = 'block';
+}
+
+function selectRedrClientByIdx(idx){
+  const sugg = REDR_STATE.suggestions || [];
+  if(idx>=0 && idx<sugg.length) selectRedrClient(sugg[idx]);
+}
+
+function buildRedrRef(){
+  const prefix = document.getElementById('redr-prefix')?.value || 'RED N°';
+  const num = (document.getElementById('redr-num')?.value || '').trim();
+  const annee = (document.getElementById('redr-annee')?.value || '').trim();
+  const suffixe = (document.getElementById('redr-suffixe')?.value || '').trim();
+  if(!num) return prefix + '—/' + (annee||'—');
+  let ref = `${prefix}${num}`;
+  if(annee) ref += `/${annee}`;
+  if(suffixe) ref += ` ${suffixe.toUpperCase()}`;
+  return ref;
+}
+
+// Enter sur N° / Année / Suffixe → valide directement la ligne d'écriture
+function onRedrFieldEnterValidate(e){
+  if(e.key==='Enter'){
+    e.preventDefault();
+    addRedrEntry();
+  }
+}
+
+function onRedrRefPartChange(){
+  const preview = document.getElementById('redr-ref-preview');
+  if(preview) preview.textContent = buildRedrRef();
+  updateRedrUI();
+}
+
+function updateRedrUI(){
+  const info = document.getElementById('redr-client-info');
+  const btn = document.getElementById('redr-add-btn');
+  const mt = REDR_STATE.montant;
+  const cl = REDR_STATE.client;
+  const num = (document.getElementById('redr-num')?.value || '').trim();
+  if(!info || !btn) return;
+  if(mt && cl && num){
+    info.style.display = 'block';
+    const clientName = cl.client || cl.nomCompta || cl.name || '?';
+    const iata = cl.iata || '—';
+    const code = cl.codeAux || cl.aux || '???';
+    info.textContent = `✓ ${clientName} — ${REDR_STATE.montantDisplay} DA (${iata}) — CODE: ${code} — RÉF: ${buildRedrRef()}`;
+    btn.disabled = false;
+  } else {
+    info.style.display = 'none';
+    btn.disabled = true;
+  }
+}
+
+function addRedrEntry(){
+  const num = (document.getElementById('redr-num')?.value || '').trim();
+  if(!REDR_STATE.montant || !REDR_STATE.client || !selectedComp || !num){
+    showToast('Montant, client et N° de référence requis','error');
+    return;
+  }
+  const cl = REDR_STATE.client;
+  const mt = REDR_STATE.montant;
+  const clientName = cl.client || cl.nomCompta || cl.name;
+
+  const montantNum = parseFloat(mt);
+  if(isNaN(montantNum)){
+    showToast('⚠ Montant invalide','error');
+    return;
+  }
+
+  // Codes comptables — même résolution CORR que les autres modes
+  const nomCompta = getNomCompta(clientName);
+  const codeAux = getCodeAux(clientName);
+  const isFWTFlag = isFWT(clientName);
+  const ref = buildRedrRef();
+
+  entries.push({
+    id: nextId++,
+    comp: selectedComp,
+    client: clientName,
+    nomCompta: nomCompta,
+    codeAux: codeAux,
+    isFWT: isFWTFlag,
+    montant: montantNum,
+    periode: currentPeriode,
+    mois: currentMois,
+    ref,
+    isNew: false,
+    isRedressement: true
+  });
+
+  // Réinitialiser montant + client (on garde préfixe/année/suffixe pour enchaîner)
+  document.getElementById('redr-montant').value = '';
+  document.getElementById('redr-client').value = '';
+  document.getElementById('redr-num').value = '';
+  REDR_STATE.montant = '';
+  REDR_STATE.montantDisplay = '';
+  REDR_STATE.client = null;
+  REDR_STATE.clientIdx = -1;
+  hideRedrList();
+  onRedrRefPartChange();
+  updateStats();
+  renderTable();
+  showToast('⚖ '+nomCompta+' — redressement '+ref+' ajouté','success');
+  setTimeout(()=>{
+    const rows=document.querySelectorAll('#entries-container tr[data-id]');
+    if(rows.length) rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'nearest'});
+    document.getElementById('redr-montant').focus();
+  },60);
+}
+
 // switchSearch étendu pour NDC-F
 const _origSwitchSearch = typeof switchSearch !== 'undefined' ? switchSearch : null;
 function switchSearch(mode, el){
   NDCF_MODE = (mode==='ndcf');
   // Cacher tous les panneaux
-  ['iata','montant','ndcf','ancien'].forEach(m=>{
+  ['iata','montant','ndcf','ancien','redressement'].forEach(m=>{
     const p=document.getElementById('search-'+m);
     if(p)p.style.display='none';
     const b=document.getElementById('tab-'+m+'-btn');
@@ -6420,7 +7166,14 @@ function switchSearch(mode, el){
   if(mode==='ancien'){
     setTimeout(()=>{ const el=document.getElementById('ancien-montant'); if(el)el.focus(); },100);
   }
-  if(_origSwitchSearch && mode!=='ndcf' && mode!=='ancien') _origSwitchSearch(mode, el);
+  if(mode==='redressement'){
+    updateRedrPrefixOptions();
+    const an=document.getElementById('redr-annee'); if(an && !an.value) an.value=new Date().getFullYear();
+    const sf=document.getElementById('redr-suffixe'); if(sf && !sf.value) sf.value='REGLE';
+    onRedrRefPartChange();
+    setTimeout(()=>{ const el=document.getElementById('redr-montant'); if(el)el.focus(); },100);
+  }
+  if(_origSwitchSearch && mode!=='ndcf' && mode!=='ancien' && mode!=='redressement') _origSwitchSearch(mode, el);
 }
 
 // F1 dans NDC-F
@@ -7230,7 +7983,7 @@ function renderMtSugFAC(){
   const box=document.getElementById('mt-sug-fac');
   if(!box)return;
   box.innerHTML=mtSugFACList.map((e,i)=>{
-    const hi=i===mtSugFACIdx?'background:var(--sky-pale);':'background:#fff;';
+    const hi=i===mtSugFACIdx?'background:var(--sky-pale);':'background:var(--surface);';
     return `<div id="msfac${i}" onmousedown="selectMtSugFAC(${i})"
       style="padding:6px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;">
       <span style="font-weight:700;color:var(--green);min-width:100px;">${Math.round(e.montant).toLocaleString('fr-DZ')} DA</span>
@@ -7267,7 +8020,7 @@ function onNDCFFac(v){
 function renderNDCFFacSug(){
   const box=document.getElementById('ndcf-fac-suggest');
   box.innerHTML=ndcfFacSugList.map((d,i)=>{
-    const hi=i===ndcfFacSugIdx?'background:var(--sky-pale);':'background:#fff;';
+    const hi=i===ndcfFacSugIdx?'background:var(--sky-pale);':'background:var(--surface);';
     const clientLabel=d.client?d.client.compta:`<span style="color:#f87171">${d.agence}</span>`;
     return `<div id="ndfac${i}" onmousedown="selectNDCFFac(${i})"
       style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
@@ -7324,16 +8077,11 @@ function ndcfFacMK(e){
   }
 }
 
-// ══ SPLASH SCREEN ══════════════════════════════════════════════
+// ══ ÉCRAN D'ENTRÉE — message d'accueil (l'écran reste visible jusqu'à la connexion) ══
 (function(){
   const h=new Date().getHours();
   const msg=h<12?'Good Morning, Ready to Fly? ☕':'Welcome Back to the Skies ✈️';
   document.getElementById('splash-msg').textContent=msg;
-  setTimeout(()=>{
-    const s=document.getElementById('splash-screen');
-    s.style.opacity='0';
-    setTimeout(()=>s.style.display='none',1000);
-  },5000);
 })();
 
 
@@ -9783,7 +10531,7 @@ function rapCreateMultiPanel(){
   panel.style.cssText = `
     position:fixed; top:0; right:0; bottom:0; z-index:8500;
     width:min(700px,55vw);
-    background:#fff;
+    background:var(--surface);
     border-left:2.5px solid #0369a1;
     box-shadow:-8px 0 40px rgba(3,105,161,.18);
     display:flex; flex-direction:column; overflow:hidden;
@@ -9822,7 +10570,7 @@ function rapCreateMultiPanel(){
     </div>
 
     <!-- PIED RÉSUMÉ CONFIRMATIONS ─────────────────────────────────────────── -->
-    <div id="rap-multi-footer" style="padding:10px 16px;border-top:1.5px solid #bfdbfe;background:#fff;flex-shrink:0;font-size:9px;color:#64748b;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div id="rap-multi-footer" style="padding:10px 16px;border-top:1.5px solid #bfdbfe;background:var(--surface);flex-shrink:0;font-size:9px;color:var(--txt3);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
       <span id="rap-multi-conf-summary"></span>
       <button onclick="rapExport()" style="margin-left:auto;padding:5px 14px;background:linear-gradient(135deg,#059669,#047857);border:none;border-radius:6px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">⬇ Export avec confirmations</button>
     </div>
@@ -9959,7 +10707,7 @@ function rapRenderMultiPanel(){
               ? 'background:rgba(5,150,105,.04);border-color:rgba(5,150,105,.3);'
               : clientMismatch
                 ? 'background:rgba(220,38,38,.03);border-color:rgba(220,38,38,.2);'
-                : 'background:#fff;border-color:var(--bo,#e2e8f0);';
+                : 'background:var(--surface);border-color:var(--bo,#e2e8f0);';
 
           const clientBadge = rv.clientIdentifie
             ? `<span style="font-size:9px;background:${clientMatch?'#d1fae5':clientMismatch?'#fee2e2':'#eff6ff'};color:${clientMatch?'#065f46':clientMismatch?'#991b1b':'#1d4ed8'};border:1px solid ${clientMatch?'#a7f3d0':clientMismatch?'#fecaca':'#bfdbfe'};border-radius:4px;padding:1px 7px;font-weight:700;">
@@ -10004,7 +10752,7 @@ function rapRenderMultiPanel(){
 
     const borderColor = isSkipped ? 'rgba(217,119,6,.35)' : item._selectedRVIdx !== undefined ? 'rgba(5,150,105,.4)' : 'var(--bo,#e2e8f0)';
 
-    return `<div style="background:#fff;border:1.5px solid ${borderColor};border-radius:12px;overflow:hidden;" id="rap-multi-item-${globalIdx}">
+    return `<div style="background:var(--surface);border:1.5px solid ${borderColor};border-radius:12px;overflow:hidden;" id="rap-multi-item-${globalIdx}">
       <!-- EN-TÊTE LIGNE GL ─────────── -->
       <div style="padding:11px 14px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-bottom:1.5px solid var(--bo-sky,rgba(2,132,199,.2));display:flex;align-items:flex-start;gap:10px;">
         <div style="width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--sky-light,#0ea5e9),var(--sky-deep,#0369a1));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;margin-top:2px;">${globalIdx+1}</div>
@@ -10370,11 +11118,11 @@ function rapEditClientIdentifie(rvIdx) {
   overlay.id = overlayId;
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);';
   overlay.innerHTML = `
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:14px;padding:22px 26px;width:360px;box-shadow:0 20px 50px rgba(15,23,42,.18);">
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:14px;padding:22px 26px;width:360px;box-shadow:0 20px 50px rgba(15,23,42,.18);">
       <div style="font-size:10px;letter-spacing:2px;color:var(--sky);font-weight:800;margin-bottom:14px;text-transform:uppercase;">🔐 Affecter un Client — Ligne #${rvIdx+1}</div>
       <div style="font-size:11px;color:var(--txt2);margin-bottom:6px;padding:6px 10px;background:var(--bg2);border-radius:6px;border:1px solid var(--bo);font-family:var(--font-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${rv.libelle}">${rv.libelle}</div>
       <div style="font-size:10px;color:var(--txt3);margin-bottom:4px;font-weight:600;margin-top:12px;">Client (BAS_RAP) :</div>
-      <select id="rap-ci-select" style="width:100%;padding:8px 10px;border:1.5px solid var(--bo);border-radius:8px;font-family:var(--font-ui);font-size:12px;background:#fff;color:var(--txt);outline:none;">
+      <select id="rap-ci-select" style="width:100%;padding:8px 10px;border:1.5px solid var(--bo);border-radius:8px;font-family:var(--font-ui);font-size:12px;background:var(--surface);color:var(--txt);outline:none;">
         ${basOptions}
       </select>
       <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
@@ -10878,7 +11626,7 @@ function rapRenderConfirmation(){
         const sensLabel = isDep?'💸 DÉPENSE':'💰 RECETTE';
         const sensColor = isDep?'#92400e':'#0369a1';
         const sensBg = isDep?'#fef3c7':'#dbeafe';
-        return `<div style="background:#fff;border:2px solid rgba(3,105,161,.3);border-radius:10px;overflow:hidden;">
+        return `<div style="background:var(--surface);border:2px solid rgba(3,105,161,.3);border-radius:10px;overflow:hidden;">
           <div style="padding:10px 12px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <span style="font-size:9px;background:${sensBg};color:${sensColor};border-radius:6px;padding:2px 8px;font-weight:800;">${sensLabel}</span>
             <span style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:#0369a1;">${fmtA(amt)}</span>
@@ -10946,14 +11694,14 @@ function rapRenderConfirmation(){
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px;">
           <!-- GL -->
-          <div style="background:#fff;border:1px solid var(--bo);border-radius:6px;padding:8px 10px;">
+          <div style="background:var(--surface);border:1px solid var(--bo);border-radius:6px;padding:8px 10px;">
             <div style="font-size:8px;letter-spacing:1.5px;color:var(--sky-deep);font-weight:700;margin-bottom:5px;">📒 GRAND LIVRE</div>
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:2px;">${r.date||'—'} · ${r.ref||'—'}</div>
             <div style="color:var(--txt);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r.libelle}">${r.libelle}</div>
             <div style="margin-top:4px;font-size:10px;color:var(--sky-deep);font-weight:700;font-family:var(--font-mono);">${fmtA(r.debit)}</div>
           </div>
           <!-- RELEVÉ -->
-          <div style="background:#fff;border:1px solid var(--bo);border-radius:6px;padding:8px 10px;">
+          <div style="background:var(--surface);border:1px solid var(--bo);border-radius:6px;padding:8px 10px;">
             <div style="font-size:8px;letter-spacing:1.5px;color:var(--green);font-weight:700;margin-bottom:5px;">🏦 RELEVÉ BNA</div>
             ${rv ? `
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--txt3);margin-bottom:2px;">${rv.dateOp||'—'}</div>
@@ -11022,7 +11770,7 @@ function rapRenderConfirmation(){
         }
       }
 
-      return `<div style="display:flex;align-items:stretch;gap:0;background:#fff;border:1.5px solid rgba(220,38,38,.25);border-radius:8px;overflow:hidden;margin-bottom:5px;">
+      return `<div style="display:flex;align-items:stretch;gap:0;background:var(--surface);border:1.5px solid rgba(220,38,38,.25);border-radius:8px;overflow:hidden;margin-bottom:5px;">
         <!-- Bande rouge gauche -->
         <div style="width:5px;background:linear-gradient(180deg,#dc2626,#991b1b);flex-shrink:0;"></div>
         <!-- Contenu -->
@@ -11270,7 +12018,7 @@ function rapRenderRecap(){
       <th style="padding:5px 8px;font-size:8px;letter-spacing:1px;color:var(--txt3);text-align:center;">STATUT</th>
     </tr></thead>`;
 
-    return `<div style="background:#fff;border:2px solid ${s.sensKey==='rec'?'#93c5fd':'#fcd34d'};border-radius:14px;overflow:hidden;">
+    return `<div style="background:var(--surface);border:2px solid ${s.sensKey==='rec'?'#93c5fd':'#fcd34d'};border-radius:14px;overflow:hidden;">
       <!-- En-tête section -->
       <div style="padding:12px 16px;background:${s.sensKey==='rec'?'linear-gradient(135deg,#dbeafe,#eff6ff)':'linear-gradient(135deg,#fef3c7,#fffbeb)'};display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
         <span style="font-size:24px;">${s.icon}</span>
@@ -11297,7 +12045,7 @@ function rapRenderRecap(){
           <div style="background:${s.pctRapr>=95?'linear-gradient(135deg,#059669,#047857)':s.pctRapr>=70?'linear-gradient(135deg,#d97706,#b45309)':'linear-gradient(135deg,#dc2626,#991b1b)'};color:#fff;border-radius:20px;padding:4px 14px;font-size:13px;font-weight:900;font-family:var(--font-mono);">${s.pctRapr}%</div>
         </div>
       </div>
-      ${pctBar.replace('<div ', '<div style="padding:0 16px;background:#fff;" ><div ')}
+      ${pctBar.replace('<div ', '<div style="padding:0 16px;background:var(--surface);" ><div ')}
       <!-- Tableau combiné -->
       <div style="max-height:350px;overflow-y:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:11px;">
@@ -14341,6 +15089,61 @@ function sClientMonthly(compte,aux){
   });
   return{ca,ops,journals,monthly:mmap,year:targetYear};
 }
+// ══ RECHERCHE CLIENT GLOBALE (autocomplete base EBV → stats complètes) ══
+let GCS_RESULTS = [];
+function statGlobalClientSearch(v){
+  const list = document.getElementById('stat-gcs-list');
+  const q = _jbrNorm(v);
+  if(!q || q.length < 2){ list.classList.remove('on'); list.innerHTML=''; GCS_RESULTS=[]; return; }
+
+  GCS_RESULTS = BASE.filter(c => _jbrNorm(c.label).includes(q)).slice(0, 8);
+
+  if(GCS_RESULTS.length === 0){
+    list.innerHTML = `<div class="stat-gcs-empty">Aucun client ne correspond dans la base EBV</div>`;
+    list.classList.add('on');
+    return;
+  }
+
+  list.innerHTML = GCS_RESULTS.map((c,i) => `
+    <div class="stat-gcs-item" onmousedown="event.preventDefault();statSelectGlobalClient(${i})">
+      <span class="gcs-ico">${c.type==='165'?'🛂':'✈️'}</span>
+      <span class="gcs-name">${c.label}</span>
+      <span class="gcs-code">${c.code}</span>
+    </div>
+  `).join('');
+  list.classList.add('on');
+}
+function statGlobalClientSearchHide(){
+  const list = document.getElementById('stat-gcs-list');
+  if(list){ list.classList.remove('on'); }
+}
+function statSelectGlobalClient(i){
+  const c = GCS_RESULTS[i];
+  if(!c) return;
+  const list = document.getElementById('stat-gcs-list');
+  const inp = document.getElementById('stat-gcs-inp');
+  inp.value = c.label;
+  list.classList.remove('on');
+
+  if(!STAT.agg || STAT.agg.length === 0){
+    list.innerHTML = `<div class="stat-gcs-empty">⚡ Lancez d'abord l'analyse (bouton ANALYSER) pour voir les statistiques</div>`;
+    list.classList.add('on');
+    return;
+  }
+
+  const row = STAT.agg.find(r => r.aux === c.code || r.compte === c.code);
+  if(!row){
+    list.innerHTML = `<div class="stat-gcs-empty">Aucune opération pour <b>${c.label}</b> dans la période analysée</div>`;
+    list.classList.add('on');
+    return;
+  }
+  sOpenClientDrill(row.compte, row.aux);
+}
+document.addEventListener('click', e=>{
+  const wrap = document.querySelector('.stat-gcs-wrap');
+  if(wrap && !wrap.contains(e.target)) statGlobalClientSearchHide();
+});
+
 function sOpenClientDrill(compte,aux){
   const key=compte+'|'+(aux||compte);
   const row=STAT.agg.find(r=>(r.compte+'|'+(r.aux||r.compte))===key);
@@ -14927,8 +15730,8 @@ function sTopVendeurs(c){
     podiumHTML+=`
     <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0">
       <div style="font-size:${idx===0?'28px':'22px'}">${podiumEmoji[pi]}</div>
-      <div style="background:#fff;border:2px solid ${podiumColors[pi]};border-radius:12px;padding:10px 12px;width:100%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.08)">
-        <div style="font-size:9px;font-weight:800;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</div>
+      <div style="background:var(--surface);border:2px solid ${podiumColors[pi]};border-radius:12px;padding:10px 12px;width:100%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.08)">
+        <div style="font-size:9px;font-weight:800;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</div>
         <div style="font-size:8px;color:var(--txt3);margin:2px 0">${r.aux||r.compte}</div>
         <div style="font-size:12px;font-weight:900;color:var(--sky-deep);margin:4px 0">${SFM(r.total)}</div>
         <div style="display:flex;justify-content:center;gap:8px;font-size:8px;color:var(--txt4);margin-bottom:4px">
@@ -15013,7 +15816,7 @@ function sTopVendeurs(c){
     </div>
     <!-- Rang 4–20 -->
     ${rest.length?`
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:10px">
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:10px">
       <div style="font-size:10px;font-weight:800;color:var(--txt);letter-spacing:.5px;margin-bottom:8px">📊 CLASSEMENT COMPLET — Rang 4 à ${Math.min(20,all.length)}</div>
       <div style="display:flex;flex-direction:column;gap:2px">${restHTML}</div>
     </div>`:``}
@@ -15253,8 +16056,8 @@ function sCliEvol(c){
     </div>
     ${ctrlHTML}
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin:8px 0;padding:8px;background:var(--bg2);border-radius:8px">${selHTML}</div>
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:8px;margin-bottom:10px;overflow-x:auto">${svg}</div>
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;overflow-x:auto">${tblH}</div>
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:8px;margin-bottom:10px;overflow-x:auto">${svg}</div>
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;overflow-x:auto">${tblH}</div>
   </div>`;
 }
 
@@ -15389,8 +16192,8 @@ function sHeatmap(c){
     const evoBadge=evo!==null?`<span style="font-size:7.5px;font-weight:800;color:${evo>=0?'#059669':'#dc2626'}">${evo>=0?'↑':'↓'}${Math.abs(evo).toFixed(0)}%</span>`:'';
     const journals=[...d.r.journals].slice(0,2).map(j=>`<span style="background:${SCOL[j]||'#6b7280'};color:#fff;border-radius:2px;padding:0 3px;font-size:7px;margin-right:2px">${j}</span>`).join('');
     tbody+=`<tr>
-      <td style="position:sticky;left:0;background:#fff;z-index:1;font-size:8.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;padding:3px 8px" title="${d.r.name}">${d.r.name}</td>
-      <td style="position:sticky;left:150px;background:#fff;z-index:1;padding:3px 4px;white-space:nowrap">${journals}</td>
+      <td style="position:sticky;left:0;background:var(--surface);z-index:1;font-size:8.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;padding:3px 8px" title="${d.r.name}">${d.r.name}</td>
+      <td style="position:sticky;left:150px;background:var(--surface);z-index:1;padding:3px 4px;white-space:nowrap">${journals}</td>
       <td style="text-align:right;font-size:8px;font-weight:800;color:var(--sky-deep);padding:3px 6px;white-space:nowrap;min-width:90px">
         ${totCA>=1e6?(totCA/1e6).toFixed(2)+'M':totCA>=1e3?Math.round(totCA/1e3)+'K':Math.round(totCA)} DA
         ${evoBadge}
@@ -15441,11 +16244,11 @@ function sHeatmap(c){
       </div>
     </div>
     ${modeHTML}
-    <div style="margin-top:8px;background:#fff;border:1.5px solid var(--bo);border-radius:10px;overflow:auto">
+    <div style="margin-top:8px;background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:auto">
       <table class="stat-tbl" style="border-collapse:collapse;min-width:100%">
         <thead><tr>
-          <th style="position:sticky;left:0;background:#fff;z-index:2;min-width:150px;font-size:8.5px">CLIENT</th>
-          <th style="position:sticky;left:150px;background:#fff;z-index:2;font-size:8px;min-width:50px">CIE</th>
+          <th style="position:sticky;left:0;background:var(--surface);z-index:2;min-width:150px;font-size:8.5px">CLIENT</th>
+          <th style="position:sticky;left:150px;background:var(--surface);z-index:2;font-size:8px;min-width:50px">CIE</th>
           <th style="min-width:90px;font-size:8px;text-align:right">CA ${curYear}</th>
           <th style="min-width:30px;font-size:8px;text-align:right">OPS</th>
           ${colHeader}
@@ -15586,7 +16389,7 @@ function sCompare(c){
     </div>
     
     <!-- Tableau détaillé -->
-    <div style="margin-top:16px;background:#fff;border-radius:10px;border:1.5px solid var(--bo);overflow:hidden;">
+    <div style="margin-top:16px;background:var(--surface);border-radius:10px;border:1.5px solid var(--bo);overflow:hidden;">
       <div style="padding:12px 16px;border-bottom:1px solid var(--bo);background:linear-gradient(135deg,rgba(124,58,237,.04),rgba(168,85,247,.04));">
         <div style="font-size:10px;font-weight:800;color:#7c3aed;letter-spacing:1px;display:flex;align-items:center;gap:6px;">
           📋 Évolution détaillée — Top 20
@@ -15795,7 +16598,7 @@ function sPareto(c){
     {ico:'💎',lbl:'CA Top 20%',val:SFM(d.slice(0,Math.ceil(n*0.2)).reduce((s,r)=>s+r.total,0)),sub:`${Math.ceil(n*0.2)} clients vitaux`,color:'#dc2626'},
     {ico:'📊',lbl:'CA 80% (seuil)',val:SFM(ca80),sub:`atteint à client #${n80}`,color:'#d97706'},
   ];
-  const kpiHTML=kpis.map(k=>`<div style="flex:1;min-width:160px;background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:10px 12px;border-left:3px solid ${k.color}">
+  const kpiHTML=kpis.map(k=>`<div style="flex:1;min-width:160px;background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:10px 12px;border-left:3px solid ${k.color}">
     <div style="font-size:9px;font-weight:700;color:var(--txt3);margin-bottom:4px">${k.ico} ${k.lbl}</div>
     <div style="font-size:12px;font-weight:900;color:${k.color};line-height:1.2">${k.val}</div>
     <div style="font-size:8px;color:var(--txt4);margin-top:2px">${k.sub}</div>
@@ -15805,8 +16608,8 @@ function sPareto(c){
     <div style="font-size:10px;font-weight:800;color:#0d9488;letter-spacing:1px;margin-bottom:10px">📐 ANALYSE PARETO 80/20 — Loi de Lorenz · Indice de Gini</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${kpiHTML}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;align-items:start">
-      <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:12px">${svgLorenz}</div>
-      <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:12px">
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:12px">${svgLorenz}</div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:12px">
         <div style="font-size:9px;font-weight:800;color:var(--txt3);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">📊 Segmentation Pareto</div>
         ${[
           {seg:'★ Vital (0–20% CA cumulé)',color:'#dc2626',clients:rows.filter(r=>r.cumPctCA<=20)},
@@ -15827,7 +16630,7 @@ function sPareto(c){
         }).join('')}
       </div>
     </div>
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;overflow:hidden">
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden">
       <div style="padding:8px 14px;background:linear-gradient(135deg,rgba(13,148,136,.06),transparent);border-bottom:1px solid var(--bo)">
         <span style="font-size:9.5px;font-weight:800;color:#0d9488">📋 Détail Pareto — Top 25 clients</span>
         <span style="font-size:8px;color:var(--txt3);margin-left:8px">Fond vert = zone 80% CA</span>
@@ -15899,7 +16702,7 @@ function sStatsDesc(c){
     const{b,r2}=olsRegression(mKeys.map((_,i)=>i+1),mVals);
     const isUp=b>0;
     const bPerMonth=b;
-    regHTML=`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border:1.5px solid var(--bo);border-radius:8px;margin-bottom:10px">
+    regHTML=`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border:1.5px solid var(--bo);border-radius:8px;margin-bottom:10px">
       <span style="font-size:20px">${isUp?'📈':'📉'}</span>
       <div>
         <div style="font-size:9px;font-weight:800;color:var(--txt3)">RÉGRESSION LINÉAIRE OLS — Tendance mensuelle (R²=${r2.toFixed(3)})</div>
@@ -15987,7 +16790,7 @@ function sStatsDesc(c){
         </div>
       </div>
     </div>
-    ${outliers.length>0?`<div style="background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:12px;margin-top:10px">
+    ${outliers.length>0?`<div style="background:var(--surface);border:1.5px solid #fde68a;border-radius:10px;padding:12px;margin-top:10px">
       <div style="font-size:9.5px;font-weight:800;color:#92400e;margin-bottom:8px">⚠️ OUTLIERS DÉTECTÉS (méthode IQR · R boxplot) — ${outliers.length} client(s) hors Q3+1.5×IQR</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px">${outliers.sort((a,b)=>b.total-a.total).map(r=>`
         <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;font-size:9px">
@@ -15996,7 +16799,7 @@ function sStatsDesc(c){
           <div style="color:#a16207;font-size:8px">${SFN(r.ops)} ops · ${(r.total/totCA*100).toFixed(1)}% du CA</div>
         </div>`).join('')}</div>
     </div>`:''}
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;padding:12px;margin-top:10px">${svgHist}</div>
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:12px;margin-top:10px">${svgHist}</div>
   </div>`;
 }
 
@@ -16154,7 +16957,7 @@ function sSegment(c){
     <div style="font-size:10px;font-weight:800;color:#be185d;letter-spacing:1px;margin-bottom:6px">🎯 SEGMENTATION CLIENTS — Power BI RFM · SPSS K-means · Score composite CA+OPS+Couverture</div>
     <div style="font-size:8.5px;color:var(--txt3);margin-bottom:12px">Algorithme : score pondéré (CA 60% · OPS 25% · couverture mois 15%) · Seuils percentiles automatiques · YoY vs ${(STAT.year||2026)-1}</div>
     <div class="seg-grid">${segCards}</div>
-    <div style="background:#fff;border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;margin-top:12px">
+    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;margin-top:12px">
       <div style="padding:8px 14px;border-bottom:1px solid var(--bo);font-size:9.5px;font-weight:800;color:#be185d">📊 Tableau croisé Segments × Compagnies</div>
       <div style="overflow-x:auto">${crossTbl}</div>
     </div>
@@ -17488,7 +18291,7 @@ function fluxCreateEcriture() {
         <div class="rap-status" id="rv-status"></div>
         <div class="rap-progress" id="rv-prog"><div class="rap-progress-fill" id="rv-prog-fill" style="width:0%"></div></div>
         <!-- 🔐 VERROU — Tableau RV avec colonne Client Identifié -->
-        <div id="rap-rv-table-container" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--bo);border-radius:var(--r-sm);background:#fff;display:none;"></div>
+        <div id="rap-rv-table-container" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--bo);border-radius:var(--r-sm);background:var(--surface);display:none;"></div>
       </div>
 
       <!-- Import Base Rapprochement -->
@@ -17643,7 +18446,7 @@ function fluxCreateEcriture() {
           <button onclick="(function(){var m=document.getElementById('rap-export-menu');m.style.display=m.style.display==='block'?'none':'block';})()"
             style="padding:7px 8px;background:linear-gradient(135deg,#047857,#065f46);border:none;border-left:1px solid rgba(255,255,255,.2);border-top-right-radius:7px;border-bottom-right-radius:7px;color:#fff;cursor:pointer;font-size:11px;"
             title="Options d'export">▼</button>
-          <div id="rap-export-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1.5px solid var(--bo2);border-radius:10px;box-shadow:0 8px 24px rgba(15,23,42,.12);z-index:999;min-width:230px;overflow:hidden;">
+          <div id="rap-export-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1.5px solid var(--bo2);border-radius:10px;box-shadow:0 8px 24px rgba(15,23,42,.12);z-index:999;min-width:230px;overflow:hidden;">
             <div style="padding:8px 14px;font-size:9px;font-weight:700;color:var(--txt3);letter-spacing:1.5px;border-bottom:1px solid var(--bo);background:var(--bg2);">EXPORTER…</div>
             <button onclick="document.getElementById('rap-export-menu').style.display='none';rapExportMode('both')" style="display:block;width:100%;padding:10px 14px;text-align:left;background:none;border:none;border-bottom:1px solid var(--bo);cursor:pointer;font-size:11px;color:var(--txt);font-family:var(--font-ui);" onmouseover="this.style.background='var(--sky-pale)'" onmouseout="this.style.background=''">📦 Export complet (Recettes + Dépenses)</button>
             <button onclick="document.getElementById('rap-export-menu').style.display='none';rapExportMode('rec')" style="display:block;width:100%;padding:10px 14px;text-align:left;background:none;border:none;border-bottom:1px solid var(--bo);cursor:pointer;font-size:11px;color:#0369a1;font-weight:700;font-family:var(--font-ui);" onmouseover="this.style.background='var(--sky-pale)'" onmouseout="this.style.background=''">💰 RECETTES seulement</button>
@@ -17739,7 +18542,7 @@ function fluxCreateEcriture() {
         </div>
       </div>
 
-      <div id="rap-footer" style="display:none;padding:8px 16px;background:#fff;border-top:1.5px solid var(--bo);display:flex;gap:16px;font-size:11px;flex-shrink:0;flex-wrap:wrap;align-items:center;">
+      <div id="rap-footer" style="display:none;padding:8px 16px;background:var(--surface);border-top:1.5px solid var(--bo);display:flex;gap:16px;font-size:11px;flex-shrink:0;flex-wrap:wrap;align-items:center;">
         <span><span id="rfoot-gl-lbl">Total GL (Débits) :</span> <strong class="mono" id="rfoot-gl" style="font-family:var(--font-mono);color:var(--sky-deep);">0 DA</strong></span>
         <span style="color:var(--txt3);">−</span>
         <span><span id="rfoot-rv-lbl">Total RV rapproché (Crédits) :</span> <strong class="mono" id="rfoot-rv" style="font-family:var(--font-mono);color:var(--green);">0 DA</strong></span>
@@ -18005,6 +18808,7 @@ function fluxCreateEcriture() {
       <div class="stat-hdr-sub" id="stat-hdr-sub">Importez un grand livre pour démarrer l'analyse</div>
     </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <div class="stat-live"><span class="dot"></span>EN DIRECT</div>
       <div class="stat-period-pill" id="stat-period-pill" style="display:none"></div>
     </div>
   </div>
@@ -18026,6 +18830,18 @@ function fluxCreateEcriture() {
         <div class="stat-fname" id="stat-fname"></div>
         <div class="stat-status" id="stat-status"></div>
         <div class="stat-prog" id="stat-prog"><div class="stat-prog-fill" id="stat-prog-fill"></div></div>
+      </div>
+
+      <!-- RECHERCHE CLIENT GLOBALE (base EBV) -->
+      <div class="stat-sect">
+        <div class="stat-sect-title">🔎 Rechercher un Client</div>
+        <div class="stat-gcs-wrap">
+          <input class="stat-gcs-inp" id="stat-gcs-inp" type="text" placeholder="Tapez le nom du client…"
+            autocomplete="off" oninput="statGlobalClientSearch(this.value)"
+            onkeydown="if(event.key==='Escape')statGlobalClientSearchHide()">
+          <div class="stat-gcs-list" id="stat-gcs-list"></div>
+        </div>
+        <div class="stat-gcs-hint">Suggestions issues de la base clients EBV (411/165)</div>
       </div>
 
       <!-- PÉRIODE AVANCÉE -->
@@ -18268,7 +19084,39 @@ function fluxCreateEcriture() {
   </div>
 </div><!-- /module-stat -->
 
+<!-- ═══ THÈME — Choix unique à l'entrée de session ═══ -->
+<div id="fwt-night-sky"></div>
+<script>
+(function(){
+  function applyTheme(mode){
+    document.documentElement.classList.toggle('dark-mode', mode === 'dark');
+    var bl=document.getElementById('tp-light'), bd=document.getElementById('tp-dark');
+    if(bl) bl.classList.toggle('on', mode !== 'dark');
+    if(bd) bd.classList.toggle('on', mode === 'dark');
+  }
+  // Choix valable pour la session en cours uniquement (onglet navigateur)
+  window.fwtSetSessionTheme = function(mode){
+    sessionStorage.setItem('fwt-theme', mode);
+    applyTheme(mode);
+  };
+  var saved = sessionStorage.getItem('fwt-theme');
+  applyTheme(saved || 'dark');
 
+  // ── Parallax interactif du ciel étoilé (souris) — actif uniquement en mode nuit ──
+  var sky = document.getElementById('fwt-night-sky');
+  var raf = null;
+  document.addEventListener('mousemove', function(e){
+    if(!document.documentElement.classList.contains('dark-mode')) return;
+    if(raf) return;
+    raf = requestAnimationFrame(function(){
+      var dx = (e.clientX / window.innerWidth  - .5) * 14;
+      var dy = (e.clientY / window.innerHeight - .5) * 14;
+      sky.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
+      raf = null;
+    });
+  }, {passive:true});
+})();
+</script>
 
 </body>
 </html>
