@@ -24528,28 +24528,40 @@ function fluxCreateEcriture() {
     return new File([buf],name,{type:'application/octet-stream'});
   }
 
+  function ghWaitTick(ms){ return new Promise(res=>setTimeout(res, ms||600)); }
+
   async function ghLoadOne(f){
     const file=await ghFetchFile(f.name);
-    if(f.name==='BAS_RAP.xlsx'){
-      if(typeof rapParseBAS==='function') rapParseBAS(file);
-      else throw new Error('rapParseBAS indisponible');
+    if(f.name==='BAS RAP.xlsx'){
+      if(typeof rapParseBAS!=='function') throw new Error('rapParseBAS indisponible');
+      rapParseBAS(file);
+      await ghWaitTick();
     } else if(f.name==='CLNDC.xlsx'){
-      if(typeof importNDCFClients==='function') importNDCFClients({files:[file]});
-      else throw new Error('importNDCFClients indisponible');
+      if(typeof importNDCFClients!=='function') throw new Error('importNDCFClients indisponible');
+      importNDCFClients({files:[file]});
+      await ghWaitTick();
     } else if(f.name==='SBAS.xls'){
-      if(typeof importIATAClients==='function') importIATAClients({files:[file]});
-      else throw new Error('importIATAClients indisponible');
+      if(typeof importIATAClients!=='function') throw new Error('importIATAClients indisponible');
+      importIATAClients({files:[file]});
+      await ghWaitTick();
     } else if(f.name==='JBR.xlsx'){
       // importClients() demande normalement le type (411/165/181) via prompt() ;
       // le fichier JBR.xlsx contient des codes 1650xxx (comptes 165 = Caution)
       // donc on répond automatiquement "165" à sa place pour un chargement silencieux.
+      // ⚠️ Le prompt() n'est en réalité appelé que dans le callback ASYNCHRONE du
+      // FileReader (après lecture) : on ne restaure prompt() qu'après avoir attendu
+      // que ce traitement soit terminé, sinon la vraie boîte de dialogue reprend le
+      // dessus et l'import échoue silencieusement.
       if(typeof importClients!=='function') throw new Error('importClients indisponible');
       const _origPrompt=window.prompt;
       window.prompt=()=>'165';
-      try{ importClients({files:[file]}); } finally { window.prompt=_origPrompt; }
+      try{ importClients({files:[file]}); await ghWaitTick(); } finally { window.prompt=_origPrompt; }
     } else if(f.name==='STAT.xlsx'){
-      if(typeof sLoad==='function') sLoad(file);
-      else throw new Error('sLoad indisponible');
+      if(typeof sLoad!=='function') throw new Error('sLoad indisponible');
+      sLoad(file);
+      await ghWaitTick(1500); // fichier volumineux (~50 000 lignes) → laisser plus de temps
+    } else {
+      throw new Error('nom de fichier non reconnu par le chargeur');
     }
   }
 
