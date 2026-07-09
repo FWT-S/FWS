@@ -24491,5 +24491,98 @@ function fluxCreateEcriture() {
 })();
 </script>
 
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     v54 : CHARGEMENT AUTOMATIQUE DES BASES DEPUIS GITHUB
+     Au chargement de la page (et via le bouton flottant), l'app va chercher
+     les 5 fichiers de base sur https://fwt-s.github.io/FWS/ et les injecte
+     dans les mêmes fonctions d'import que celles utilisées par les boutons
+     manuels — aucune donnée n'est stockée ailleurs que dans la mémoire du
+     navigateur, exactement comme un import manuel classique.
+     Pour mettre à jour une base : remplacer le fichier sur GitHub (Add file
+     → Upload files → même nom → Commit), puis cliquer "🔄 Recharger" (ou
+     recharger la page).
+════════════════════════════════════════════════════════════════════════ -->
+<div id="gh-autoload-btn" title="Recharger les bases depuis GitHub" style="position:fixed;bottom:16px;right:16px;z-index:99999;background:#111827;color:#e5e7eb;font-family:Arial,sans-serif;font-size:11px;padding:8px 12px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.35);cursor:pointer;display:flex;align-items:center;gap:6px;opacity:.85;transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.85" onclick="ghAutoLoadAll(false)">
+  <span id="gh-autoload-dot" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>
+  <span id="gh-autoload-lbl">Bases GitHub</span>
+</div>
+
+<script>
+(function(){
+  const GH_BASE_URL='https://fwt-s.github.io/FWS/';
+  const GH_FILES=[
+    {name:'BAS_RAP.xlsx', label:'BAS_RAP (clients JBR)'},
+    {name:'CLNDC.xlsx',   label:'CLNDC (clients NDC)'},
+    {name:'SBAS.xls',     label:'SBAS (base IATA)'},
+    {name:'JBR.xlsx',     label:'JBR (codes 165)'},
+    {name:'STAT.xlsx',    label:'STAT (journal + SUP COM)'}
+  ];
+
+  async function ghFetchFile(name){
+    const url=GH_BASE_URL+encodeURIComponent(name)+'?t='+Date.now(); // cache-bust
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const buf=await res.arrayBuffer();
+    if(!buf||!buf.byteLength) throw new Error('fichier vide');
+    return new File([buf],name,{type:'application/octet-stream'});
+  }
+
+  async function ghLoadOne(f){
+    const file=await ghFetchFile(f.name);
+    if(f.name==='BAS_RAP.xlsx'){
+      if(typeof rapParseBAS==='function') rapParseBAS(file);
+      else throw new Error('rapParseBAS indisponible');
+    } else if(f.name==='CLNDC.xlsx'){
+      if(typeof importNDCFClients==='function') importNDCFClients({files:[file]});
+      else throw new Error('importNDCFClients indisponible');
+    } else if(f.name==='SBAS.xls'){
+      if(typeof importIATAClients==='function') importIATAClients({files:[file]});
+      else throw new Error('importIATAClients indisponible');
+    } else if(f.name==='JBR.xlsx'){
+      // importClients() demande normalement le type (411/165/181) via prompt() ;
+      // le fichier JBR.xlsx contient des codes 1650xxx (comptes 165 = Caution)
+      // donc on répond automatiquement "165" à sa place pour un chargement silencieux.
+      if(typeof importClients!=='function') throw new Error('importClients indisponible');
+      const _origPrompt=window.prompt;
+      window.prompt=()=>'165';
+      try{ importClients({files:[file]}); } finally { window.prompt=_origPrompt; }
+    } else if(f.name==='STAT.xlsx'){
+      if(typeof sLoad==='function') sLoad(file);
+      else throw new Error('sLoad indisponible');
+    }
+  }
+
+  window.ghAutoLoadAll=async function(silent){
+    const dot=document.getElementById('gh-autoload-dot');
+    const lbl=document.getElementById('gh-autoload-lbl');
+    if(dot) dot.style.background='#f59e0b';
+    if(lbl) lbl.textContent='Chargement…';
+    // Pendant le chargement silencieux automatique, on évite les alert()
+    // internes des fonctions d'import pour ne pas bloquer l'ouverture de page.
+    const _origAlert=window.alert;
+    if(silent) window.alert=function(){};
+    const results=[];
+    for(const f of GH_FILES){
+      try{ await ghLoadOne(f); results.push({...f,ok:true}); }
+      catch(e){ console.warn('[GitHub AutoLoad] échec '+f.name+' :',e.message); results.push({...f,ok:false,err:e.message}); }
+    }
+    if(silent) window.alert=_origAlert;
+    const ok=results.filter(r=>r.ok).length;
+    if(dot) dot.style.background=ok===results.length?'#059669':ok>0?'#f59e0b':'#dc2626';
+    if(lbl) lbl.textContent=`Bases GitHub (${ok}/${results.length})`;
+    if(!silent){
+      alert('Chargement depuis GitHub :\n\n'+results.map(r=>`${r.ok?'✅':'❌'} ${r.label}${r.ok?'':' — '+r.err}`).join('\n'));
+    }
+    return results;
+  };
+
+  // Chargement automatique et silencieux à l'ouverture de la page.
+  // En cas d'échec (hors ligne, fichier pas encore uploadé sur GitHub…),
+  // l'import manuel classique via les boutons reste disponible normalement.
+  window.addEventListener('load',()=>{ setTimeout(()=>{ ghAutoLoadAll(true).catch(()=>{}); },800); });
+})();
+</script>
+
 </body>
 </html>
