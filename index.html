@@ -2398,13 +2398,22 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
       <div class="entry-globe-col">
   <div class="entry-tag-top">Four Winds Travels · Comptabilité</div>
   <div class="entry-rings">
-    <svg class="globe-svg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg">
+    <svg class="globe-svg" id="fwtMapSvg" viewBox="-140 20 740 460" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="globeGlow" cx="48%" cy="42%" r="62%">
           <stop offset="0%" stop-color="rgba(56,189,248,.20)"/>
           <stop offset="100%" stop-color="rgba(56,189,248,0)"/>
         </radialGradient>
-        <clipPath id="globeClip"><circle cx="260" cy="260" r="259"/></clipPath>
+        <radialGradient id="landVolume" cx="34%" cy="22%" r="95%">
+          <stop offset="0%"  stop-color="#3a92d4"/>
+          <stop offset="45%" stop-color="#1f699f"/>
+          <stop offset="100%" stop-color="#0c3357"/>
+        </radialGradient>
+        <clipPath id="globeClip"><rect x="-139" y="21" width="738" height="458" rx="0"/></clipPath>
+        <filter id="coastGlow" x="-15%" y="-15%" width="130%" height="130%">
+          <feGaussianBlur stdDeviation=".35" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
       </defs>
 
       <g clip-path="url(#globeClip)">
@@ -2423,7 +2432,7 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
              Source : Simple SVG World Map (Al MacDonald / Fritz Lekschas) — CC BY-SA 3.0
              https://github.com/flekschas/simple-world-map
              Recadrée sur la zone Amérique du Nord / Europe / Afrique / Moyen-Orient (réseau FWT) ── -->
-        <g id="wmap-root" transform="translate(-300,-388) scale(1.6)" class="wmap-real">
+        <g id="wmap-root" transform="translate(-587.76,-703.82) scale(2.2104)" class="wmap-real" filter="url(#coastGlow)">
 
     <path id="wmap-_somaliland" d="M512.674,502.797l3.526,2.403l1.046-0.052l8.757-3.008l0.994,3.206l-0.701,2.706l-1.893,1.503l-4.729-0.302l-6.769-4.158L512.674,502.797L512.674,502.797z"/>
     <path id="wmap-ae" d="M528.466,468.135l0.753,3.008l8.522,0.752l0.596-6.172l1.644-0.897l0.448-2.257l-2.688,0.753l-2.99,4.521L528.466,468.135L528.466,468.135z"/>
@@ -2815,153 +2824,77 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
     <path id="wmap-zw" d="M468.52,578.226l7.755,8.757l5.946,1.513l3.984-6.248l-0.312-8.281l-6.465-3.337l-2.431,1.098l-3.62,5.524l-5.014-0.053L468.52,578.226L468.52,578.226z"/>
         </g>
 
-        <!-- Méridiens (longitudes) — balayage animé simulant la rotation du globe -->
-        <ellipse cx="260" cy="260" ry="259" rx="259" fill="none" stroke="rgba(125,211,252,.22)" stroke-width="1"/>
-        <ellipse cx="260" cy="260" ry="259" rx="259" fill="none" stroke="rgba(125,211,252,.22)" stroke-width="1">
-          <animate attributeName="rx" values="259;0;259" dur="9s" repeatCount="indefinite"/>
-        </ellipse>
-        <ellipse cx="260" cy="260" ry="259" rx="0" fill="none" stroke="rgba(125,211,252,.20)" stroke-width="1">
-          <animate attributeName="rx" values="0;259;0" dur="9s" repeatCount="indefinite"/>
-        </ellipse>
-        <ellipse cx="260" cy="260" ry="259" rx="130" fill="none" stroke="rgba(125,211,252,.16)" stroke-width="1">
-          <animate attributeName="rx" values="130;259;0;130" dur="13s" repeatCount="indefinite"/>
-        </ellipse>
+        <!-- Grille cartographique plate (méridiens verticaux, style carte plane comme référence SKYWAYS) -->
+        <line x1="90"  y1="0" x2="90"  y2="520" stroke="rgba(125,211,252,.10)"/>
+        <line x1="175" y1="0" x2="175" y2="520" stroke="rgba(125,211,252,.12)"/>
+        <line x1="260" y1="0" x2="260" y2="520" stroke="rgba(125,211,252,.16)"/>
+        <line x1="345" y1="0" x2="345" y2="520" stroke="rgba(125,211,252,.12)"/>
+        <line x1="430" y1="0" x2="430" y2="520" stroke="rgba(125,211,252,.10)"/>
 
         <!-- Routes aériennes FWT — Alger vers les pays des compagnies partenaires (positions réelles, recalculées en JS au chargement, 6 emplacements secondaires) -->
-        <path id="rt1" d="M341,312 Q403,304 466,297" fill="none" stroke="rgba(212,161,61,.30)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt2" d="M341,312 Q344,276 348,240" fill="none" stroke="rgba(212,161,61,.26)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt3" d="M341,312 Q220,275 100,239" fill="none" stroke="rgba(125,211,252,.24)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt4" d="M341,312 Q349,282 357,252" fill="none" stroke="rgba(212,161,61,.22)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt5" d="M341,312 Q354,294 368,275" fill="none" stroke="rgba(212,161,61,.20)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt6" d="M341,312 Q348,297 355,282" fill="none" stroke="rgba(125,211,252,.20)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt1" d="M321.2,310.2 Q410.7,296.5 470.4,242.5" fill="none" stroke="rgba(212,161,61,.30)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt2" d="M321.2,310.2 Q346.6,222.6 307.4,163.8" fill="none" stroke="rgba(212,161,61,.26)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt3" d="M321.2,310.2 Q161.0,176.5 -35.2,162.4" fill="none" stroke="rgba(125,211,252,.24)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt4" d="M321.2,310.2 Q349.1,235.0 319.9,180.3" fill="none" stroke="rgba(212,161,61,.22)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt5" d="M321.2,310.2 Q349.7,256.6 335.1,212.1" fill="none" stroke="rgba(212,161,61,.20)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt6" d="M321.2,310.2 Q338.6,258.3 317.1,221.8" fill="none" stroke="rgba(125,211,252,.20)" stroke-width="1" stroke-dasharray="3 5"/>
 
-        <circle r="2.2" fill="#fff"><animateMotion id="rtMotion1" dur="4.2s" repeatCount="indefinite" path="M341,312 Q403,304 466,297"/></circle>
-        <circle r="2"   fill="#fff"><animateMotion id="rtMotion2" dur="5.5s" repeatCount="indefinite" path="M341,312 Q344,276 348,240"/></circle>
-        <circle r="2"   fill="#fff"><animateMotion id="rtMotion3" dur="4.8s" repeatCount="indefinite" path="M341,312 Q220,275 100,239"/></circle>
-        <circle r="1.8" fill="#fff"><animateMotion id="rtMotion4" dur="5.1s" repeatCount="indefinite" path="M341,312 Q349,282 357,252"/></circle>
-        <circle r="1.8" fill="#fff"><animateMotion id="rtMotion5" dur="4.5s" repeatCount="indefinite" path="M341,312 Q354,294 368,275"/></circle>
-        <circle r="1.8" fill="#fff"><animateMotion id="rtMotion6" dur="5.8s" repeatCount="indefinite" path="M341,312 Q348,297 355,282"/></circle>
+        <!-- Avion unique — bascule d'une destination à l'autre par alternance (aucun zoom caméra) -->
+        <g id="mainPlane" filter="url(#planeGlow)">
+          <animateMotion id="mainPlaneMotion" dur="3.3s" repeatCount="1" fill="freeze" rotate="auto" path="M321.2,310.2 Q349.1,235.0 319.9,180.3"/>
+          <g transform="rotate(90) scale(.46)">
+            <path d="M0,-15.5L2.3,-9.5L2.3,-2.4L15,4.6L15,7.6L2.3,4.4L2.3,9.2L6.4,12.4L6.4,14.6L0,12.9L-6.4,14.6L-6.4,12.4L-2.3,9.2L-2.3,4.4L-15,7.6L-15,4.6L-2.3,-2.4L-2.3,-9.5Z" fill="#f5a83a" stroke="#c9701b" stroke-width="0.8" stroke-linejoin="round"/>
+          </g>
+        </g>
       </g>
 
-      <circle cx="260" cy="260" r="259" fill="none" stroke="rgba(125,211,252,.4)" stroke-width="1.2"/>
+      <rect x="2" y="2" width="516" height="516" rx="15" fill="none" stroke="rgba(125,211,252,.4)" stroke-width="1.2"/>
 
       <!-- Villes (points lumineux qui scintillent) — 6 destinations secondaires (positions/étiquettes gérées en JS, celle qui n'est pas ici devient la destination principale en pin) -->
       <g>
-        <circle id="cityDot1" cx="466" cy="297" r="2.4" fill="var(--radar)"><animate attributeName="opacity" values=".4;1;.4" dur="2.6s" repeatCount="indefinite" begin=".4s"/></circle>
-        <text id="cityLbl1" x="466" y="297" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.55)" font-family="var(--font-ui)">ISTANBUL · TK</text>
+        <circle id="cityDot1" cx="470.4" cy="242.5" r="2.4" fill="#fff"><animate attributeName="opacity" values=".4;1;.4" dur="2.6s" repeatCount="indefinite" begin=".4s"/></circle>
+        <text id="cityLbl1" x="489.8" y="246.6" text-anchor="start" font-size="9" font-weight="700" fill="rgba(255,255,255,.92)" font-family="var(--font-ui)">ISTANBUL · TK</text>
 
-        <circle id="cityDot2" cx="348" cy="240" r="2.2" fill="#7dd3fc"><animate attributeName="opacity" values=".4;1;.4" dur="2.4s" repeatCount="indefinite" begin=".8s"/></circle>
-        <text id="cityLbl2" x="348" y="240" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.55)" font-family="var(--font-ui)">LONDRES · BA</text>
+        <circle id="cityDot2" cx="307.4" cy="163.8" r="2.2" fill="#fff"><animate attributeName="opacity" values=".4;1;.4" dur="2.4s" repeatCount="indefinite" begin=".8s"/></circle>
+        <text id="cityLbl2" x="307.4" y="151.3" text-anchor="middle" font-size="9" font-weight="700" fill="rgba(255,255,255,.92)" font-family="var(--font-ui)">LONDRES · BA</text>
 
-        <circle id="cityDot3" cx="100" cy="239" r="2.4" fill="var(--gold)"><animate attributeName="opacity" values=".4;1;.4" dur="2.8s" repeatCount="indefinite" begin="1.1s"/></circle>
-        <text id="cityLbl3" x="100" y="239" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.55)" font-family="var(--font-ui)">MONTRÉAL · AC</text>
+        <circle id="cityDot3" cx="-35.2" cy="162.4" r="2.4" fill="#fff"><animate attributeName="opacity" values=".4;1;.4" dur="2.8s" repeatCount="indefinite" begin="1.1s"/></circle>
+        <text id="cityLbl3" x="-15.8" y="166.5" text-anchor="start" font-size="9" font-weight="700" fill="rgba(255,255,255,.92)" font-family="var(--font-ui)">MONTRÉAL · AC</text>
 
-        <circle id="cityDot4" cx="357" cy="252" r="2" fill="#a5b4fc"><animate attributeName="opacity" values=".35;.9;.35" dur="3.0s" repeatCount="indefinite" begin=".2s"/></circle>
-        <text id="cityLbl4" x="357" y="252" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.55)" font-family="var(--font-ui)">PARIS</text>
+        <circle id="cityDot4" cx="319.9" cy="180.3" r="2" fill="#fff"><animate attributeName="opacity" values=".35;.9;.35" dur="3.0s" repeatCount="indefinite" begin=".2s"/></circle>
+        <text id="cityLbl4" x="303.3" y="169.3" text-anchor="end" font-size="9" font-weight="700" fill="rgba(255,255,255,.92)" font-family="var(--font-ui)">PARIS</text>
 
-        <circle id="cityDot5" cx="368" cy="275" r="2" fill="#a5b4fc"><animate attributeName="opacity" values=".35;.9;.35" dur="3.3s" repeatCount="indefinite" begin=".6s"/></circle>
-        <text id="cityLbl5" x="368" y="275" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.55)" font-family="var(--font-ui)">MARSEILLE</text>
+        <circle id="cityDot5" cx="335.1" cy="212.1" r="2" fill="#fff"><animate attributeName="opacity" values=".35;.9;.35" dur="3.3s" repeatCount="indefinite" begin=".6s"/></circle>
+        <text id="cityLbl5" x="354.4" y="214.9" text-anchor="start" font-size="9" font-weight="700" fill="rgba(255,255,255,.92)" font-family="var(--font-ui)">MARSEILLE</text>
 
-        <circle id="cityDot6" cx="355" cy="282" r="2" fill="#7dd3fc"><animate attributeName="opacity" values=".35;.9;.35" dur="2.9s" repeatCount="indefinite" begin="1.4s"/></circle>
-        <text id="cityLbl6" x="355" y="282" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.55)" font-family="var(--font-ui)">BARCELONE</text>
+        <circle id="cityDot6" cx="317.1" cy="221.8" r="2" fill="#fff"><animate attributeName="opacity" values=".35;.9;.35" dur="2.9s" repeatCount="indefinite" begin="1.4s"/></circle>
+        <text id="cityLbl6" x="317.1" y="241.1" text-anchor="middle" font-size="9" font-weight="700" fill="rgba(255,255,255,.92)" font-family="var(--font-ui)">BARCELONE</text>
       </g>
 
-      <!-- ── Trajectoire principale : point de départ (pin) + tracé pointillé + avion en vol ── -->
-      <g id="mainTraj">
-        <defs>
-          <linearGradient id="trajLine" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="rgba(212,161,61,.75)"/>
-            <stop offset="100%" stop-color="rgba(125,211,252,.85)"/>
-          </linearGradient>
-          <radialGradient id="pinGrad" cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#f4c869"/>
-            <stop offset="55%" stop-color="var(--gold)"/>
-            <stop offset="100%" stop-color="#a9782f"/>
-          </radialGradient>
-          <filter id="planeGlow" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="2.6" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-
-        <!-- tracé pointillé départ → vol, au cœur du globe -->
-        <path id="trajPath" d="M341,312 Q340,303 340,294"
-              fill="none" stroke="url(#trajLine)" stroke-width="2.2" stroke-linecap="round"></path>
-
-        <!-- pin de départ — Alger, base FWT (fixe) -->
-        <g id="startPin" transform="translate(358,314) scale(.4)">
-          <text x="0" y="98" text-anchor="middle" font-size="11" font-weight="700" fill="rgba(255,255,255,.82)" font-family="var(--font-ui)" letter-spacing="1">ALGER</text>
-          <circle cx="0" cy="80" r="7" fill="none" stroke="var(--gold)" stroke-width="2" opacity=".7">
-            <animate attributeName="r" values="6;24;6" dur="2.4s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values=".7;0;.7" dur="2.4s" repeatCount="indefinite"/>
-          </circle>
-          <path d="M0,0 C-16,0 -29,13 -29,29 C-29,50 0,80 0,80 C0,80 29,50 29,29 C29,13 16,0 0,0 Z"
-                fill="url(#pinGrad)" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
-          <circle cx="0" cy="27" r="9" fill="#0c2d52"/>
-          <circle cx="0" cy="27" r="4" fill="#fff"/>
-        </g>
-
-        <!-- pin d'arrivée — fin de trajet, même style que le pin de départ -->
-        <radialGradient id="pinGradEnd" cx="35%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#5eead4"/>
-          <stop offset="55%" stop-color="var(--radar)"/>
-          <stop offset="100%" stop-color="#067a5c"/>
-        </radialGradient>
-        <g id="endPin" transform="translate(340,262) scale(.4)">
-          <text id="endPinLabel" x="0" y="98" text-anchor="middle" font-size="11" font-weight="700" fill="rgba(255,255,255,.82)" font-family="var(--font-ui)" letter-spacing="1">MADRID</text>
-          <text id="endPinDistance" x="0" y="-26" text-anchor="middle" font-size="15" font-weight="700" fill="#38bdf8" font-family="var(--font-ui)" letter-spacing=".5">715 km</text>
-          <circle cx="0" cy="80" r="7" fill="none" stroke="var(--radar)" stroke-width="2" opacity=".7">
-            <animate attributeName="r" values="6;24;6" dur="2.4s" repeatCount="indefinite" begin="1.2s"/>
-            <animate attributeName="opacity" values=".7;0;.7" dur="2.4s" repeatCount="indefinite" begin="1.2s"/>
-          </circle>
-          <path d="M0,0 C-16,0 -29,13 -29,29 C-29,50 0,80 0,80 C0,80 29,50 29,29 C29,13 16,0 0,0 Z"
-                fill="url(#pinGradEnd)" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
-          <circle cx="0" cy="27" r="9" fill="#0c2d52"/>
-          <circle cx="0" cy="27" r="4" fill="#fff"/>
-        </g>
-
-        <!-- traînée lumineuse -->
-        <circle r="3.4" fill="#fff" opacity=".9" filter="url(#planeGlow)">
-          <animateMotion id="glowMotion" dur="6s" repeatCount="indefinite" rotate="auto"
-            path="M341,312 Q340,303 340,294"/>
+      <!-- ── Alger : point d'attache fixe du réseau (sans zoom, sans pin animé — comme la carte de référence) ── -->
+      <defs>
+        <filter id="planeGlow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="2.6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g id="algerHub">
+        <circle cx="321.2" cy="310.2" r="9.7" fill="none" stroke="#fff" stroke-width="1.4" opacity=".6">
+          <animate attributeName="r" values="9.7;30;9.7" dur="2.4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".6;0;.6" dur="2.4s" repeatCount="indefinite"/>
         </circle>
-
-        <!-- avion en vol, suit le tracé (orienté selon la direction réelle du trajet) -->
-        <linearGradient id="planeFuselage" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"   stop-color="#ffd873"/>
-          <stop offset="55%"  stop-color="var(--gold)"/>
-          <stop offset="100%" stop-color="var(--gold-deep)"/>
-        </linearGradient>
-        <g filter="url(#planeGlow)">
-          <animateMotion id="planeMotion" dur="6s" repeatCount="indefinite" rotate="auto"
-            path="M341,312 Q340,303 340,294"/>
-          <!-- Silhouette avion vue de dessus façon FlightRadar24 : nez pointé vers le haut (-y) par défaut,
-               rotate(90) aligne le nez sur la tangente du trajet (animateMotion rotate="auto" pointe vers +x) -->
-          <g transform="rotate(90) scale(.62)">
-            <path d="M0,-15.5
-                     L2.3,-9.5
-                     L2.3,-2.4 L15,4.6 L15,7.6 L2.3,4.4
-                     L2.3,9.2 L6.4,12.4 L6.4,14.6 L0,12.9
-                     L-6.4,14.6 L-6.4,12.4 L-2.3,9.2
-                     L-2.3,4.4 L-15,7.6 L-15,4.6 L-2.3,-2.4
-                     L-2.3,-9.5 Z"
-                  fill="url(#planeFuselage)" stroke="#3a2405" stroke-width="0.6" stroke-linejoin="round"/>
-            <circle cx="0" cy="-7.5" r="1" fill="#3a2405" opacity=".55"/>
-          </g>
-        </g>
+        <circle cx="321.2" cy="310.2" r="8.3" fill="#7dd3fc" opacity=".5" filter="url(#planeGlow)"/>
+        <circle cx="321.2" cy="310.2" r="7.6" fill="#fff"/>
+        <text x="321.2" y="343.4" text-anchor="middle" font-size="17" font-weight="800" fill="#fff" font-family="var(--font-ui)" letter-spacing="1">ALGER</text>
       </g>
       </g>
       </g>
     </svg>
   </div>
-        <div class="entry-bottom">
-          <div id="splash-msg"></div>
-          <div class="loadbar-wrap"><div class="loadbar-fill"></div></div>
-          <div class="loadbar-cap">CHARGEMENT DU PLAN COMPTABLE…</div>
-        </div>
       </div>
 
-      <!-- Colonne droite : carte d'accès session -->
+      <!-- Colonne droite : carte d'accès session + message d'accueil sous le volet -->
+      <div class="entry-card-col">
       <div class="login-box entry-card">
         <div class="lb-strip"></div>
         <div class="lb-head">
@@ -2983,6 +2916,12 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
               <button type="button" class="tp-opt" id="tp-dark" onclick="fwtSetSessionTheme('dark')">🌙 Nuit</button>
             </div>
           </div>
+        </div>
+      </div>
+        <div class="entry-bottom">
+          <div id="splash-msg"></div>
+          <div class="loadbar-wrap"><div class="loadbar-fill"></div></div>
+          <div class="loadbar-cap">CHARGEMENT DU PLAN COMPTABLE…</div>
         </div>
       </div>
 
@@ -3009,7 +2948,8 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
   animation: animIn .7s ease forwards;
 }
 .globe-svg{
-  width:540px; height:540px;
+  width:calc(100vw - 320px); max-width:1750px; min-width:420px;
+  height:auto; max-height:84vh; aspect-ratio: 740 / 460;
   animation: globeFadeIn 1.2s ease forwards;
   transform-origin: 50% 50%;
 }
@@ -3030,7 +2970,9 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
 #endPinLabel.pop, #endPinDistance.pop{ animation: pinLabelPop .8s cubic-bezier(.34,1.56,.64,1); }
 
 /* ── Carte du monde réelle — style de base discret + pays des compagnies partenaires en évidence ── */
-.wmap-real path{ fill:rgba(148,163,184,.14); stroke:rgba(125,211,252,.22); stroke-width:.6; }
+.wmap-real path{ fill:url(#landVolume); stroke:rgba(140,228,255,.95); stroke-width:.32; shape-rendering:geometricPrecision; vector-effect:non-scaling-stroke; }
+.rt-active{ stroke-width:1.8 !important; filter: drop-shadow(0 0 3px rgba(255,255,255,.55)); }
+.cl-active{ fill:#f5a83a !important; font-size:11px !important; filter: drop-shadow(0 0 4px rgba(245,168,58,.75)); }
 .wmap-real #wmap-dz, .wmap-real #wmap-es, .wmap-real #wmap-tr,
 .wmap-real #wmap-gb, .wmap-real #wmap-ca, .wmap-real #wmap-fr{
   fill:rgba(94,234,212,.30); stroke:rgba(212,161,61,.55); stroke-width:.8;
@@ -3056,18 +2998,60 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
 }
 @keyframes globeFadeIn{ from{ opacity:0; } to{ opacity:1; } }
 
+/* ── Habillage carte plate façon "SKYWAYS MAPS" (entête + pied de contrôle) ── */
+.map-panel{
+  background: rgba(6,13,26,.55);
+  border: 1px solid rgba(125,211,252,.18);
+  border-radius: 16px;
+  padding: 10px 10px 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  animation: globeFadeIn 1.2s ease forwards;
+}
+.map-panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 2px 8px 10px; margin-bottom: 8px;
+  border-bottom: 1px solid rgba(125,211,252,.14);
+}
+.map-panel-brand{
+  font-family: var(--font-mono); font-size: 13px; font-weight: 800;
+  letter-spacing: 1.5px; color: #fff; display:flex; align-items:center; gap:8px;
+}
+.map-panel-ic{ color: var(--radar); transform: rotate(45deg); display:inline-block; }
+.map-panel-nav{ display:flex; gap:16px; font-size:10.5px; letter-spacing:.5px; color: rgba(255,255,255,.55); font-family: 'Inter',sans-serif; }
+.map-panel-nav span.on{ color:#fff; font-weight:700; border-bottom: 2px solid var(--radar); padding-bottom: 3px; }
+.map-panel-foot{
+  display:flex; align-items:center; gap:12px;
+  padding: 10px 8px 2px; margin-top: 6px;
+}
+#mapAnimStatus{ font-size:9.5px; color: rgba(255,255,255,.45); font-family: var(--font-mono); letter-spacing:.5px; white-space:nowrap; }
+.map-progress-wrap{ flex:1; height:3px; background: rgba(255,255,255,.12); border-radius:3px; overflow:hidden; }
+.map-progress-fill{ height:100%; width:0; background: linear-gradient(90deg,#7dd3fc,var(--gold)); border-radius:3px; animation: mapProgressLoop 5s linear infinite; }
+@keyframes mapProgressLoop{ from{ width:0; } to{ width:100%; } }
+.map-controls{ display:flex; gap:6px; flex-shrink:0; }
+.map-ctrl-btn{
+  width:24px; height:24px; border-radius:50%; border:1px solid rgba(125,211,252,.3);
+  background: rgba(125,211,252,.08); color:#dff3ff; font-size:9px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition: background .2s ease, transform .15s ease;
+}
+.map-ctrl-btn:hover{ background: rgba(125,211,252,.2); transform: translateY(-1px); }
+.map-ctrl-btn:active{ transform: translateY(0); }
+@media (max-width: 420px){
+  .map-panel-nav{ display:none; }
+}
+
 /* ── Composition : globe pleinement visible à gauche, carte de connexion à droite ── */
 .entry-wrap{
   position:relative; z-index:2; width:100%; height:100%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:28px 16px; box-sizing:border-box; overflow-y:auto;
+  padding:16px 8px; box-sizing:border-box; overflow-y:auto;
 }
 .entry-row{
   display:flex; align-items:center; justify-content:center;
-  gap:56px; flex-wrap:wrap; width:100%;
+  gap:28px; flex-wrap:wrap; width:100%; max-width:1800px; margin:0 auto;
 }
 .entry-globe-col{
   display:flex; flex-direction:column; align-items:center;
+  flex:0 0 auto;
   animation: animIn .8s ease forwards;
 }
 .entry-eyebrow{
@@ -3086,23 +3070,27 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
   font-size:10px; letter-spacing:5px; color:rgba(255,255,255,.45); font-family:'Inter',sans-serif;
   text-transform:uppercase; text-align:center; margin-top:6px;
 }
+.entry-card-col{
+  display:flex; flex-direction:column; align-items:center;
+  flex:0 0 auto;
+}
 .entry-card{
-  width:260px; flex-shrink:0;
-  margin-left: 24px;
+  width:250px; flex-shrink:0;
+  margin-left: 0;
   animation: cardIn .7s cubic-bezier(.16,1,.3,1) .2s backwards;
   pointer-events:auto;
 }
 .entry-bottom{
-  margin-top:18px; width:100%; text-align:center;
+  margin-top:16px; width:250px; margin-left:0; text-align:center;
   animation: animIn .9s ease .3s backwards;
 }
 #splash-msg{
-  font-size:15px; font-weight:600; color:#fff; letter-spacing:.3px;
+  font-size:13px; font-weight:600; color:#fff; letter-spacing:.3px;
   font-family:'Inter',sans-serif; min-height:22px; text-align:center;
-  line-height:1.4; max-width:380px; margin:0 auto;
+  line-height:1.4; max-width:240px; margin:0 auto;
 }
 .loadbar-wrap{
-  margin-top:16px; width:220px; height:3px; background:rgba(255,255,255,.12);
+  margin-top:16px; width:200px; height:3px; background:rgba(255,255,255,.12);
   border-radius:3px; overflow:hidden; margin-left:auto; margin-right:auto; position:relative;
 }
 .loadbar-fill{ height:100%; width:0; background:linear-gradient(90deg,#7dd3fc,var(--gold)); animation:loadBar 8s ease forwards; border-radius:3px; }
@@ -3112,12 +3100,14 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
 }
 
 @media (max-width: 900px){
-  .entry-row{ flex-direction:column; gap:20px; }
-  .globe-svg{ width:420px; height:420px; }
+  .entry-row{ flex-direction:column; gap:20px; max-width:100%; }
+  .entry-globe-col{ flex:none; width:100%; }
+  .globe-svg{ width:92vw; min-width:0; max-width:92vw; height:auto; max-height:60vh; }
   .entry-card{ margin-left:0; }
+  .entry-bottom{ margin-left:0; width:260px; }
 }
 @media (max-width: 420px){
-  .globe-svg{ width:340px; height:340px; }
+  .globe-svg{ width:94vw; height:auto; }
   .entry-card{ width:100%; max-width:280px; }
 }
 
@@ -15934,11 +15924,37 @@ function statInvalidateAuxIndex(){ _SIDX=null; }
 
 /* ── Résolution du nom client ─────────────────────────────────────── */
 /* Priorité : BASE[aux] → BASE[compte] → LIBELLE fichier → fallback */
+// ── Nettoyage de secours : extrait le nom client réel en tête des tokens
+//    de type/flag/numéro/compagnie qui ne doivent jamais s'afficher tels quels
+//    (ex: "CST RED 00126 AC BICHA VOYAGE" → "BICHA VOYAGE")
+const S_AIRLINE_CODES=new Set(['VY','BJ','AC','V7','TK','IB','BA','TO']);
+const S_FLAG_TOKENS=new Set(['CST','RED','ANN','REG','CORR','CORRECTION','AJUST','COM','FACT','FACTURE','NDC','NDCF','ANNUL','ANNULATION']);
+function sCleanClientName(lib){
+  if(!lib) return lib;
+  const s=String(lib).trim();
+  const tokens=s.split(/\s+/);
+  let i=0;
+  while(i<tokens.length-1){
+    const t=tokens[i].toUpperCase();
+    const isNumeric=/^\d+$/.test(t);
+    const isAirline=S_AIRLINE_CODES.has(t);
+    const isFlag=S_FLAG_TOKENS.has(t);
+    if(isNumeric||isAirline||isFlag){ i++; } else { break; }
+  }
+  const cleaned=tokens.slice(i).join(' ').trim();
+  return cleaned||s;
+}
 function sResolveName(aux,cpt,lib){
   _sBuildIdx();
   if(aux){const v=_SIDX?.get(aux.toUpperCase());if(v) return v;}
   if(cpt){const v=_SIDX?.get(cpt.toUpperCase());if(v) return v;}
-  if(lib&&lib.trim().length>1) return lib.trim();
+  // Même moteur d'identification que RAP/JBR (base de correspondances V2),
+  // s'il a été chargé dans la session — priorité sur l'affichage brut.
+  if(_V2_LOADED&&lib){
+    const v2=v2IdentifierClient(lib);
+    if(v2&&v2.client) return v2.client;
+  }
+  if(lib&&lib.trim().length>1) return sCleanClientName(lib);
   return aux||cpt||'—';
 }
 
@@ -16036,7 +16052,28 @@ function sLoad(file){
   r.onload=e=>{
     try{
       const wb=XLSX.read(e.target.result,{cellDates:false});
-      const ws=wb.Sheets[wb.SheetNames[0]];
+      // ── Sélection de la feuille principale : on ignore la feuille "SUP COM"
+      //    (commissions) quelle que soit sa position dans le classeur, et on
+      //    prend la première feuille restante dont les en-têtes contiennent
+      //    au moins AUXILIAIRE ou JOURNAL (signature de la feuille GL/411-18xxx).
+      //    Avant : wb.SheetNames[0] toujours — cassait l'import si "SUP COM"
+      //    se trouvait être la 1ʳᵉ feuille du fichier.
+      const normSheetName=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/['’´`]/g,'').trim().toUpperCase().replace(/\s+/g,' ');
+      const normHdr=k=>String(k).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+      let mainSheetName=wb.SheetNames.find(n=>{
+        if(normSheetName(n)==='SUP COM'||normSheetName(n)==='SUPCOM') return false;
+        const testRows=XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:'',range:0});
+        if(!testRows.length) return false;
+        const hdrs=Object.keys(testRows[0]).map(normHdr);
+        return hdrs.some(h=>h==='AUXILIAIRE'||h==='AUXILIARE'||h==='AUX'||h==='JOURNAL'||h==='FOLIO');
+      });
+      // Filet de sécurité : si aucune feuille ne correspond à la signature attendue,
+      // on retombe sur la première feuille qui n'est pas "SUP COM".
+      if(!mainSheetName){
+        mainSheetName=wb.SheetNames.find(n=>normSheetName(n)!=='SUP COM'&&normSheetName(n)!=='SUPCOM')||wb.SheetNames[0];
+      }
+      const ws=wb.Sheets[mainSheetName];
       const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
       if(!rows.length){sMsg('err','❌ Fichier vide');sProgs(false);return;}
 
@@ -18758,6 +18795,8 @@ function sAggFiltered(rows){
 let _cliEvolSelected=new Set();
 let _cliEvolMode='mois'; // mois|trim|ann
 let _cliEvolCompare=false;
+let _cliEvolMulti=false;   // 🆕 mode Multi-Années N-n (évolution CA client sur plusieurs années)
+let _cliEvolDepth=4;       // 🆕 profondeur historique par défaut : N-4 → N
 function sCliEvol(c){
   if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">👤</div><div class="msg">Aucune donnée</div></div>`;return;}
   const top10=[...STAT.agg].sort((a,b)=>b.total-a.total).slice(0,10);
@@ -18809,6 +18848,7 @@ function sCliEvol(c){
   }).join('');
 
   // Contrôles
+  const maxDepth=Math.max(1,Math.min(8,(STAT.availableYears?STAT.availableYears.length-1:7)));
   const ctrlHTML=`
   <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
     <span style="font-size:10px;font-weight:700;color:var(--txt3)">GRANULARITÉ</span>
@@ -18816,9 +18856,20 @@ function sCliEvol(c){
       style="padding:2px 8px;border-radius:5px;border:1px solid var(--bo);font-size:10px;font-weight:700;cursor:pointer;
       background:${_cliEvolMode===g?'var(--sky)':'#fff'};color:${_cliEvolMode===g?'#fff':'var(--txt3)'}">${g==='mois'?'Mensuel':g==='trim'?'Trim.':'Annuel'}</button>`).join('')}
     <span style="margin-left:8px;font-size:10px;font-weight:700;color:var(--txt3)">COMPARAISON</span>
-    <button onclick="_cliEvolCompare=!_cliEvolCompare;sCliEvol(document.getElementById('stat-content'))"
-      style="padding:2px 8px;border-radius:5px;border:1px solid ${_cliEvolCompare?'#8b5cf6':'var(--bo)'};font-size:10px;font-weight:700;cursor:pointer;
-      background:${_cliEvolCompare?'#8b5cf6':'#fff'};color:${_cliEvolCompare?'#fff':'var(--txt3)'}">${curYear} vs ${prevYear}</button>
+    <button onclick="_cliEvolCompare=!_cliEvolCompare;_cliEvolMulti=false;sCliEvol(document.getElementById('stat-content'))"
+      style="padding:2px 8px;border-radius:5px;border:1px solid ${(_cliEvolCompare&&!_cliEvolMulti)?'#8b5cf6':'var(--bo)'};font-size:10px;font-weight:700;cursor:pointer;
+      background:${(_cliEvolCompare&&!_cliEvolMulti)?'#8b5cf6':'#fff'};color:${(_cliEvolCompare&&!_cliEvolMulti)?'#fff':'var(--txt3)'}">${curYear} vs ${prevYear}</button>
+    <button onclick="_cliEvolMulti=!_cliEvolMulti;sCliEvol(document.getElementById('stat-content'))"
+      style="padding:2px 8px;border-radius:5px;border:1px solid ${_cliEvolMulti?'#0d9488':'var(--bo)'};font-size:10px;font-weight:700;cursor:pointer;
+      background:${_cliEvolMulti?'#0d9488':'#fff'};color:${_cliEvolMulti?'#fff':'var(--txt3)'}">📅 Multi-Années (N-n)</button>
+    ${_cliEvolMulti?`
+      <span style="font-size:10px;color:var(--txt3);margin-left:2px">Profondeur</span>
+      <button onclick="_cliEvolDepth=Math.max(1,_cliEvolDepth-1);sCliEvol(document.getElementById('stat-content'))"
+        style="width:20px;height:20px;border-radius:5px;border:1px solid var(--bo);background:#fff;color:var(--txt3);font-weight:800;cursor:pointer;font-size:11px;line-height:1">−</button>
+      <span style="font-size:10px;font-weight:800;color:#0d9488;min-width:34px;text-align:center">N-${_cliEvolDepth}</span>
+      <button onclick="_cliEvolDepth=Math.min(${maxDepth},_cliEvolDepth+1);sCliEvol(document.getElementById('stat-content'))"
+        style="width:20px;height:20px;border-radius:5px;border:1px solid var(--bo);background:#fff;color:var(--txt3);font-weight:800;cursor:pointer;font-size:11px;line-height:1">+</button>
+    `:''}
   </div>`;
 
   if(!selected.length){
@@ -18827,6 +18878,123 @@ function sCliEvol(c){
       ${ctrlHTML}
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin:10px 0;padding:8px;background:var(--bg2);border-radius:8px">${selHTML}</div>
       <div class="stat-empty"><div class="big">👆</div><div class="msg">Sélectionnez au moins un client</div></div></div>`;
+    return;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     🆕 MODE MULTI-ANNÉES (N-n) — évolution du CA client sur plusieurs
+     années consécutives (N, N-1, N-2 … N-depth), pas seulement N vs N-1
+  ══════════════════════════════════════════════════════════════════ */
+  if(_cliEvolMulti){
+    const yearsList=[...Array(_cliEvolDepth+1)].map((_,i)=>curYear-_cliEvolDepth+i); // ordre chronologique ascendant
+    const rowsByYear=yearsList.map(y=>sRawFiltered(y));
+    function buildClientYearly(key){
+      return rowsByYear.map(rows=>{
+        let sum=0;
+        for(const r of rows){ if((r.compte+'|'+(r.aux||r.compte))===key) sum+=r.debit; }
+        return sum;
+      });
+    }
+    const yearData=selected.map(d=>({...d, valsY:buildClientYearly(d.key)}));
+
+    const W2=820,H2=280,PL2=110,PR2=20,PT2=20,PB2=40;
+    const cW2=W2-PL2-PR2, cH2=H2-PT2-PB2;
+    const allValsY=yearData.flatMap(d=>d.valsY);
+    const maxVY=Math.max(...allValsY,1);
+    const nY=yearsList.length;
+
+    let yGrid2='',xLbls2='',curves2='',dots2='',legend2='';
+    for(let i=0;i<=4;i++){
+      const y=PT2+cH2-cH2*i/4;
+      const v=maxVY*i/4;
+      const lbl=v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':Math.round(v)+'';
+      yGrid2+=`<line x1="${PL2}" y1="${y}" x2="${W2-PR2}" y2="${y}" stroke="${i===0?'#d1d5db':'#f3f4f6'}" stroke-width="${i===0?1.5:1}"/>
+        <text x="${PL2-4}" y="${y+3.5}" text-anchor="end" font-size="8" fill="#9ca3af">${lbl}</text>`;
+    }
+    yearsList.forEach((y,i)=>{
+      const x=nY>1?PL2+cW2*i/(nY-1):PL2+cW2/2;
+      xLbls2+=`<text x="${x}" y="${H2-PB2+16}" text-anchor="middle" font-size="9" font-weight="700" fill="#374151">${y}</text>`;
+    });
+
+    yearData.forEach((d,ci)=>{
+      const color=CPALS[d.idx%CPALS.length];
+      const pts=d.valsY.map((v,i)=>`${nY>1?PL2+cW2*i/(nY-1):PL2+cW2/2},${PT2+cH2-cH2*v/maxVY}`).join(' ');
+      const area=`M${PL2},${PT2+cH2} `+d.valsY.map((v,i)=>`L${nY>1?PL2+cW2*i/(nY-1):PL2+cW2/2},${PT2+cH2-cH2*v/maxVY}`).join(' ')+` L${PL2+cW2},${PT2+cH2} Z`;
+      curves2+=`<defs><linearGradient id="cgY${ci}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity=".2"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="${area}" fill="url(#cgY${ci})"/>
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`;
+      d.valsY.forEach((v,i)=>{
+        const x=nY>1?PL2+cW2*i/(nY-1):PL2+cW2/2, y=PT2+cH2-cH2*v/maxVY;
+        dots2+=`<circle cx="${x}" cy="${y}" r="3.5" fill="${color}" stroke="#fff" stroke-width="1.5"><title>${d.r.name} ${yearsList[i]} : ${v.toLocaleString('fr-DZ',{minimumFractionDigits:2})} DA</title></circle>`;
+      });
+      const legX=PL2+(ci%5)*(W2-PL2)/5;
+      const legY=H2-4+Math.floor(ci/5)*10;
+      legend2+=`<rect x="${legX}" y="${legY-5}" width="14" height="3" fill="${color}" rx="1"/>
+        <text x="${legX+17}" y="${legY}" font-size="7.5" fill="#374151">${d.r.name.substring(0,20)}</text>`;
+    });
+
+    const svg2=`<svg viewBox="0 0 ${W2} ${H2+10}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-height:290px;display:block">
+      ${yGrid2}${curves2}${dots2}${xLbls2}${legend2}
+      <line x1="${PL2}" y1="${PT2+cH2}" x2="${W2-PR2}" y2="${PT2+cH2}" stroke="#d1d5db" stroke-width="1.5"/>
+      <line x1="${PL2}" y1="${PT2}" x2="${PL2}" y2="${PT2+cH2}" stroke="#d1d5db" stroke-width="1"/>
+    </svg>`;
+
+    // Tableau récap : une colonne par année + évolution d'une année sur l'autre + CAGR global
+    let tblH2=`<table class="stat-tbl" style="font-size:8.5px"><thead><tr>
+      <th>CLIENT</th>
+      ${yearsList.map(y=>`<th class="r">${y}</th>`).join('')}
+      <th class="r" style="color:#0d9488">CAGR (${yearsList[0]}→${yearsList[nY-1]})</th>
+    </tr></thead><tbody>`;
+    yearData.forEach((d,ci)=>{
+      const color=CPALS[d.idx%CPALS.length];
+      const first=d.valsY[0], last=d.valsY[nY-1];
+      const cagr=(first>0&&nY>1)?(Math.pow(last/first,1/(nY-1))-1)*100:null;
+      const cagrBadge=cagr===null?`<span style="color:var(--txt4)">—</span>`:
+        `<span style="font-weight:800;color:${cagr>=0?'#059669':'#dc2626'}">${cagr>=0?'▲':'▼'} ${Math.abs(cagr).toFixed(1)}%/an</span>`;
+      tblH2+=`<tr>
+        <td style="font-weight:700;white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;background:${color};border-radius:50%;margin-right:4px"></span>${d.r.name.substring(0,22)}</td>
+        ${d.valsY.map((v,i)=>{
+          const prev=i>0?d.valsY[i-1]:null;
+          const evo=(prev!==null&&prev>0)?((v-prev)/prev*100):null;
+          const arrow=evo===null?'':(evo>=0?` <span style="color:#059669;font-size:7px">▲${evo.toFixed(0)}%</span>`:` <span style="color:#dc2626;font-size:7px">▼${Math.abs(evo).toFixed(0)}%</span>`);
+          return `<td class="r" style="font-weight:700;color:var(--sky-deep)">${v>0?SFM(v):'—'}${arrow}</td>`;
+        }).join('')}
+        <td class="r">${cagrBadge}</td>
+      </tr>`;
+    });
+    tblH2+=`</tbody></table>`;
+
+    // KPI global : CA cumulé toutes années sélectionnées + évolution première → dernière année
+    const totFirst=yearData.reduce((s,d)=>s+d.valsY[0],0);
+    const totLast=yearData.reduce((s,d)=>s+d.valsY[nY-1],0);
+    const totEvo=totFirst>0?((totLast-totFirst)/totFirst*100):null;
+
+    c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:10px 16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:800;color:#0d9488;letter-spacing:1px">📅 ÉVOLUTION CA CLIENT — MULTI-ANNÉES ${yearsList[0]} → ${yearsList[nY-1]}</span>
+        <span style="font-size:10px;color:var(--txt3)">${selected.length} client(s) · ${nY} années</span>
+      </div>
+      ${ctrlHTML}
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin:8px 0;padding:8px;background:var(--bg2);border-radius:8px">${selHTML}</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:160px;background:var(--bg2);border-radius:9px;padding:10px 12px;border-left:3px solid #0d9488">
+          <div class="dk-lbl">CA CUMULÉ ${yearsList[0]}</div>
+          <div class="dk-val" style="color:#0d9488">${SFM(totFirst)}</div>
+        </div>
+        <div style="flex:1;min-width:160px;background:var(--bg2);border-radius:9px;padding:10px 12px;border-left:3px solid #0d9488">
+          <div class="dk-lbl">CA CUMULÉ ${yearsList[nY-1]}</div>
+          <div class="dk-val" style="color:#0d9488">${SFM(totLast)}</div>
+        </div>
+        <div style="flex:1;min-width:160px;background:var(--bg2);border-radius:9px;padding:10px 12px;border-left:3px solid ${totEvo!==null&&totEvo>=0?'#059669':'#dc2626'}">
+          <div class="dk-lbl">ÉVOLUTION GLOBALE</div>
+          <div class="dk-val" style="color:${totEvo!==null&&totEvo>=0?'#059669':'#dc2626'}">${totEvo===null?'—':(totEvo>=0?'▲ +':'▼ ')+totEvo.toFixed(1)+'%'}</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:8px;margin-bottom:10px;overflow-x:auto">${svg2}</div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;overflow-x:auto">${tblH2}</div>
+    </div>`;
     return;
   }
 
@@ -20299,7 +20467,7 @@ function _svgHeatmap(data){
   });
   const allVals=matrix.flat().filter(v=>v>0);
   const maxV=allVals.length?Math.max(...allVals):1;
-  const CW=48, RH=20, ML=160, MT=50, W=ML+12*CW+40, H=MT+top.length*RH+40;
+  const CW=58, RH=26, ML=175, MT=54, W=ML+12*CW+46, H=MT+top.length*RH+46;
   // Color interpolation: white → teal
   const heatColor=v=>{
     if(v===0) return '#f8fafc';
@@ -20312,37 +20480,37 @@ function _svgHeatmap(data){
   let cells='', rowLabels='', colLabels='', totals='';
   SMEVOL.forEach((m,ci)=>{
     const x=ML+ci*CW+CW/2;
-    colLabels+=`<text x="${x}" y="${MT-6}" text-anchor="middle" font-size="10" font-weight="700" fill="#374151">${m}</text>`;
+    colLabels+=`<text x="${x}" y="${MT-8}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${m}</text>`;
   });
   top.forEach((r,ri)=>{
     const y=MT+ri*RH;
-    const nm=r.name.length>22?r.name.substring(0,20)+'…':r.name;
-    rowLabels+=`<text x="${ML-5}" y="${y+RH/2+4}" text-anchor="end" font-size="9" fill="#374151" font-weight="${ri<3?'700':'400'}">${_esc(nm)}</text>`;
+    const nm=r.name.length>26?r.name.substring(0,24)+'…':r.name;
+    rowLabels+=`<text x="${ML-8}" y="${y+RH/2+4}" text-anchor="end" font-size="11" fill="#374151" font-weight="${ri<3?'700':'400'}">${_esc(nm)}</text>`;
     let rowTotal=0;
     matrix[ri].forEach((v,ci)=>{
       const x=ML+ci*CW;
       const c=heatColor(v);
       const txt=v>0?(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':'‹1K'):'';
       const txtFill=v/maxV>0.55?'#fff':'#374151';
-      cells+=`<rect x="${x}" y="${y}" width="${CW-1}" height="${RH-1}" fill="${c}" rx="1"><title>${_esc(r.name)} — ${SMEVOL[ci]} : ${Math.round(v).toLocaleString('fr-FR')} DA</title></rect>`;
-      if(txt) cells+=`<text x="${x+CW/2}" y="${y+RH/2+3.5}" text-anchor="middle" font-size="7.5" fill="${txtFill}">${txt}</text>`;
+      cells+=`<rect x="${x}" y="${y}" width="${CW-1.5}" height="${RH-1.5}" fill="${c}" rx="2"><title>${_esc(r.name)} — ${SMEVOL[ci]} : ${Math.round(v).toLocaleString('fr-FR')} DA</title></rect>`;
+      if(txt) cells+=`<text x="${x+CW/2}" y="${y+RH/2+4}" text-anchor="middle" font-size="9.5" font-weight="600" fill="${txtFill}">${txt}</text>`;
       rowTotal+=v;
     });
-    totals+=`<text x="${ML+12*CW+5}" y="${y+RH/2+4}" font-size="8.5" font-weight="700" fill="#15803d">${rowTotal>=1e6?(rowTotal/1e6).toFixed(1)+'M':(rowTotal/1e3).toFixed(0)+'K'}</text>`;
+    totals+=`<text x="${ML+12*CW+8}" y="${y+RH/2+4}" font-size="10.5" font-weight="700" fill="#15803d">${rowTotal>=1e6?(rowTotal/1e6).toFixed(1)+'M':(rowTotal/1e3).toFixed(0)+'K'}</text>`;
   });
   // Légende gradient
-  const lgX=ML, lgY=H-22, lgW=12*CW;
+  const lgX=ML, lgY=H-26, lgW=12*CW;
   let lgStops='';
-  for(let i=0;i<=10;i++){const x=lgX+i/10*lgW;const c=heatColor(i/10*maxV);lgStops+=`<rect x="${x}" y="${lgY}" width="${lgW/10+1}" height="10" fill="${c}"/>`;}
+  for(let i=0;i<=10;i++){const x=lgX+i/10*lgW;const c=heatColor(i/10*maxV);lgStops+=`<rect x="${x}" y="${lgY}" width="${lgW/10+1}" height="12" fill="${c}"/>`;}
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="font-family:Arial,sans-serif">
     <rect width="${W}" height="${H}" fill="#ffffff"/>
-    <text x="${(ML+W)/2}" y="22" text-anchor="middle" font-size="14" font-weight="800" fill="#dc2626">🔥 HEATMAP — CA MENSUEL PAR CLIENT (Top 20)</text>
-    <text x="${(ML+W)/2}" y="38" text-anchor="middle" font-size="10" fill="#6b7280">Intensité = CA du mois · Blanc = inactif · Bleu foncé = fort CA</text>
+    <text x="${(ML+W)/2}" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#dc2626">🔥 HEATMAP — CA MENSUEL PAR CLIENT (Top 20)</text>
+    <text x="${(ML+W)/2}" y="41" text-anchor="middle" font-size="11" fill="#6b7280">Intensité = CA du mois · Blanc = inactif · Bleu foncé = fort CA</text>
     ${colLabels}${rowLabels}${cells}${totals}
     ${lgStops}
-    <text x="${lgX}" y="${lgY+22}" font-size="8.5" fill="#9ca3af">Faible</text>
-    <text x="${lgX+lgW}" y="${lgY+22}" text-anchor="end" font-size="8.5" fill="#9ca3af">Élevé</text>
-    <text x="${ML+12*CW+5}" y="${MT-6}" font-size="9" font-weight="700" fill="#15803d">TOTAL</text>
+    <text x="${lgX}" y="${lgY+26}" font-size="10" fill="#9ca3af">Faible</text>
+    <text x="${lgX+lgW}" y="${lgY+26}" text-anchor="end" font-size="10" fill="#9ca3af">Élevé</text>
+    <text x="${ML+12*CW+8}" y="${MT-8}" font-size="10.5" font-weight="700" fill="#15803d">TOTAL</text>
   </svg>`;
 }
 
@@ -20587,6 +20755,46 @@ async function exportRapportWord(){
       return sign+Math.round(Math.abs(v)).toLocaleString('fr-FR')+' DA';
     };
     const fmtPct=v=>v.toFixed(1)+'%';
+
+    // ── v53 : DONNÉES MULTI-ANNÉES — pour afficher, dans le rapport, le CA/la
+    // commission de chaque entité (client ou compagnie) ANNÉE PAR ANNÉE selon
+    // les données réellement disponibles (pas seulement N vs N-1), avec le
+    // taux d'évolution d'une année sur l'autre. Réutilisé pour le Top 20
+    // clients (section 2.3) et pour le classement des compagnies (section 6). ──
+    const yearsMY=[...(STAT.availableYears||[STAT.year||new Date().getFullYear()])].sort((a,b)=>a-b);
+    const rawByYearMY=new Map(); // année -> Map(clé_client -> CA)
+    yearsMY.forEach(y=>{
+      const m=new Map();
+      sRawFiltered(y).forEach(r=>{const k=r.compte+'|'+(r.aux||r.compte);m.set(k,(m.get(k)||0)+r.debit);});
+      rawByYearMY.set(y,m);
+    });
+    function clientYearSeries(key){
+      return yearsMY.map(y=>({year:y,total:rawByYearMY.get(y).get(key)||0}));
+    }
+    const comByYearMY=new Map(); // année -> Map(compagnie -> commission)
+    if(STAT.comAgg&&STAT.comAgg.length){
+      yearsMY.forEach(y=>{
+        const m=new Map();
+        comRawFiltered(y).forEach(r=>{ m.set(r.sym,(m.get(r.sym)||0)+r.credit); });
+        comByYearMY.set(y,m);
+      });
+    }
+    function comYearSeries(sym){
+      return yearsMY.map(y=>({year:y,total:(comByYearMY.get(y)||new Map()).get(sym)||0}));
+    }
+    // Construit une ligne de liste "2023: 12,5M DA · 2024: 15,2M DA (+21,6%) · ..."
+    function yearSeriesLine(series){
+      return series.map((pt,i)=>{
+        if(pt.total===0&&series.slice(0,i).every(p=>p.total===0)&&i<series.length-1&&series.slice(i+1).every(p=>p.total===0)) return null;
+        let evo='';
+        if(i>0){
+          const prev=series[i-1].total;
+          if(prev>0){ const r=(pt.total-prev)/prev*100; evo=` (${r>=0?'+':''}${r.toFixed(1)}%)`; }
+          else if(pt.total>0) evo=' (nouveau)';
+        }
+        return `${pt.year}: ${pt.total>0?fmtDA(pt.total):'—'}${evo}`;
+      }).filter(Boolean).join('  ·  ');
+    }
 
     /* ── Génération des graphiques SVG → PNG base64 ─────────────── */
     const top20=[...d].slice(0,20);
@@ -21206,7 +21414,7 @@ async function exportRapportWord(){
     const svgSegPiePng=SECT.segment?await svgToPng(svgSegPieStr,700,380,'Donut segmentation RFM'):null;
     const svgMultiEvolPng=(SECT.evol&&svgMultiEvolStr)?await svgToPng(svgMultiEvolStr,900,420,'Multi-courbes Top5 clients'):null;
     const heatTopLen=Math.min(20,n);
-    const svgHeatPng=(SECT.heat&&svgHeatStr)?await svgToPng(svgHeatStr,160+12*48+40,50+heatTopLen*20+40,'Heatmap CA mensuel par client'):null;
+    const svgHeatPng=(SECT.heat&&svgHeatStr)?await svgToPng(svgHeatStr,175+12*58+46,54+heatTopLen*26+46,'Heatmap CA mensuel par client'):null;
 
     // ── Commission PNG (générés seulement si section commission active et données présentes) ──
     const hasCom4Svg=SECT.commission&&!!(STAT.comAgg&&STAT.comAgg.length);
@@ -21496,9 +21704,29 @@ ${rows.join('')}</w:tbl>`;
       tc(fmtDA(panierMoyen),'1e3a8a',true,'bfdbfe',1220,16,'right')
     ));
     bodyParts.push(tableWrap(tblRows,9020));
-
     bodyParts.push(pageBreak());
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 2.3 : ÉVOLUTION ANNÉE PAR ANNÉE — TOP 20 CLIENTS (liste)
+    // Pour chaque client du Top 20, affiche le CA de chaque année disponible
+    // et le taux d'évolution d'une année sur l'autre, sous forme de liste —
+    // exploitable indépendamment du nombre d'années présentes dans les données.
+    // ══════════════════════════════════════════════════════════════════════
+    if(yearsMY.length>=2){
+      bodyParts.push(heading('2.3 Évolution année par année — Top 20 clients',2));
+      bodyParts.push(para(`Le portefeuille couvre ${yearsMY.length} années (${yearsMY[0]}–${yearsMY[yearsMY.length-1]}). Pour chacun des ${Math.min(20,top20.length)} premiers clients du classement, la liste ci-dessous détaille le CA de chaque année disponible ainsi que le taux d'évolution d'une année sur l'autre (en vert une hausse, en rouge une baisse). Un client sans opération sur une année donnée est marqué « — ».`,0,'374151'));
+      top20.forEach((r,i)=>{
+        const key=r.compte+'|'+(r.aux||r.compte);
+        const series=clientYearSeries(key);
+        const line=yearSeriesLine(series);
+        const lastEvo=series.length>1&&series[series.length-2].total>0?(series[series.length-1].total-series[series.length-2].total)/series[series.length-2].total*100:null;
+        const col=lastEvo===null?'374151':lastEvo>=0?'047857':'dc2626';
+        bodyParts.push(bullet(`${i+1}. ${r.name} — ${line||'Données insuffisantes'}`,col));
+      });
+      bodyParts.push(pageBreak());
+    }
     } // fin if(SECT.rank)
+
 
     // ════════════════════════════════════════════
     // SECTION 3 : ÉVOLUTION MENSUELLE
@@ -21759,6 +21987,36 @@ ${rows.join('')}</w:tbl>`;
           ));
         });
         bodyParts.push(tableWrap(evolComRows,6400));
+
+        // ── Détail : évolution SUP COM par année/mois × compagnie (tableau net) ──
+        const comSymsSorted=[...STAT.comAgg].sort((a,b)=>b.total-a.total).map(o=>o.sym);
+        const TOPN_COM_SYM=6;
+        const topSyms=comSymsSorted.slice(0,TOPN_COM_SYM);
+        const hasAutres=comSymsSorted.length>TOPN_COM_SYM;
+        bodyParts.push(para('Détail par compagnie — évolution mensuelle de la commission (DA)',10,'065f46',true,19));
+        const symHdrCells=topSyms.map(sym=>tc(sym,'0369a1',true,'ffffff',1050,14,'right'));
+        if(hasAutres) symHdrCells.push(tc('AUTRES','0369a1',true,'ffffff',1050,14,'right'));
+        const pivotHdr=tableRow(
+          tc('PÉRIODE','0369a1',true,'ffffff',1400,14),
+          ...symHdrCells,
+          tc('TOTAL','0369a1',true,'ffffff',1200,14,'right')
+        );
+        const pivotRows=[pivotHdr];
+        STAT.comByMonth.forEach((m,i)=>{
+          const bg=i%2===0?'ffffff':'f0fdf4';
+          const cells=topSyms.map(sym=>tc(fmtDAFull(m.bySym.get(sym)||0),bg,false,'374151',1050,14,'right'));
+          if(hasAutres){
+            const autresTotal=[...m.bySym.entries()].filter(([sym])=>!topSyms.includes(sym)).reduce((s,[,v])=>s+v,0);
+            cells.push(tc(fmtDAFull(autresTotal),bg,false,'6b7280',1050,14,'right'));
+          }
+          pivotRows.push(tableRow(
+            tc(SMOISW[m.month-1]+' '+m.year,bg,false,'374151',1400,14),
+            ...cells,
+            tc(fmtDAFull(m.total),bg,true,'047857',1200,14,'right')
+          ));
+        });
+        bodyParts.push(tableWrap(pivotRows,9020));
+        bodyParts.push(para('Note : les compagnies au-delà du Top '+TOPN_COM_SYM+' sont regroupées dans la colonne AUTRES.',6,'6b7280',false,16));
       }
 
       // ── 6.6 : Analyse statistique — Corrélation CA ↔ Commission ────────────
@@ -21775,6 +22033,24 @@ ${rows.join('')}</w:tbl>`;
       bodyParts.push(para(`Coefficient de Pearson CA ↔ Commission (par compagnie, hors NDC FACTURE) : ${pearsonW===null?'non calculable (données insuffisantes)':pearsonW.toFixed(2)}.${pearsonW!==null?(Math.abs(pearsonW)>0.85?' ✅ Corrélation très forte — la commission suit fidèlement le CA, le barème est cohérent.':Math.abs(pearsonW)>0.5?' ⚠️ Corrélation modérée — des écarts par compagnie sont à surveiller.':' 🔴 Corrélation faible — la commission est partiellement déconnectée du CA. Vérifier barèmes contractuels et ajustements NDC.'):''}`,0,'374151',false,18));
       bodyParts.push(para('Note : le taux de commission réel peut diverger des barèmes contractuels théoriques en raison des avoirs, régularisations et NDC comptabilisés sur la même période. Un écart persistant sur une compagnie donnée doit être investigué auprès du service commercial.',0,'374151',false,18));
       bodyParts.push(pageBreak());
+
+      // ══════════════════════════════════════════════════════════════════════
+      // 6.7 : ÉVOLUTION ANNÉE PAR ANNÉE — COMMISSION PAR COMPAGNIE (liste)
+      // Même logique que la section 2.3 (clients) appliquée aux compagnies :
+      // commission de chaque année disponible + taux d'évolution N/N-1.
+      // ══════════════════════════════════════════════════════════════════════
+      if(yearsMY.length>=2){
+        bodyParts.push(para('6.7  ÉVOLUTION ANNÉE PAR ANNÉE — COMMISSION PAR COMPAGNIE',0,'065f46',true));
+        bodyParts.push(para(`Les données couvrent ${yearsMY.length} années (${yearsMY[0]}–${yearsMY[yearsMY.length-1]}). Pour chaque compagnie du classement, la liste ci-dessous détaille la commission de chaque année disponible ainsi que le taux d'évolution d'une année sur l'autre (vert = hausse, rouge = baisse), pour un pilotage annuel du produit net par partenaire.`,0,'374151'));
+        sortedComW.forEach((o,i)=>{
+          const series=comYearSeries(o.sym);
+          const line=yearSeriesLine(series);
+          const lastEvo=series.length>1&&series[series.length-2].total>0?(series[series.length-1].total-series[series.length-2].total)/series[series.length-2].total*100:null;
+          const col=lastEvo===null?'374151':lastEvo>=0?'047857':'dc2626';
+          bodyParts.push(bullet(`${i+1}. ${o.sym} — ${line||'Données insuffisantes'}`,col));
+        });
+        bodyParts.push(pageBreak());
+      }
     }
 
     // ════════════════════════════════════════════
@@ -24141,185 +24417,50 @@ function fluxCreateEcriture() {
 })();
 </script>
 
-<!-- ── Vitrine animée des destinations : le pin d'arrivée tourne en continu sur les 7 villes desservies ── -->
+<!-- ── Avion unique en alternance de destination (aucun zoom caméra, tracé géo fixe) ── -->
 <script>
 (function(){
-  var ALGER = { x:358, y:346 };  // centre géographique de l'Algérie (au lieu de la position côtière)
-  var PIN_SCALE = .4;             // pins départ + arrivée de même taille, réduits pour la visibilité
-  var CYCLE_MS = 5000; // durée d'affichage de chaque destination avant de passer à la suivante
-
-  // 7 destinations réelles — positionnées au centre géographique de leur pays (coordonnées dérivées de la vraie carte du monde)
-  // lx/ly = décalage de l'étiquette (évite que les libellés se chevauchent quand les villes sont proches)
-  var DESTS = [
-    { name:'PARIS',     code:'',             x:357, y:262, lx:-12, ly:-8, anchor:'end',    country:'wmap-fr', zoom:3,   km:1348 },
-    { name:'ISTANBUL',  code:'TK',           x:477, y:297, lx:14,  ly:3,  anchor:'start',  country:'wmap-tr', zoom:3,   km:2284 },
-    { name:'MADRID',    code:'IB / VY / V7', x:340, y:294, lx:-30, ly:3,  anchor:'end',    country:'wmap-es', zoom:3,   km:715  },
-    { name:'MONTRÉAL',  code:'AC',           x:55,  y:189, lx:14,  ly:3,  anchor:'start',  country:'wmap-ca', zoom:0.8, km:6247 },
-    { name:'LONDRES',   code:'BA',           x:343, y:223, lx:0,   ly:-9, anchor:'middle', country:'wmap-gb', zoom:3,   km:1660 },
-    { name:'MARSEILLE', code:'',             x:365, y:272, lx:14,  ly:2,  anchor:'start',  country:'wmap-fr', zoom:3,   km:754  },
-    { name:'BARCELONE', code:'',             x:350, y:288, lx:0,   ly:14, anchor:'middle', country:'wmap-es', zoom:3,   km:522  }
+  // Ordre d'alternance demandé : Alger→Paris, Alger→Istanbul, Alger→Barcelone, Alger→Montréal, Alger→Londres, Alger→Marseille
+  var ORDER = [
+    { n:4, name:'PARIS'     },
+    { n:1, name:'ISTANBUL'  },
+    { n:6, name:'BARCELONE' },
+    { n:3, name:'MONTRÉAL'  },
+    { n:2, name:'LONDRES'   },
+    { n:5, name:'MARSEILLE' }
   ];
-  var ALL_COUNTRIES = ['wmap-dz','wmap-es','wmap-tr','wmap-gb','wmap-ca','wmap-fr'];
+  var CYCLE_MS = 3600;
+  var idx = 0;
+  var _cycleIv = null;
 
-  // Ordre de passage fixe (logique géographique), bouclé indéfiniment — plus de mélange aléatoire
-  var order = DESTS.map(function(_, i){ return i; });
-  var cursor = 0;
-
-  function quadPath(a, b){
-    // Point de contrôle légèrement décalé pour un arc de vol réaliste (pas une ligne droite)
-    var mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-    var dx = b.x - a.x, dy = b.y - a.y;
-    var dist = Math.sqrt(dx*dx + dy*dy) || 1;
-    var curve = Math.min(dist * 0.22, 34);
-    var nx = -dy / dist, ny = dx / dist;
-    var cx = mx + nx * curve, cy = my + ny * curve - curve * 0.35;
-    return 'M' + a.x + ',' + a.y + ' Q' + cx.toFixed(1) + ',' + cy.toFixed(1) + ' ' + b.x + ',' + b.y;
-  }
-
-  var _kmRaf = null;
-  function animateKmCountdown(el, totalKm, durationMs){
-    if(_kmRaf) cancelAnimationFrame(_kmRaf);
-    var start = null;
-    function step(ts){
-      if(!start) start = ts;
-      var p = Math.min((ts - start) / durationMs, 1);
-      var eased = 1 - Math.pow(1 - p, 2); // ease-out : descend vite puis ralentit à l'approche de 0
-      var remaining = Math.round(totalKm * (1 - eased));
-      el.textContent = remaining.toLocaleString('fr-FR') + ' km';
-      if(p < 1){
-        _kmRaf = requestAnimationFrame(step);
-      } else {
-        el.textContent = '0 km';
-      }
+  function activate(step){
+    for(var i=1;i<=6;i++){
+      var rt  = document.getElementById('rt'+i);
+      var lbl = document.getElementById('cityLbl'+i);
+      if(rt)  rt.classList.remove('rt-active');
+      if(lbl) lbl.classList.remove('cl-active');
     }
-    _kmRaf = requestAnimationFrame(step);
-  }
+    var rtActive  = document.getElementById('rt'+step.n);
+    var lblActive = document.getElementById('cityLbl'+step.n);
+    if(rtActive)  rtActive.classList.add('rt-active');
+    if(lblActive) lblActive.classList.add('cl-active');
 
-  var _zoomTimer = null;
-  function focusOnTrajectory(a, b){
-    var content = document.getElementById('globeContent');
-    if(!content) return;
-    var PAD = 55;
-    var midx = (a.x + b.x) / 2, midy = (a.y + b.y) / 2;
-    var w = Math.abs(b.x - a.x) + PAD * 2;
-    var h = Math.abs(b.y - a.y) + PAD * 2;
-    var s = Math.min(500 / w, 500 / h);
-    s = Math.max(1, Math.min(s, 2.6)); // ne jamais dézoomer sous la taille normale, ni zoomer à l'excès
-    content.style.transition = 'transform 1.3s cubic-bezier(.4,0,.2,1)';
-    content.style.transform = 'translate(260px,260px) scale(' + s + ') translate(' + (-midx) + 'px,' + (-midy) + 'px)';
-  }
-  function resetZoom(){
-    var content = document.getElementById('globeContent');
-    if(!content) return;
-    content.style.transition = 'transform .8s cubic-bezier(.4,0,.2,1)';
-    content.style.transform = 'translate(0,0) scale(1) translate(0,0)';
-  }
-
-  function showDestination(idx){
-    var main = DESTS[idx];
-    var others = DESTS.filter(function(_, i){ return i !== idx; });
-
-    // ── Zoom caméra : focus sur le trajet Alger → destination, comme si on suivait l'avion ──
-    if(_zoomTimer) clearTimeout(_zoomTimer);
-    focusOnTrajectory(ALGER, main);
-    _zoomTimer = setTimeout(resetZoom, CYCLE_MS - 700);
-
-    // ── Destination principale : pin (taille réduite) + tracé + avion, avec transition fluide ──
-    var endPin = document.getElementById('endPin');
-    var endLbl = document.getElementById('endPinLabel');
-    if(endPin){
-      endPin.style.transition = 'transform .6s cubic-bezier(.4,0,.2,1)';
-      endPin.setAttribute('transform', 'translate(' + main.x + ',' + (main.y - 80 * PIN_SCALE) + ') scale(' + PIN_SCALE + ')');
+    var d = rtActive ? rtActive.getAttribute('d') : null;
+    var motion = document.getElementById('mainPlaneMotion');
+    if(motion && d){
+      motion.setAttribute('path', d);
+      if (typeof motion.beginElement === 'function') { try { motion.beginElement(); } catch(e){} }
     }
-    if(endLbl){
-      endLbl.textContent = main.name;
-      // Redémarre l'animation de mise en évidence à chaque changement de destination
-      endLbl.classList.remove('pop');
-      void window.getComputedStyle(endLbl).opacity; // force le reflow pour pouvoir rejouer l'animation
-      endLbl.classList.add('pop');
-    }
-
-    // ── Compteur de distance réelle (km) Alger → destination : décompte animé façon "distance restante" ──
-    var endDist = document.getElementById('endPinDistance');
-    if(endDist && main.km){
-      endDist.classList.remove('pop');
-      void window.getComputedStyle(endDist).opacity;
-      endDist.classList.add('pop');
-      animateKmCountdown(endDist, main.km, 4200);
-    }
-
-    // ── Zone géographique correspondante mise en évidence sur la carte réelle ──
-    // On cible uniquement le tracé "mainland" (continent réel), pas les îles/territoires lointains
-    // qui fausseraient le centre du zoom (ex: Canada = archipel arctique, France = outre-mer)
-    function countryTarget(cid){
-      var mainland = document.querySelector('#' + cid + ' .mainland');
-      return mainland || document.getElementById(cid);
-    }
-    ALL_COUNTRIES.forEach(function(cid){
-      var el = countryTarget(cid);
-      if(el) el.classList.remove('active-country');
-    });
-    if(main.country){
-      var activeEl = countryTarget(main.country);
-      if(activeEl){
-        activeEl.style.setProperty('--zoom-scale', main.zoom || 3);
-        activeEl.classList.add('active-country');
-      }
-    }
-
-    var mainPathD = quadPath(ALGER, main);
-    var trajEl = document.getElementById('trajPath');
-    if(trajEl){
-      trajEl.setAttribute('d', mainPathD);
-      // ── Tracé progressif : la ligne se dessine du départ vers l'arrivée, comme un vrai plan de vol ──
-      try{
-        var len = trajEl.getTotalLength();
-        trajEl.style.transition = 'none';
-        trajEl.style.strokeDasharray = len + ' ' + len;
-        trajEl.style.strokeDashoffset = len;
-        void trajEl.getBoundingClientRect(); // force le reflow
-        trajEl.style.transition = 'stroke-dashoffset 1.3s cubic-bezier(.25,.1,.25,1)';
-        trajEl.style.strokeDashoffset = '0';
-      }catch(e){}
-    }
-    ['glowMotion','planeMotion'].forEach(function(id){
-      var el = document.getElementById(id);
-      if(!el) return;
-      el.setAttribute('path', mainPathD);
-      if (typeof el.beginElement === 'function') { try { el.beginElement(); } catch(e){} }
-    });
-
-    // ── 6 destinations secondaires : dots + labels décalés + routes discrètes ──
-    others.forEach(function(dest, i){
-      var n = i + 1;
-      var dot = document.getElementById('cityDot' + n);
-      var lbl = document.getElementById('cityLbl' + n);
-      var rt  = document.getElementById('rt' + n);
-      var rm  = document.getElementById('rtMotion' + n);
-      var pathD = quadPath(ALGER, dest);
-      if(dot){ dot.setAttribute('cx', dest.x); dot.setAttribute('cy', dest.y); }
-      if(lbl){
-        lbl.setAttribute('x', dest.x + dest.lx);
-        lbl.setAttribute('y', dest.y + dest.ly);
-        lbl.setAttribute('text-anchor', dest.anchor);
-        lbl.textContent = dest.code ? (dest.name + ' · ' + dest.code) : dest.name;
-      }
-      if(rt) rt.setAttribute('d', pathD);
-      if(rm){
-        rm.setAttribute('path', pathD);
-        if (typeof rm.beginElement === 'function') { try { rm.beginElement(); } catch(e){} }
-      }
-    });
   }
 
   function tick(){
-    showDestination(order[cursor]);
-    cursor = (cursor + 1) % order.length;
+    activate(ORDER[idx]);
+    idx = (idx + 1) % ORDER.length;
   }
 
   function startShowcase(){
-    tick(); // affiche la première destination dès l'ouverture
-    setInterval(tick, CYCLE_MS);
+    tick();
+    _cycleIv = setInterval(tick, CYCLE_MS);
   }
 
   if (document.readyState === 'loading') {
@@ -24327,6 +24468,26 @@ function fluxCreateEcriture() {
   } else {
     startShowcase();
   }
+
+  // Contrôles conservés en API silencieuse (aucun bouton à l'écran) au cas où besoin futur
+  function mapSvgEl(){ return document.getElementById('fwtMapSvg'); }
+  window.fwtMapPause = function(){
+    var svg = mapSvgEl();
+    if(svg && typeof svg.pauseAnimations === 'function') svg.pauseAnimations();
+    if(_cycleIv){ clearInterval(_cycleIv); _cycleIv = null; }
+  };
+  window.fwtMapPlay = function(){
+    var svg = mapSvgEl();
+    if(svg && typeof svg.unpauseAnimations === 'function') svg.unpauseAnimations();
+    if(!_cycleIv) _cycleIv = setInterval(tick, CYCLE_MS);
+  };
+  window.fwtMapReset = function(){
+    var svg = mapSvgEl();
+    if(_cycleIv){ clearInterval(_cycleIv); _cycleIv = null; }
+    idx = 0;
+    if(svg && typeof svg.setCurrentTime === 'function') svg.setCurrentTime(0);
+    startShowcase();
+  };
 })();
 </script>
 
