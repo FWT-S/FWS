@@ -359,6 +359,20 @@ body {
 .mod-title{ font-size: 30px; letter-spacing: -0.03em; color: var(--txt); font-weight: 800; margin-bottom:10px; position:relative; z-index:1; }
 .mod-hint{ font-size:13px; color:var(--txt3); position:relative; z-index:1; }
 
+/* ── Décor "signature avion" — F·W·T tracé en cursive manuscrite (Hershey Script), teinté vert BNA ── */
+.mod-flight-deco{
+  position:absolute; right:0; bottom:6px;
+  width:74%; min-width:520px; max-width:920px;
+  opacity:.92; pointer-events:none; z-index:0;
+}
+.mod-flight-deco svg{ width:100%; height:auto; display:block; }
+.mod-flight-trail{
+  stroke:none; fill:none; opacity:0; /* trajectoire invisible — guide de vol uniquement */
+}
+.mod-flight-plane{ filter:url(#modPlaneGlow); }
+#modLandingText{ text-anchor:start; opacity:0; transition:opacity .25s ease; }
+#modLandingText.mod-landing-active{ opacity:1; }
+
 /* ── Mobile : sidebar devient une barre horizontale scrollable en haut ── */
 @media (max-width: 760px){
   .mod-shell{ flex-direction:column; }
@@ -378,6 +392,7 @@ body {
   .mod-side-logout{ display:none; }
   .mod-main{ padding:28px 22px; align-items:center; text-align:center; }
   .mod-title{ font-size:22px; }
+  .mod-flight-deco{ width:88%; min-width:0; opacity:.55; bottom:-20px; right:-20px; }
 }
 
 #module-jbr, #module-fac { display: none; height: 100vh; overflow: hidden; position: relative; }
@@ -2832,16 +2847,16 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
         <line x1="430" y1="0" x2="430" y2="520" stroke="rgba(125,211,252,.10)"/>
 
         <!-- Routes aériennes FWT — Alger vers les pays des compagnies partenaires (positions réelles, recalculées en JS au chargement, 6 emplacements secondaires) -->
-        <path id="rt1" d="M321.2,310.2 Q410.7,296.5 470.4,242.5" fill="none" stroke="rgba(212,161,61,.30)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt2" d="M321.2,310.2 Q346.6,222.6 307.4,163.8" fill="none" stroke="rgba(212,161,61,.26)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt3" d="M321.2,310.2 Q161.0,176.5 -35.2,162.4" fill="none" stroke="rgba(125,211,252,.24)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt4" d="M321.2,310.2 Q349.1,235.0 319.9,180.3" fill="none" stroke="rgba(212,161,61,.22)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt5" d="M321.2,310.2 Q349.7,256.6 335.1,212.1" fill="none" stroke="rgba(212,161,61,.20)" stroke-width="1" stroke-dasharray="3 5"/>
-        <path id="rt6" d="M321.2,310.2 Q338.6,258.3 317.1,221.8" fill="none" stroke="rgba(125,211,252,.20)" stroke-width="1" stroke-dasharray="3 5"/>
+        <path id="rt1" d="M321.2,310.2 Q424.2,321.8 470.4,242.5" fill="none" stroke="rgba(212,161,61,.30)" stroke-width="1.4" stroke-dasharray="2 6"/>
+        <path id="rt2" d="M321.2,310.2 Q375.8,215.8 307.4,163.8" fill="none" stroke="rgba(212,161,61,.26)" stroke-width="1.4" stroke-dasharray="2 6"/>
+        <path id="rt3" d="M321.2,310.2 Q177.5,130.7 -35.2,162.4" fill="none" stroke="rgba(125,211,252,.24)" stroke-width="1.4" stroke-dasharray="2 6"/>
+        <path id="rt4" d="M321.2,310.2 Q375.1,231.1 319.9,180.3" fill="none" stroke="rgba(212,161,61,.22)" stroke-width="1.4" stroke-dasharray="2 6"/>
+        <path id="rt5" d="M321.2,310.2 Q369.4,256.6 335.1,212.1" fill="none" stroke="rgba(212,161,61,.20)" stroke-width="1.4" stroke-dasharray="2 6"/>
+        <path id="rt6" d="M321.2,310.2 Q356.3,255.0 317.1,221.8" fill="none" stroke="rgba(125,211,252,.20)" stroke-width="1.4" stroke-dasharray="2 6"/>
 
         <!-- Avion unique — bascule d'une destination à l'autre par alternance (aucun zoom caméra) -->
         <g id="mainPlane" filter="url(#planeGlow)">
-          <animateMotion id="mainPlaneMotion" dur="3.3s" repeatCount="1" fill="freeze" rotate="auto" path="M321.2,310.2 Q349.1,235.0 319.9,180.3"/>
+          <animateMotion id="mainPlaneMotion" dur="3.3s" repeatCount="1" fill="freeze" rotate="auto" path="M321.2,310.2 Q375.1,231.1 319.9,180.3"/>
           <g transform="rotate(90) scale(.46)">
             <path d="M0,-15.5L2.3,-9.5L2.3,-2.4L15,4.6L15,7.6L2.3,4.4L2.3,9.2L6.4,12.4L6.4,14.6L0,12.9L-6.4,14.6L-6.4,12.4L-2.3,9.2L-2.3,4.4L-15,7.6L-15,4.6L-2.3,-2.4L-2.3,-9.5Z" fill="#f5a83a" stroke="#c9701b" stroke-width="0.8" stroke-linejoin="round"/>
           </g>
@@ -3187,9 +3202,38 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
     </div>
 
     <div class="mod-main">
-      <div class="mod-eyebrow"><span>FOUR WINDS TRAVELS</span><span class="sep"></span><span>SALLE D'EMBARQUEMENT</span></div>
+      <div class="mod-eyebrow"><span>FOUR WINDS TRAVELS</span><span class="sep"></span><span>DASHBOARD</span></div>
       <div class="mod-title">SÉLECTIONNER UN MODULE</div>
       <div class="mod-hint">Choisissez un module à gauche, puis l'action à effectuer.</div>
+
+      <!-- Décor : l'avion écrit F·W·T à la volée, comme une signature manuscrite -->
+      <div class="mod-flight-deco" aria-hidden="true">
+        <svg viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="modPlaneGlow" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur stdDeviation="2.2" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Trajectoire : double boucle, départ en bas à gauche, arrivée en haut à droite. Invisible (guide de vol uniquement). -->
+          <path id="modFlightTrail" class="mod-flight-trail" fill="none"
+                d="M30.0,275.0 C188.2,238.6 579.8,299.3 595.0,145.0 C610.2,-9.3 60.9,70.6 55.0,22.0 C49.1,-26.6 181.0,22.0 230.0,22.0"/>
+
+          <!-- Avion — suit la trajectoire fixe en double boucle -->
+          <g id="modPlane" class="mod-flight-plane">
+            <animateMotion id="modPlaneMotion" dur="16s" repeatCount="1" fill="freeze" rotate="auto"
+              path="M30.0,275.0 C188.2,238.6 579.8,299.3 595.0,145.0 C610.2,-9.3 60.9,70.6 55.0,22.0 C49.1,-26.6 181.0,22.0 230.0,22.0"/>
+            <g transform="rotate(90) scale(.52)">
+              <path d="M0,-15.5L2.3,-9.5L2.3,-2.4L15,4.6L15,7.6L2.3,4.4L2.3,9.2L6.4,12.4L6.4,14.6L0,12.9L-6.4,14.6L-6.4,12.4L-2.3,9.2L-2.3,4.4L-15,7.6L-15,4.6L-2.3,-2.4L-2.3,-9.5Z"
+                    fill="#15803d" stroke="#16a34a" stroke-width="0.8" stroke-linejoin="round"/>
+            </g>
+          </g>
+
+          <!-- Texte "FOUR WINDS TRAVELS" — apparaît lettre par lettre à l'arrivée (point d'atterrissage, en haut à droite) -->
+          <text id="modLandingText" x="245" y="15" font-size="15" font-weight="800" fill="var(--sky)" font-family="var(--font-ui)" letter-spacing="1"></text>
+        </svg>
+      </div>
     </div>
   </div>
 </div>
@@ -4053,6 +4097,7 @@ function checkPwd(){
   if(v===PWD){
     document.getElementById('login-screen').style.display='none';
     document.getElementById('module-screen').style.display='flex';
+    if(typeof window.__startModFlight==='function') window.__startModFlight();
   }else{
     const err=document.getElementById('login-err');
     err.textContent='❌ Mot de passe incorrect';
@@ -4155,6 +4200,7 @@ function retourChoix(){
   document.getElementById('module-rap').style.display='none';
   document.getElementById('module-stat').style.display='none';
   document.getElementById('module-screen').style.display='flex';
+  if(typeof window.__startModFlight==='function') window.__startModFlight();
 }
 
 window.onload=()=>{setTimeout(()=>document.getElementById('login-pwd').focus(),100);};
@@ -4633,7 +4679,9 @@ function ACS(v){
   const q=v.toLowerCase();
 
   // ── Partie 1 : DB locale (clients comptables enregistrés) ──
-  let pool=TYP==='411'?DB.filter(c=>c.type==='411'):TYP==='165'?DB.filter(c=>c.type==='165'):DB;
+  // RÈGLEMENT (411) → comptes 411 (clients) + 18*** (interunité/FWT) — jamais 165
+  // CAUTION (165)   → uniquement la table des 1650, rien d'autre
+  let pool=TYP==='411'?DB.filter(c=>c.type==='411'||c.type==='181'):TYP==='165'?DB.filter(c=>c.type==='165'):DB;
   const scored=pool.map(c=>({c,s:fuzzyScore(c.label,c.code,q)})).filter(x=>x.s>0);
   scored.sort((a,b)=>b.s-a.s);
   const dbRes=scored.slice(0,8).map(x=>({...x.c,_src:'db'}));
@@ -4641,8 +4689,9 @@ function ACS(v){
   const dbCodes=new Set(dbRes.map(r=>r.code));
 
   // ── Partie 2 : BAS_RAP V2 ──────────────────────────────────
+  // BAS_RAP ne référence que des clients 411 : jamais de suggestion BAS_RAP en mode CAUTION (165)
   let basRes=[];
-  if(_V2_LOADED && _V2_CLIENT_IDX && _V2_CLIENT_IDX.length){
+  if(TYP!=='165' && _V2_LOADED && _V2_CLIENT_IDX && _V2_CLIENT_IDX.length){
     const qNorm  = _jbrNorm(v);
     const qTokens= new Set(qNorm.split(' ').filter(t=>t.length>=2));
     const v2Scored=_V2_CLIENT_IDX.map(c=>{
@@ -4653,6 +4702,8 @@ function ACS(v){
 
     basRes=v2Scored
       .map(x=>_jbrMakeSEL(x.v2))
+      // Sécurité : ne jamais laisser passer un 165 issu de BAS_RAP dans le volet RÈGLEMENT
+      .filter(x=>x.type==='411')
       // Ne pas doubler un client déjà dans DB (même label OU même code)
       .filter(x=>!dbLabels.has(x.label.toUpperCase()) && !dbCodes.has(x.code));
     basRes=basRes.slice(0,6);
@@ -17526,6 +17577,7 @@ function statSetView(v){
     if(v==='tl')      {sCommTimeline(c);return;}
     if(v==='evol')    {sCommEvol(c);return;}
     if(v==='comp')    {sCommComp(c);return;}
+    if(v==='top')     {sTopVendeursCommission(c);return;}
     if(v==='rank')    {sCommission(c);return;}// fallback: classement → commission
   }
   if(v==='rank')    sRank(c);
@@ -18271,6 +18323,7 @@ function sEvol(c){
     if(granul==='annee'){ if(r.year) k=String(r.year); }
     else if(granul==='sem'){ if(r.year&&r.month) k=r.year+'-S'+(r.month<=6?1:2); }
     else if(granul==='trim'){ if(r.year&&r.month) k=r.year+'-T'+Math.ceil(r.month/3); }
+    else if(granul==='quinz'){ if(r.year&&r.month&&r.date) k=r.year+'-'+String(r.month).padStart(2,'0')+'-Q'+(r.date.getDate()<=15?1:2); } // même règle que EBV : jours 1-15 → 1/15, 16-fin → 2/15
     else { // mois — utiliser DATE si dispo, sinon FOLIO
       if(r.year&&r.month) k=r.year+'-'+String(r.month).padStart(2,'0');
       else if(r.folio>=1&&r.folio<=12) k=String(STAT.year||r.year||'?')+'-'+String(r.folio).padStart(2,'0');
@@ -18278,9 +18331,9 @@ function sEvol(c){
     if(!k) return;
     periMap.set(k,(periMap.get(k)||0)+r.debit);
 
-    // Track NDC séparément
-    const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-    if(isNDC) ndcMap.set(k,(ndcMap.get(k)||0)+r.debit);
+    // Track TK NDC séparément — journal dédié 261/26-1 (pas le flag générique /NDC/, qui couvre TOUTES les compagnies)
+    const isTKNDC=(SJMAP[r.journal]||'')==='TK NDC';
+    if(isTKNDC) ndcMap.set(k,(ndcMap.get(k)||0)+r.debit);
   });
 
   const periKeys=[...periMap.keys()].sort();
@@ -18352,6 +18405,10 @@ function sEvol(c){
       lbl=SMOIS2[+m-1]+(n>12?' '+yr.slice(2):'');
     } else if(granul==='trim') lbl=lbl.replace('-T','·T');
     else if(granul==='sem')    lbl=lbl.replace('-S','·S');
+    else if(granul==='quinz'){
+      const[yr,m,q]=lbl.split('-');
+      lbl=SMOIS2[+m-1]+'·'+q.replace('Q','')+(n>24?'/'+yr.slice(2):'');
+    }
     xLbls+=`<text x="${cx2}" y="${H-PB+16}" text-anchor="middle" font-size="7.5" fill="#6b7280"
       transform="rotate(-35,${cx2},${H-PB+16})">${lbl}</text>`;
   });
@@ -18375,12 +18432,22 @@ function sEvol(c){
   </svg>`;
 
   // Granularité sélecteur
-  const granulBtns=['mois','trim','sem','annee'].map(g=>
+  const granulBtns=['mois','quinz','trim','sem','annee'].map(g=>
     `<button onclick="STAT.granul='${g}';sEvol(document.getElementById('stat-content'))"
       style="padding:3px 9px;border-radius:6px;border:1px solid var(--bo);font-size:9px;font-weight:700;cursor:pointer;
       background:${(STAT.granul||'mois')===g?'var(--sky)':'#fff'};color:${(STAT.granul||'mois')===g?'#fff':'var(--txt3)'}"
-    >${g==='mois'?'🗓 Mensuel':g==='trim'?'📊 Trim.':g==='sem'?'📈 Sem.':'📅 Annuel'}</button>`
+    >${g==='mois'?'🗓 Mensuel':g==='quinz'?'🔀 Quinzaine':g==='trim'?'📊 Trim.':g==='sem'?'📈 Sem.':'📅 Annuel'}</button>`
   ).join('');
+
+  // ── Meilleure période (pic) — toutes périodes, ou comparaison au sein de la granularité active ──
+  const bestIdx=vals.indexOf(Math.max(...vals));
+  let bestLbl=periKeys[bestIdx]||'—';
+  if(granul==='mois'){const[yr,m]=bestLbl.split('-');bestLbl=SMOIS2[+m-1]+' '+yr;}
+  else if(granul==='trim')bestLbl=bestLbl.replace('-T',' T');
+  else if(granul==='sem')bestLbl=bestLbl.replace('-S',' S');
+  else if(granul==='quinz'){const[yr,m,q]=bestLbl.split('-');bestLbl=SMOIS2[+m-1]+' '+yr+' · '+q.replace('Q','')+'/15';}
+  const bestVal=vals[bestIdx]||0;
+  const bestBadge=`<span style="font-size:9.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#f59e0b,#d97706);padding:3px 10px;border-radius:12px;white-space:nowrap;">🏆 Meilleure période : ${bestLbl} — ${SFM(bestVal)}</span>`;
 
   // Tableau récapitulatif
   let tbl=`<table class="stat-tbl" style="margin-top:6px"><thead><tr>
@@ -18398,6 +18465,7 @@ function sEvol(c){
     if(granul==='mois'){const[yr,m]=k.split('-');klbl=SMOIS2[+m-1]+' '+yr;}
     else if(granul==='trim')klbl=k.replace('-T',' T');
     else if(granul==='sem')klbl=k.replace('-S',' S');
+    else if(granul==='quinz'){const[yr,m,q]=k.split('-');klbl=SMOIS2[+m-1]+' '+yr+' · '+q.replace('Q','')+'/15';}
     tbl+=`<tr>
       <td class="m" style="font-weight:600">${klbl}</td>
       <td class="r m" style="color:var(--sky-deep);font-weight:700">${v.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})} DA</td>
@@ -18417,6 +18485,7 @@ function sEvol(c){
   c.innerHTML=`<div style="padding:10px 16px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px">📅 ÉVOLUTION PÉRIODIQUE</span>
     <span style="font-size:9px;color:var(--txt3)">${SFN(periKeys.length)} périodes · ${totalCA.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})} DA total</span>
+    ${bestBadge}
     <div style="margin-left:auto;display:flex;gap:4px">${granulBtns}</div>
   </div>
   <div style="padding:6px 16px 0;overflow-x:auto">${svg}</div>
@@ -18682,6 +18751,63 @@ function sCAByCompany(){
     m.set(sym,(m.get(sym)||0)+r.debit);
   });
   return m;
+}
+
+/* ── Agrégation Commission PAR CLIENT (résolution via libellé, comme RAP/JBR) ──
+   La feuille SUP COM n'a pas de colonne AUXILIAIRE : le client est identifié
+   depuis le LIBELLE via le même moteur que sResolveName (v2IdentifierClient
+   en priorité, sinon nettoyage sCleanClientName). Exclut NDC FACTURE (706012)
+   qui est une catégorie transverse, pas un client. ── */
+function sComClientAgg(){
+  const rows=comRawFiltered().filter(r=>r.sym!=='NDC FACTURE');
+  const m=new Map();
+  rows.forEach(r=>{
+    let name=null;
+    if(_V2_LOADED&&r.libelle){ const v2=v2IdentifierClient(r.libelle); if(v2&&v2.client) name=v2.client; }
+    if(!name) name=sCleanClientName(r.libelle)||r.libelle||'—';
+    const key=name.toUpperCase();
+    if(!m.has(key)) m.set(key,{name,total:0,ops:0});
+    const o=m.get(key); o.total+=r.credit; o.ops++;
+  });
+  return [...m.values()].sort((a,b)=>b.total-a.total);
+}
+
+/* ══ VUE TOP VENDEURS — MODE COMMISSION (podium clients par SUP COM) ══
+   Même principe que sTopVendeurs (podium + Top 20) mais classé sur la
+   commission perçue par client plutôt que sur le chiffre d'affaires. ── */
+function sTopVendeursCommission(c){
+  if(!_commCheck(c)) return;
+  const all=sComClientAgg();
+  if(!all.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏆</div><div class="msg">Aucune commission client identifiable sur cette période</div></div>`;return;}
+  const top3=all.slice(0,3), rest=all.slice(3,20);
+  const totCom=all.reduce((s,r)=>s+r.total,0);
+  const podiumOrder=[1,0,2], podiumColors=['#c0c0c0','#f59e0b','#cd7f32'], podiumEmoji=['🥈','🥇','🥉'];
+  let podiumHTML='';
+  podiumOrder.forEach((idx,pi)=>{
+    const r=top3[idx]; if(!r) return;
+    const pct=totCom>0?(r.total/totCom*100).toFixed(1):'0.0';
+    podiumHTML+=`
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0">
+      <div style="font-size:${idx===0?'28px':'22px'}">${podiumEmoji[pi]}</div>
+      <div style="background:var(--surface);border:2px solid ${podiumColors[pi]};border-radius:12px;padding:10px 12px;width:100%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.08)">
+        <div style="font-size:9px;font-weight:800;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</div>
+        <div style="font-size:12px;font-weight:900;color:#047857;margin:4px 0">${SFM(r.total)}</div>
+        <div style="font-size:10px;color:var(--txt4)">${SFN(r.ops)} ops · ${pct}% du total</div>
+      </div>
+    </div>`;
+  });
+  const rowsH=rest.map((r,i)=>{
+    const pct=totCom>0?(r.total/totCom*100).toFixed(1):'0.0';
+    return `<tr><td class="m" style="color:var(--txt4)">${i+4}</td><td class="m" style="font-weight:600">${r.name}</td>
+      <td class="r m" style="font-weight:800;color:#047857">${SFM(r.total)}</td>
+      <td class="r m">${SFN(r.ops)}</td><td class="r m" style="color:var(--txt3)">${pct}%</td></tr>`;
+  }).join('');
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    ${_commBanner('Top Vendeurs — Commission (SUP COM)')}
+    <div style="display:flex;gap:10px;margin-bottom:16px">${podiumHTML}</div>
+    <table class="stat-tbl"><thead><tr><th>#</th><th>CLIENT</th><th class="r">COMMISSION</th><th class="r">OPS</th><th class="r">% TOTAL</th></tr></thead>
+    <tbody>${rowsH}</tbody></table>
+  </div>`;
 }
 
 /* ── Agrégation principale du module Commission ──────────────────────── */
@@ -24593,6 +24719,69 @@ function fluxCreateEcriture() {
   // En cas d'échec (hors ligne, fichier pas encore uploadé sur GitHub…),
   // l'import manuel classique via les boutons reste disponible normalement.
   window.addEventListener('load',()=>{ setTimeout(()=>{ ghAutoLoadAll(true).catch(()=>{}); },800); });
+})();
+</script>
+
+<!-- ── Décor avion (écran modules) : trajectoire fixe, texte qui s'écrit à l'arrivée uniquement ── -->
+<script>
+(function(){
+  var LANDING_WORD = 'FOUR WINDS TRAVELS';
+  var FLIGHT_DUR_MS = 16000; // doit correspondre exactement à dur="16s" sur l'animateMotion
+  var PAUSE_MS = 8000;       // pause après l'atterrissage avant que la boucle ne reprenne
+  var _timeoutId = null;
+
+  function typeWriter(el, word, totalMs){
+    var i = 0;
+    var stepMs = totalMs / word.length;
+    el.textContent = '';
+    if(el._typeTimer) clearInterval(el._typeTimer);
+    el._typeTimer = setInterval(function(){
+      i++;
+      el.textContent = word.substring(0, i);
+      if(i >= word.length) clearInterval(el._typeTimer);
+    }, stepMs);
+  }
+
+  // Démarre (ou redémarre proprement) l'animation avion + le minuteur du texte.
+  // Doit être appelée au moment précis où l'écran des modules devient réellement visible
+  // (pas au chargement de la page, sinon le décompte tourne pendant l'écran de connexion
+  // et le texte peut déjà être affiché quand l'utilisateur arrive sur l'écran des modules).
+  function startModFlight(){
+    var motion = document.getElementById('modPlaneMotion');
+    var landingText = document.getElementById('modLandingText');
+    if(!motion) return;
+
+    // Annule tout minuteur d'un précédent démarrage, pour ne jamais en cumuler plusieurs
+    if(_timeoutId) { clearTimeout(_timeoutId); _timeoutId = null; }
+    if(landingText && landingText._typeTimer) clearInterval(landingText._typeTimer);
+
+    function onLanding(){
+      if(landingText){
+        landingText.classList.add('mod-landing-active');
+        typeWriter(landingText, LANDING_WORD, 1400);
+      }
+      // Pause de 8s après l'atterrissage, puis nouveau cycle complet (décollage + vol + atterrissage)
+      _timeoutId = window.setTimeout(runOneCycle, PAUSE_MS);
+    }
+
+    function runOneCycle(){
+      if(landingText){ landingText.textContent = ''; landingText.classList.remove('mod-landing-active'); }
+      if (typeof motion.beginElement === 'function') { try { motion.beginElement(); } catch(e){} }
+      _timeoutId = window.setTimeout(onLanding, FLIGHT_DUR_MS);
+    }
+
+    runOneCycle();
+  }
+
+  window.__startModFlight = startModFlight;
+
+  // Sécurité : si jamais rien n'appelle __startModFlight (ancienne page en cache, etc.),
+  // démarrage de secours au chargement du DOM.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startModFlight);
+  } else {
+    startModFlight();
+  }
 })();
 </script>
 
