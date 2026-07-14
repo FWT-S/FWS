@@ -2199,6 +2199,34 @@ html.dark-mode .stat-tbl tbody tr.top3{background:linear-gradient(90deg,rgba(212
 .stat-vtab[data-view="segment"].on{ background:linear-gradient(135deg,#ec4899,#be185d);border-color:transparent;color:#fff; }
 .stat-vtab[data-view="insights"]  { border-color:rgba(234,179,8,.4);color:#a16207; }
 .stat-vtab[data-view="insights"].on{ background:linear-gradient(135deg,#facc15,#a16207);border-color:transparent;color:#fff; }
+/* ── Quinzaine tab ── */
+.stat-vtab[data-view="quinz"]    { border-color:rgba(139,92,246,.35);color:#7c3aed; }
+.stat-vtab[data-view="quinz"].on { background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-color:transparent;color:#fff; }
+/* ── Quinzaine filter buttons in sidebar ── */
+.stat-qnz-grp{display:flex;gap:3px;margin-top:5px;}
+.stat-qnz-btn{flex:1;padding:5px 4px;border:1.5px solid rgba(139,92,246,.3);border-radius:5px;font-size:9px;font-weight:800;cursor:pointer;background:var(--surface);color:#7c3aed;transition:.15s;text-align:center;}
+.stat-qnz-btn.on{background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(139,92,246,.3);}
+.stat-qnz-btn:hover:not(.on){background:rgba(139,92,246,.08);}
+/* ── Evolution depth selector ── */
+.stat-depth-row{display:flex;align-items:center;gap:5px;margin-top:6px;}
+.stat-depth-lbl{font-size:9px;color:var(--txt3);font-weight:700;}
+.stat-depth-sel{flex:1;padding:3px 5px;border:1px solid var(--bo);border-radius:4px;font-size:9.5px;background:var(--surface);color:var(--txt);outline:none;}
+/* ── Evolution badge inline ── */
+.evo-up{color:#059669;font-weight:800;font-size:9.5px;}
+.evo-dn{color:#dc2626;font-weight:800;font-size:9.5px;}
+.evo-na{color:var(--txt4);font-size:9px;}
+/* ── Top mode buttons ── */
+.stat-topmode-grp{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px;}
+.stat-topmode-btn{padding:3px 8px;border:1.5px solid var(--bo);border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--txt3);transition:.15s;}
+.stat-topmode-btn.on{background:linear-gradient(135deg,#f59e0b,#d97706);border-color:transparent;color:#fff;box-shadow:0 2px 6px rgba(245,158,11,.3);}
+/* ── Multi-year evol table ── */
+.evol-ny-tbl{width:100%;border-collapse:collapse;font-size:10px;margin-top:8px;}
+.evol-ny-tbl th{padding:5px 8px;background:linear-gradient(120deg,#05101f,#15803d);color:#fff;font-size:7.5px;font-weight:800;letter-spacing:1px;text-align:right;white-space:nowrap;}
+.evol-ny-tbl th:first-child{text-align:left;}
+.evol-ny-tbl td{padding:5px 8px;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:9.5px;}
+.evol-ny-tbl td:first-child{text-align:left;font-weight:700;color:var(--txt);}
+.evol-ny-tbl tr:hover td{background:var(--sky-pale);}
+.evol-ny-tbl tfoot td{background:linear-gradient(120deg,#05101f,#15803d);color:#fff;font-weight:800;padding:5px 8px;}
 
 /* ── Modale de sélection des sections du Rapport Word ─────────────────── */
 .stat-rsm-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:9100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
@@ -3591,8 +3619,8 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
   <div id="mbox">
     <h3 id="mttl">── NOUVEAU CLIENT ──</h3>
     <div><label class="lb">TYPE</label>
-      <select id="mtype"><option value="411">411 — Facture vente</option><option value="165">165 — Caution</option><option value="181">181 — Unité FWT</option></select></div>
-    <div><label class="lb">CODE AUXILIAIRE</label><input id="mcod" placeholder="ex: 41100999"></div>
+      <select id="mtype" onchange="SC_liveHint(document.getElementById('mcod').value,this.value)"><option value="411">411 — Facture vente</option><option value="165">165 — Caution</option><option value="181">181 — Unité FWT</option></select></div>
+    <div><label class="lb">CODE AUXILIAIRE (411:41100XXX · 165:1650XXX · Unité:181142…)</label><input id="mcod" placeholder="41100XXX / 1650XXX / 181142" oninput="SC_liveHint(this.value,document.getElementById('mtype').value)"><div id="mcod-hint" style="font-size:10px;margin-top:3px;min-height:14px;color:var(--txt3);"></div></div>
     <div><label class="lb">LIBELLÉ</label><input id="mlab" placeholder="ex: MON AGENCE TOURS" onkeydown="if(event.key==='Enter')SC()"></div>
     <div class="mbtns"><button class="bcan" onclick="CM()">ANNULER</button><button class="bprim" onclick="SC()">✔ OK</button></div>
   </div>
@@ -4012,8 +4040,8 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
       <input type="text" class="text-input iata" id="nc-iata" maxlength="4" placeholder="0000">
     </div>
     <div class="input-group">
-      <label class="input-label">Code comptable</label>
-      <input type="text" class="text-input" id="nc-aux" placeholder="41100XXX">
+      <label class="input-label">Code comptable (411:41100XXX · 165:1650XXX · Unité:181142…)</label>
+      <input type="text" class="text-input" id="nc-aux" placeholder="41100XXX / 1650XXX / 181142">
     </div>
     <div class="input-group">
       <label class="input-label">Montant (DZD)</label>
@@ -4512,11 +4540,13 @@ const BASE=[
 ];
 
 // ══ HELPERS ══════════════════════════════════════════════════
-// 411 → CODE_COM=411 / CODE_AUX=411***
-// 165 → CODE_COM=165 / CODE_AUX=165***
-// 181 → CODE_COM=181xxx / CODE_AUX=vide
-// 18*** (interunité) → CODE_COM=18*** / CODE_AUX=vide (pas d'auxiliaire)
-function getCOM(c){return c.type==='411'?'411':c.type==='165'?'165':c.code;}
+// PRINCIPE COMPTABLE FWT (à respecter dans TOUS les modules) :
+//   411  (Client)  → CODE_COM = '411'   / CODE_AUX = '41100XXX' (auxiliaire)
+//   165  (Caution) → CODE_COM = '1650'  / CODE_AUX = '1650XXX'  (auxiliaire)
+//   181  (Unité)   → CODE_COM = '18114X' (code complet) / CODE_AUX = vide
+//        Unités : 181142 FWT MENNANI | 181143 FWT PASTEUR | 181144 FWT ABANE
+//                 181145 FWT ORAN    | 181146 FWT BIRKHADEM | 181148 FWT GHARDAIA
+function getCOM(c){return c.type==='411'?'411':c.type==='165'?'1650':c.code;}
 function getAUX(c){
   // 181 et comptes interunité 18*** ne prennent pas d'auxiliaire
   if(c.type==='181') return '';
@@ -4631,8 +4661,8 @@ function _jbrNorm(s){
 // On reconstruit un objet identique à BASE[] pour que AL()/getCOM()/getAUX() fonctionnent
 function _jbrMakeSEL(v2client){
   const aux = String(v2client.code_client||'').trim();
-  // Détecter type depuis le code auxiliaire
-  const typ = aux.startsWith('165') ? '165' : '411';
+  // Détecter type depuis le code auxiliaire — Caution = 1650xxx précisément (pas 165x générique)
+  const typ = aux.startsWith('1650') ? '165' : '411';
   // Le code doit commencer par le même préfixe que le type (convention getCOM/getAUX)
   const code = aux || (typ+'00000');
   return {
@@ -5324,23 +5354,86 @@ function parseImportXLS(buf,fn){
   }catch(e){MSG('err','❌ Erreur lecture fichier clients.');}
 }
 function processImportRows(rows,fn){
-  let ci=-1,li=-1;
+  let ci=-1,ai=-1,li=-1;
   const hdr=rows[0]||[];
-  hdr.forEach((h,i)=>{const hs=String(h).toLowerCase().trim();if(hs.includes('code'))ci=i;if(hs.includes('lib')||hs.includes('nom'))li=i;});
-  if(ci<0)ci=0;if(li<0)li=1;
-  const type=prompt('Type des clients à importer ?\n411 = Facture vente\n165 = Caution\n181 = Unité FWT\n\nEntrer : 411, 165 ou 181','411');
-  if(!['411','165','181'].includes(type)){MSG('err','❌ Type invalide.');return;}
-  let added=0,updated=0;
+  hdr.forEach((h,i)=>{
+    const hs=String(h).toLowerCase().trim();
+    if(hs.includes('auxil'))ai=i;          // AUXILIAIRE / AUXILLIAIRE (typo courante)
+    else if(hs.includes('code'))ci=i;      // CODE (compte comptable racine)
+    if(hs.includes('lib')||hs.includes('nom'))li=i;
+  });
+  if(ci<0&&ai<0)ci=0;
+  if(li<0)li=ai>=0?2:1;
+
+  // Détection auto du type par préfixe de compte — utilisée quand le fichier a
+  // une colonne AUXILIAIRE dédiée (format CODE / AUXILIAIRE / LIBELLE) : chaque
+  // ligne peut être 411, 165 ou 181 dans le MÊME fichier, plus besoin de choisir
+  // un type unique pour tout le fichier (c'était le bug : tout finissait forcé
+  // en 165, donc les 411 étaient importés mais mal étiquetés).
+  function detectType(code){
+    const s=String(code||'').trim();
+    if(s.startsWith('411'))return'411';
+    if(s.startsWith('1650'))return'165';
+    if(s.startsWith('18')) return'181';
+    return null;
+  }
+
+  // ══ STRATÉGIE DE DÉTECTION DU TYPE ══════════════════════════════════════════
+  // Priorité 1 : colonne AUXILIAIRE explicite (autoMode) → detectType(auxCode)
+  // Priorité 2 : colonne CODE → detectType(code) — TOUJOURS tenté avant le prompt
+  // Priorité 3 : prompt() uniquement si les deux colonnes échouent à auto-détecter
+  //   (cas rare : fichier 100% type homogène sans préfixe reconnaissable)
+  //   → En mode GitHub silencieux, le prompt est supprimé ; on skip les lignes
+  //     non reconnues plutôt que de tout forcer en 411 (BUG CORRIGÉ v73).
+  const autoMode=ai>=0; // colonne AUXILIAIRE présente
+  let forcedType=null;
+  let _promptDone=false;
+
+  let added=0,updated=0,skipped=0;
   rows.slice(1).forEach(r=>{
-    const code=String(r[ci]||'').trim();
-    const label=String(r[li]||'').trim().toUpperCase();
-    if(!code||!label||code.toLowerCase()==='code')return;
-    const idx=DB.findIndex(c=>c.code===code);
-    if(idx>=0){DB[idx]={code,label,type};updated++;}
-    else{DB.push({code,label,type});added++;}
+    // Code de référence pour la détection : auxiliaire en priorité, sinon code racine
+    const rawAux  = ai>=0 ? String(r[ai]||'').trim() : '';
+    const rawCode = String(r[ci>=0?ci:0]||'').trim();
+    const codeRef = rawAux || rawCode; // ce qui sert à détecter le type
+    const label   = String(r[li]||'').trim().toUpperCase();
+    if(!codeRef||!label||codeRef.toLowerCase()==='code'||codeRef.toLowerCase().includes('auxil'))return;
+
+    // ── Détection automatique par préfixe (PRINCIPE COMPTABLE FWT) ────────────
+    let type = detectType(codeRef);
+
+    // ── Fallback prompt — uniquement si aucun préfixe reconnu ─────────────────
+    if(!type){
+      if(!_promptDone){
+        const ans=prompt('Type des clients à importer ?\n411 = Facture vente\n165 = Caution\n181 = Unité FWT\n\nEntrer : 411, 165 ou 181 (laisser vide pour ignorer les lignes non reconnues)','');
+        if(ans && ['411','165','181'].includes(ans.trim())){forcedType=ans.trim();}
+        _promptDone=true;
+      }
+      type=forcedType;
+    }
+
+    // ── Résolution FWT par libellé si type/code non reconnu ─────────────────
+    // Cas : JBR.xlsx a le nom "FWT MENNANI" en colonne LIBELLE et pas de code 181xxx
+    let rawCode2 = rawAux || rawCode;
+    if(!type || !rawCode2.match(/^[0-9]/)){
+      const FWT_NAME_MAP = {
+        'FWT MENNANI':{code:'181142',type:'181'},'FWT  MENNANI':{code:'181142',type:'181'},
+        'FWT PASTEUR':{code:'181143',type:'181'},'FWT  PASTEUR':{code:'181143',type:'181'},
+        'FWT ABANE':{code:'181144',type:'181'},'FWT  ABANE':{code:'181144',type:'181'},
+        'FWT ABANE RAMDANE':{code:'181144',type:'181'},'FWT  ABANE RAMDANE':{code:'181144',type:'181'},
+        'FWT ORAN':{code:'181145',type:'181'},'FWT  ORAN':{code:'181145',type:'181'},
+        'FWT BIRKHADEM':{code:'181146',type:'181'},'FWT  BIRKHADEM':{code:'181146',type:'181'},
+        'FWT GHARDAIA':{code:'181148',type:'181'},'FWT  GHARDAIA':{code:'181148',type:'181'},
+      };
+      const fwtMatch = FWT_NAME_MAP[label] || FWT_NAME_MAP[rawCode2.toUpperCase()] || FWT_NAME_MAP[codeRef.toUpperCase()];
+      if(fwtMatch){ rawCode2=fwtMatch.code; type=fwtMatch.type; }
+    }
+    if(!type){skipped++;return;}
+    const idx=DB.findIndex(c=>c.code===rawCode2);
+    if(idx>=0){DB[idx]={code:rawCode2,label,type};updated++;}
+    else{DB.push({code:rawCode2,label,type});added++;}
   });
   RC(DB);document.getElementById('ccnt').textContent=DB.length;
-  MSG('ok',`✅ ${fn} — ${added} ajouté(s), ${updated} mis à jour.`,4000);
+  MSG('ok',`✅ ${fn} — ${added} ajouté(s), ${updated} mis à jour${skipped?', '+skipped+' ignoré(s) (type non reconnu)':''}.`,4000);
 }
 
 // ══ EXPORT XLS 97-2003 ═══════════════════════════════════════
@@ -5440,11 +5533,43 @@ function OM(code=null){
   setTimeout(()=>document.getElementById('mcod').focus(),100);
 }
 function CM(){document.getElementById('mov').classList.remove('on');editC=null;}
+function SC_liveHint(code,type){
+  const h=document.getElementById('mcod-hint');
+  if(!h)return;
+  const FWT_UNITS={181142:'MENNANI',181143:'PASTEUR',181144:'ABANE',181145:'ORAN',181146:'BIRKHADEM',181148:'GHARDAIA'};
+  if(!code){h.textContent='';return;}
+  if(type==='411'){
+    h.style.color=code.startsWith('411')?'var(--green)':'var(--red)';
+    h.textContent=code.startsWith('411')?'✅ Code CLIENT 411 valide':'❌ Doit commencer par 411';
+  } else if(type==='165'){
+    h.style.color=code.startsWith('1650')?'var(--green)':'var(--red)';
+    h.textContent=code.startsWith('1650')?'✅ Code CAUTION 165 valide':'❌ Doit commencer par 1650';
+  } else if(type==='181'){
+    const lbl=FWT_UNITS[parseInt(code)];
+    h.style.color=lbl?'var(--green)':'var(--red)';
+    h.textContent=lbl?'✅ Unité FWT : '+lbl:'❌ Codes valides : 181142·181143·181144·181145·181146·181148';
+  } else {h.textContent='';}
+}
 function SC(){
   const type=document.getElementById('mtype').value;
   const code=document.getElementById('mcod').value.trim();
   const label=document.getElementById('mlab').value.trim().toUpperCase();
   if(!code||!label){MSG('err','⚠️ Code et libellé obligatoires.');return;}
+  // ── VALIDATION PRINCIPE COMPTABLE FWT ──────────────────────────────────────
+  // 411 CLIENT  : code auxiliaire doit commencer par 411
+  // 165 CAUTION : code auxiliaire doit commencer par 1650
+  // 181 UNITE   : code doit être 181142/181143/181144/181145/181146/181148
+  const FWT_UNITS=['181142','181143','181144','181145','181146','181148'];
+  if(type==='411' && !code.startsWith('411')){
+    MSG('err','⚠️ CLIENT (411) : le code auxiliaire doit commencer par 411 — ex: 41100123');return;
+  }
+  if(type==='165' && !code.startsWith('1650')){
+    MSG('err','⚠️ CAUTION (165) : le code auxiliaire doit commencer par 1650 — ex: 1650123');return;
+  }
+  if(type==='181' && !FWT_UNITS.includes(code)){
+    MSG('err','⚠️ UNITE FWT (181) : codes autorisés → 181142 MENNANI | 181143 PASTEUR | 181144 ABANE | 181145 ORAN | 181146 BIRKHADEM | 181148 GHARDAIA');return;
+  }
+  // ────────────────────────────────────────────────────────────────────────────
   if(editC){const i=DB.findIndex(c=>c.code===editC);if(i>=0)DB[i]={code,label,type};}
   else{if(DB.find(c=>c.code===code)){MSG('err','⚠️ Code déjà existant.');return;}DB.push({code,label,type});}
   CM();RC(DB);document.getElementById('ccnt').textContent=DB.length;
@@ -5663,13 +5788,13 @@ function _jbrIdentifyFromLib(libelle){
   if(result && result.client){
     // ── Client identifié ─────────────────────────────────────────────────
     const auxV2 = String(result.auxiliaire||'').trim();
-    // Chercher d'abord dans DB locale (priorité : même code auxiliaire)
-    let found = DB.find(c => (auxV2 && c.code===auxV2) || c.label.toUpperCase()===result.client.toUpperCase());
-    if(!found){
-      // Construire objet compatible BASE[]
-      const typ = auxV2.startsWith('165')?'165':'411';
-      found = { code:auxV2||(typ+'00000'), label:result.client, type:typ, _src:'bas', _basCode:auxV2 };
-    }
+      // Chercher d'abord dans DB locale (priorité : même code auxiliaire)
+      let found = DB.find(c => (auxV2 && c.code===auxV2) || c.label.toUpperCase()===result.client.toUpperCase());
+      if(!found){
+        // Construire objet compatible BASE[] — Caution = 1650xxx précisément
+        const typ = auxV2.startsWith('1650')?'165':'411';
+        found = { code:auxV2||(typ+'00000'), label:result.client, type:typ, _src:'bas', _basCode:auxV2 };
+      }
     SEL = found;
     if(isrc) isrc.value = SEL.label;
     // Badge
@@ -5876,6 +6001,7 @@ const NDCF_CLIENTS = [
   {ndc:"SARL SAB NOUR LIL SAYAHA WA AL",   compta:"SARL SAB NOUR LIL SAYAHA WA AL",       aux:"411ND014"},
   {ndc:"DIGI BOOKING",                     compta:"DIGI BOOKING",                         aux:"41100010"},
   {ndc:"CAMPUS VOYAGES ANNABA",            compta:"CAMPUS VOYAGE",                        aux:"41100185"},
+  {ndc:"BOULOUIZ TOURISME ET VOYAGE",      compta:"BOULOUIZ TOURISME ET VOYAGE",          aux:"411ND011"},	
   {ndc:"TIKJDA TOURS",                     compta:"TIKJDA TOURS",                         aux:"41100358"},
   {ndc:"CORRECT TOURS",                    compta:"CORRECT TOURS",                        aux:"41100313"},
   {ndc:"ELZAIM TOURISME ET VOYAGES",       compta:"EL ZAIM TOURS",                        aux:"41100203"},
@@ -8116,7 +8242,7 @@ function editNDCFClient(i){
   if(ndc===null)return;
   const compta=prompt('Nom comptabilité:',c.compta);
   if(compta===null)return;
-  const aux=prompt('Auxiliaire (vide pour compte 18*** inter-unité):',c.aux);
+  const aux=prompt('Code auxiliaire :\n• Client 411 → ex: 41100123\n• Caution 165 → ex: 1650123\n• Unité FWT 181 → laisser vide (code déjà dans compta)\n• Inter-unité 18*** → laisser vide',c.aux);
   if(aux===null)return;
   NDCF_CLIENTS[i]={ndc:ndc.trim(),compta:compta.trim(),aux:aux.trim()};
   // Mettre à jour index
@@ -8129,8 +8255,8 @@ function addNDCFClient(){
   if(!ndc||!ndc.trim())return;
   const compta=prompt('Nom comptabilité:','');
   if(!compta)return;
-  // Auxiliaire optionnel : vide pour comptes 18*** (inter-unité)
-  const auxRaw=prompt('Auxiliaire (ex: 41100xxx)\nLaisser vide pour compte 18*** inter-unité:','');
+  // Auxiliaire : 41100xxx (client 411) | 1650xxx (caution 165) | vide pour unités 18***
+  const auxRaw=prompt('Code auxiliaire :\n• Client 411 → ex: 41100123\n• Caution 165 → ex: 1650123\n• Unité FWT (181142…181148) → laisser vide\n• Inter-unité 18*** → laisser vide','');
   if(auxRaw===null)return; // annulé
   NDCF_CLIENTS.push({ndc:ndc.trim(),compta:compta.trim(),aux:auxRaw.trim()});
   rebuildNDCFIdx();
@@ -8150,7 +8276,7 @@ function associerNDCFClientInline(agenceNDC){
   if(!compta||!compta.trim())return;
   // Tenter de retrouver un compte 411 existant dans DB pour récupérer son code auxiliaire
   const matchDB = DB.find(c=>c.type==='411' && c.label.toUpperCase()===compta.trim().toUpperCase());
-  const auxRaw = matchDB ? matchDB.code : (prompt('Auxiliaire (ex: 41100xxx)\nLaisser vide pour compte 18*** inter-unité:','')||'');
+  const auxRaw = matchDB ? matchDB.code : (prompt('Code auxiliaire :\n• Client 411 → ex: 41100123\n• Caution 165 → ex: 1650123\n• Unité FWT (181142…181148) → laisser vide\n• Inter-unité 18*** → laisser vide','')||'');
   NDCF_CLIENTS.push({ndc:agenceNDC.trim(),compta:compta.trim(),aux:auxRaw.trim()});
   rebuildNDCFIdx();
   showToast('✓ "'+agenceNDC+'" associé à "'+compta.trim()+'"','success');
@@ -8618,8 +8744,8 @@ function selectRVLine(mt, rowEl, idx){
         (auxV2 && c.code===auxV2)
       );
       if(!found){
-        // Construire objet SEL compatible BASE[] si absent de DB
-        const typ = auxV2.startsWith('165')?'165':'411';
+        // Construire objet SEL compatible BASE[] si absent de DB — Caution = 1650xxx précisément
+        const typ = auxV2.startsWith('1650')?'165':'411';
         found = { code:auxV2||(typ+'00000'), label:result.client, type:typ, _src:'bas', _basCode:auxV2 };
       }
       SEL = found;
@@ -8779,9 +8905,37 @@ function importIATAClients(inp){
         
         // Vérifier si client existe déjà
         const exists = planning in CORR;
-        
-        // Ajouter ou mettre à jour
-        CORR[planning] = {nom:compta, aux:aux||'', isFWT:false};
+
+        // ── PRINCIPE COMPTABLE FWT : résolution du code auxiliaire ────────────
+        // Si la colonne AUXILIAIRE COMPTABLE est vide dans le fichier (cas des
+        // unités FWT inter-unités), on récupère le bon code depuis le mapping
+        // CORR hardcodé (181142/181143/181144/181145/181146/181148).
+        // On ne doit JAMAIS écraser une entrée FWT avec aux='' — ça casserait
+        // le principe 181→CODE_COM=181xxx sans auxiliaire séparé.
+        let resolvedAux = aux;
+        let resolvedIsFWT = false;
+        if(!resolvedAux){
+          // Chercher dans CORR hardcodé par NOM PLANNING (clé exacte)
+          const hardcoded = CORR[planning];
+          if(hardcoded && hardcoded.aux){ resolvedAux = hardcoded.aux; resolvedIsFWT = !!hardcoded.isFWT; }
+        }
+        // Deuxième tentative : chercher par NOM COMPTABLE dans CORR
+        if(!resolvedAux && compta){
+          const compKey = Object.keys(CORR).find(k => CORR[k].nom && CORR[k].nom.toUpperCase()===compta.toUpperCase());
+          if(compKey && CORR[compKey].aux){ resolvedAux = CORR[compKey].aux; resolvedIsFWT = !!CORR[compKey].isFWT; }
+        }
+        // Si on a trouvé un aux 181xxx → c'est forcément une unité FWT
+        if(resolvedAux && String(resolvedAux).startsWith('18')) resolvedIsFWT = true;
+        // ─────────────────────────────────────────────────────────────────────
+
+        // Ajouter ou mettre à jour — ne pas écraser si déjà FWT avec bon aux
+        const existingEntry = CORR[planning];
+        if(existingEntry && existingEntry.isFWT && !resolvedIsFWT){
+          // L'entrée existante est FWT mais la nouvelle ne l'est pas (aux vide)
+          // → conserver l'entrée FWT hardcodée, juste mettre à jour IATA
+        } else {
+          CORR[planning] = {nom:compta, aux:resolvedAux||'', isFWT:resolvedIsFWT};
+        }
         IATA_DB[planning] = iata;
         
         if(!IATA_REVERSE[iata]) IATA_REVERSE[iata]=[];
@@ -8889,20 +9043,41 @@ function importNDCFClients(inp){
       rows.forEach((row,idx)=>{
         const ndc = String(row[colNDC]||'').trim();
         const compta = String(row[colCompta]||'').trim();
-        const code = String(row[colCode]||'411').trim();
-        const aux = String(row[colAux]||'').trim();
-        
+        let code = String(row[colCode]||'').trim();
+        let aux = String(row[colAux]||'').trim();
+
         if(!ndc || !compta){
           console.log('Ligne NDC',idx,'ignorée');
           return;
         }
-        
+
+        // ── PRINCIPE COMPTABLE FWT : résolution auxiliaire depuis CORR hardcodé ──
+        // Si aux vide → chercher dans CORR par NOM_PLANNING ou NOM_COMPTABLE
+        let isFWTunit = false;
+        if(!aux){
+          const byPlanning = CORR[ndc.toUpperCase()];
+          if(byPlanning && byPlanning.aux){ aux = byPlanning.aux; isFWTunit = !!byPlanning.isFWT; }
+        }
+        if(!aux && compta){
+          const compKey = Object.keys(CORR).find(k => CORR[k].nom && CORR[k].nom.toUpperCase()===compta.toUpperCase());
+          if(compKey && CORR[compKey].aux){ aux = CORR[compKey].aux; isFWTunit = !!CORR[compKey].isFWT; }
+        }
+        if(aux && String(aux).startsWith('18')) isFWTunit = true;
+        // Déduire le code type depuis aux si non fourni — JAMAIS forcer 411 par défaut
+        if(!code){
+          if(aux.startsWith('1650'))      code = '165';
+          else if(aux.startsWith('18'))   code = '181';
+          else if(aux.startsWith('411'))  code = '411';
+          else                            code = '411'; // vrai dernier recours
+        }
+        // ──────────────────────────────────────────────────────────────────────
+
         const existing = NDCF_CLIENTS.findIndex(c=>c.ndc.toUpperCase()===ndc.toUpperCase());
         if(existing>=0){
-          NDCF_CLIENTS[existing]={ndc,compta,code,aux};
+          NDCF_CLIENTS[existing]={ndc,compta,code,aux,isFWT:isFWTunit};
           updated++;
         }else{
-          NDCF_CLIENTS.push({ndc,compta,code,aux});
+          NDCF_CLIENTS.push({ndc,compta,code,aux,isFWT:isFWTunit});
           added++;
         }
       });
@@ -16040,7 +16215,13 @@ const STAT={
   comByMonth: [], // agrégation par mois × compagnie : {key,year,month,sym,total}
   // ══ v37 : Mode COMMISSION cross-filter + Toutes Périodes ══
   commissionMode: false, // true = toutes les vues opèrent sur données COM
-  allYears: false        // true = pas de filtre année (toutes les données)
+  allYears: false,       // true = pas de filtre année (toutes les données)
+  quinzaine: 'all',     // 'all'|'1'|'2' — filtre sur la quinzaine du mois (jour≤15 = Q1, jour>15 = Q2)
+  evolDepth: 3,          // nombre d'années N-1, N-2, N-3… à afficher dans les vues évolution
+  topMode: 'global',     // 'global'|'annuel'|'mensuel'|'quinzaine' — mode de la vue Top Vendeurs
+  topYear: null,         // année sélectionnée en mode annuel/mensuel/quinzaine
+  topMonth: null,        // mois sélectionné en mode mensuel/quinzaine (1-12)
+  topQ: 1                // quinzaine sélectionnée en mode quinzaine (1 ou 2)
 };
 
 /* ── Formateur ─────────────────────────────────────────────────────── */
@@ -16730,7 +16911,8 @@ function statAnalyze(){
       const tt=STAT.type==='all'?'411+18xx':STAT.type==='411'?'Agences 411':'Unités 18xx';
       const nt=STAT.ndc==='ndc'?'· Avec /NDC/':STAT.ndc==='std'?'· Sans /NDC/':'';
       const rt=STAT.redMode==='excl'?'· Sans Redress.':STAT.redMode==='only'?'· Redress. seuls':'';
-      pill.textContent=`${ft} · ${ct} · ${tt} ${nt} ${rt}`.trim();
+      const qt=STAT.quinzaine!=='all'?`· Q${STAT.quinzaine} (${STAT.quinzaine==='1'?'1-15':'16-fin'})`:'';
+      pill.textContent=`${ft} · ${ct} · ${tt} ${nt} ${rt} ${qt}`.replace(/\s+/g,' ').trim();
       pill.style.display='';
     }
     sRenderFilterBar();
@@ -17577,6 +17759,9 @@ function statSetView(v){
     if(v==='tl')      {sCommTimeline(c);return;}
     if(v==='evol')    {sCommEvol(c);return;}
     if(v==='comp')    {sCommComp(c);return;}
+    if(v==='top')     {sTopVendeursCommission(c);return;}
+    if(v==='compare') {sCommCompare(c);return;}
+    if(v==='quinz')   {sQuinzaineCommission(c);return;}
     if(v==='rank')    {sCommission(c);return;}// fallback: classement → commission
   }
   if(v==='rank')    sRank(c);
@@ -17593,6 +17778,51 @@ function statSetView(v){
   else if(v==='stats')   sStatsDesc(c);
   else if(v==='segment') sSegment(c);
   else if(v==='insights') sInsights(c);
+  else if(v==='quinz')   sQuinzaine(c);
+}
+/* ── Vue Quinzaine en mode COMMISSION ── */
+function sQuinzaineCommission(c){
+  if(!_commCheck(c)) return;
+  const depth=STAT.evolDepth||3;
+  const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const qmap=new Map();
+  (STAT.comRaw||[]).forEach(r=>{
+    if(!sCompMatch(r.sym)) return;
+    if(!r.date||!r.year||!r.month) return;
+    const q=_dateQ(r.date);
+    const k=`${r.year}-${String(r.month).padStart(2,'0')}-Q${q}`;
+    if(!qmap.has(k)) qmap.set(k,{year:r.year,month:r.month,q,com:0,ops:0});
+    const o=qmap.get(k); o.com+=r.credit; o.ops++;
+  });
+  if(!qmap.size){c.innerHTML=`<div class="stat-empty"><div class="big">💼</div><div class="msg">Aucune donnée commission avec DATE</div></div>`;return;}
+  const qkeys=[...qmap.keys()].sort();
+  let rows='';
+  qmap.forEach((d,k)=>{
+    const {year,month,q,com}=d;
+    const lbl=`${SMOIS2[month-1]} ${year} — Q${q}`;
+    const pq=_prevQ(year,month,q);
+    const prevCOM=_sComCAForPeriod(null,pq.year,pq.month,pq.q);
+    const nxCells=Array.from({length:Math.min(depth,3)},(_,i)=>{
+      const ny=year-(i+1); const nca=_sComCAForPeriod(null,ny,month,q);
+      return `<td class="r m" style="font-size:9px">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,com,true)}</td>`;
+    }).join('');
+    rows+=`<tr><td style="white-space:nowrap;font-size:9.5px;font-weight:700">${lbl}</td>
+      <td class="r m" style="color:#047857;font-weight:800">${SFM(com)}</td>
+      <td class="r">${_evoBadge(prevCOM,com,true)}</td>${nxCells}</tr>`;
+  });
+  const totCOM=qkeys.reduce((s,k)=>s+(qmap.get(k)?.com||0),0);
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
+    ${_commBanner('Quinzaine — Évolution des Commissions')}
+    <div style="overflow-x:auto"><table class="evol-ny-tbl">
+      <thead><tr><th style="text-align:left;min-width:160px">QUINZAINE</th>
+        <th class="r">COMMISSION</th><th class="r">vs Q préc.</th>
+        ${Array.from({length:Math.min(depth,3)},(_,i)=>`<th class="r">N-${i+1}</th><th class="r">Évol</th>`).join('')}
+      </tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td>TOTAL</td><td class="r m">${SFM(totCOM)}</td><td>—</td>
+        ${Array.from({length:Math.min(depth,3)},()=>'<td>—</td><td>—</td>').join('')}
+      </tr></tfoot>
+    </table></div></div>`;
 }
 /* ── Mise à jour visuelle du badge mode commission ── */
 function _statUpdateCommModeBadge(){
@@ -17769,7 +17999,6 @@ function sChart(c){
 /* ── Vue Compagnies (Doughnut SVG) ──────────────────────────────── */
 function sComp(c){
   const cm=new Map();
-  // Calculer directement depuis les données brutes filtrées (ligne par ligne)
   sRawFiltered().forEach(r=>{
     const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
     if(!cm.has(sym)) cm.set(sym,0);
@@ -17777,9 +18006,13 @@ function sComp(c){
   });
   const tot=[...cm.values()].reduce((s,v)=>s+v,0);
   if(!tot){c.innerHTML=`<div class="stat-empty"><div class="big">✈️</div><div class="msg">Aucune donnée</div></div>`;return;}
+  const depth=STAT.evolDepth||3;
+  const curYear=STAT.year||new Date().getFullYear();
   const sz=180,cx=90,cy=90,ro=78,ri=50;
   let a=-Math.PI/2,paths='';
   const ents=[...cm.entries()].sort((a,b)=>b[1]-a[1]);
+
+  // ── Donut chart ──
   ents.forEach(([comp,val])=>{
     const sw=val/tot*2*Math.PI;
     const x1=cx+ro*Math.cos(a),y1=cy+ro*Math.sin(a);
@@ -17788,26 +18021,96 @@ function sComp(c){
     const xi2=cx+ri*Math.cos(a+sw),yi2=cy+ri*Math.sin(a+sw);
     const lg=sw>Math.PI?1:0;
     const col=SCOL[comp]||'#6b7280';
-    paths+=`<path class="stat-clk" onclick="sCrossFilterComp('${comp.replace(/'/g,"\\'")}')" d="M${xi1},${yi1}L${x1},${y1}A${ro},${ro} 0 ${lg},1 ${x2},${y2}L${xi2},${yi2}A${ri},${ri} 0 ${lg},0 ${xi1},${yi1}Z" fill="${col}" stroke="#fff" stroke-width="2.5"><title>${comp}: ${(val/tot*100).toFixed(1)}% — clic pour filtrer</title></path>`;
+    paths+=`<path class="stat-clk" onclick="sCrossFilterComp('${comp.replace(/'/g,"\\'")}')\" d="M${xi1},${yi1}L${x1},${y1}A${ro},${ro} 0 ${lg},1 ${x2},${y2}L${xi2},${yi2}A${ri},${ri} 0 ${lg},0 ${xi1},${yi1}Z" fill="${col}" stroke="#fff" stroke-width="2.5"><title>${comp}: ${(val/tot*100).toFixed(1)}% — clic pour filtrer</title></path>`;
     a+=sw;
   });
+
   const legH=ents.map(([comp,val])=>`
-    <div class="stat-lr stat-clk" onclick="sCrossFilterComp('${comp.replace(/'/g,"\\'")}')" title="Clic pour filtrer le tableau de bord sur ${comp}">
+    <div class="stat-lr stat-clk" onclick="sCrossFilterComp('${comp.replace(/'/g,"\\'")}')\" title="Clic pour filtrer">
       <div class="stat-ld" style="background:${SCOL[comp]||'#6b7280'}"></div>
       <span class="stat-ln">${comp}</span>
       <span class="stat-lv">${SFM(val)}</span>
       <span class="stat-lp">${(val/tot*100).toFixed(1)}%</span>
     </div>`).join('');
-  c.innerHTML=`<div class="stat-dw">
-    <div class="stat-dt">✈️ Répartition du CA par Compagnie / Journal <span class="stat-cs">Cliquez une part ou la légende pour filtrer (cross-filter)</span></div>
-    <div class="stat-db">
-      <svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" style="flex-shrink:0">
-        ${paths}
-        <text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="8" fill="#6b7280" font-weight="700">TOTAL</text>
-        <text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="9" fill="#16a34a" font-weight="900" font-family="monospace">${SFM(tot).replace(' DA','')}</text>
-        <text x="${cx}" y="${cy+18}" text-anchor="middle" font-size="7" fill="#9ca3af">DA</text>
-      </svg>
-      <div class="stat-leg">${legH}</div>
+
+  // ── Tableau évolution compagnies ──
+  const nxTh=Array.from({length:Math.min(depth,3)},(_,i)=>
+    `<th class="r" style="font-size:7px">${curYear-(i+1)}</th><th class="r" style="font-size:7px">Évol</th>`
+  ).join('');
+
+  let compRows='';
+  ents.forEach(([comp,ca],rank)=>{
+    const nxCells=Array.from({length:Math.min(depth,3)},(_,i)=>{
+      const ny=curYear-(i+1);
+      const nca=_sCompCAForPeriod(comp,ny);
+      return `<td class="r m" style="font-size:9px;color:var(--txt3)">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,ca,true)}</td>`;
+    }).join('');
+    // Meilleur mois pour cette compagnie
+    const bestMonth=((mm)=>{
+      const bmap=new Map();
+      STAT.raw.filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===comp&&r.month)
+        .forEach(r=>bmap.set(r.month,(bmap.get(r.month)||0)+r.debit));
+      if(!bmap.size) return '—';
+      const best=[...bmap.entries()].sort((a,b)=>b[1]-a[1])[0];
+      return SMOIS[best[0]-1]||'—';
+    })();
+    compRows+=`<tr>
+      <td><span class="sbdg" style="background:${SCOL[comp]||'#6b7280'};color:#fff">${comp}</span></td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800;font-size:10px">${SFM(ca)}</td>
+      <td class="r" style="color:var(--txt3);font-size:9.5px">${(ca/tot*100).toFixed(1)}%</td>
+      <td class="r" style="font-size:9px;color:var(--txt4)">${bestMonth}</td>
+      ${nxCells}
+    </tr>`;
+  });
+
+  const nxTotCells=Array.from({length:Math.min(depth,3)},(_,i)=>{
+    const ny=curYear-(i+1);
+    const nTot=_sCAForPeriod(ny);
+    return `<td class="r m">${nTot>0?SFM(nTot):'—'}</td><td class="r">${_evoBadge(nTot,tot,true)}</td>`;
+  }).join('');
+
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:14px 18px">
+    <!-- Donut + légende -->
+    <div class="stat-dw" style="padding:0 0 14px">
+      <div class="stat-dt">✈️ Répartition CA par Compagnie <span class="stat-cs" style="font-size:9px">Cliquez une part pour cross-filter</span></div>
+      <div class="stat-db">
+        <svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" style="flex-shrink:0">
+          ${paths}
+          <text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="8" fill="#6b7280" font-weight="700">TOTAL</text>
+          <text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="9" fill="#16a34a" font-weight="900" font-family="monospace">${SFM(tot).replace(' DA','')}</text>
+          <text x="${cx}" y="${cy+18}" text-anchor="middle" font-size="7" fill="#9ca3af">DA</text>
+        </svg>
+        <div class="stat-leg">${legH}</div>
+      </div>
+    </div>
+    <!-- Tableau évolution par compagnie -->
+    <div>
+      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:8px">
+        📊 ÉVOLUTION ANNUELLE PAR COMPAGNIE
+        <span style="font-size:9px;color:var(--txt3);font-weight:400">Profondeur :</span>
+        <select class="stat-depth-sel" style="width:65px" onchange="STAT.evolDepth=+this.value;sComp(document.getElementById('stat-content'))">
+          ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>N-${n}</option>`).join('')}
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="evol-ny-tbl">
+          <thead><tr>
+            <th style="text-align:left">COMPAGNIE</th>
+            <th class="r">${curYear} (DA)</th>
+            <th class="r">PART</th>
+            <th class="r">BEST MOIS</th>
+            ${nxTh}
+          </tr></thead>
+          <tbody>${compRows}</tbody>
+          <tfoot><tr>
+            <td>TOTAL</td>
+            <td class="r m">${SFM(tot)}</td>
+            <td class="r">100%</td>
+            <td class="r">—</td>
+            ${nxTotCells}
+          </tr></tfoot>
+        </table>
+      </div>
     </div>
   </div>`;
 }
@@ -18047,6 +18350,83 @@ function sCommComp(c){
   </div>`;
 }
 
+/* ══ VUE COMPARAISON PÉRIODES — MODE COMMISSION (P1 vs P2, par compagnie) ══
+   Miroir de sCompare() côté SUP COM : réutilise statGetComparePeriod() (donc
+   le mode "prev-year" compare bien le(s) même(s) mois sélectionné(s) en P2,
+   mais sur l'année précédente) et sComCompanyAggForPeriod() pour la ventilation
+   par compagnie. ── */
+function sCommCompare(c){
+  if(!_commCheck(c)) return;
+  if(!STAT.compareEnabled){
+    c.innerHTML = `<div class="stat-empty"><div class="big">📊</div><div class="msg">Comparaison désactivée</div>
+      <div class="sub">Activez "Comparer les périodes" dans la barre latérale</div></div>`;
+    return;
+  }
+  const p2=STAT.comAgg; // période actuelle, déjà calculée par comAnalyze()
+  const totP2=p2.reduce((s,o)=>s+o.total,0);
+  const opsP2=p2.reduce((s,o)=>s+o.ops,0);
+
+  const comparePeriod=statGetComparePeriod();
+  const p1=comparePeriod?sComCompanyAggForPeriod(comparePeriod):[];
+  const totP1=p1.reduce((s,o)=>s+o.total,0);
+  const opsP1=p1.reduce((s,o)=>s+o.ops,0);
+
+  const evoTot=statCalcEvolution(totP1,totP2);
+  const evoOps=statCalcEvolution(opsP1,opsP2);
+
+  const p1Map=new Map(p1.map(o=>[o.sym,o]));
+  const allSyms=new Set([...p2.map(o=>o.sym),...p1.map(o=>o.sym)]);
+  const merged=[...allSyms].map(sym=>{
+    const o2=p2.find(o=>o.sym===sym)||{total:0,ops:0};
+    const o1=p1Map.get(sym)||{total:0,ops:0};
+    return {sym,p1:o1.total,p2:o2.total,ops2:o2.ops};
+  }).sort((a,b)=>b.p2-a.p2);
+
+  const rowsH=merged.map(o=>{
+    const evo=statCalcEvolution(o.p1,o.p2);
+    return `<tr><td><span class="sbdg" style="background:${SCOL2[o.sym]||'#6b7280'};color:#fff">${o.sym||'—'}</span></td>
+      <td class="r compare-val">${SFM(o.p1)}</td>
+      <td class="r m" style="font-weight:800;color:#047857">${SFM(o.p2)}</td>
+      <td class="compare-evo">${statEvoHTML(evo)}</td>
+      <td class="r m">${SFN(o.ops2)}</td></tr>`;
+  }).join('');
+
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    ${_commBanner('Comparaison Périodes — Commission (SUP COM)')}
+    <div class="stat-compare-kpis">
+      <div class="stat-compare-kpi">
+        <div class="stat-compare-kpi-icon">💼</div>
+        <div class="stat-compare-kpi-label">Commission Totale</div>
+        <div class="stat-compare-kpi-vals">
+          <span class="stat-compare-kpi-old">${SFM(totP1)}</span>
+          <span class="stat-compare-kpi-new">${SFM(totP2)}</span>
+        </div>
+        <div class="stat-compare-kpi-evo">${statEvoHTML(evoTot)}</div>
+      </div>
+      <div class="stat-compare-kpi">
+        <div class="stat-compare-kpi-icon">📋</div>
+        <div class="stat-compare-kpi-label">Opérations</div>
+        <div class="stat-compare-kpi-vals">
+          <span class="stat-compare-kpi-old">${SFN(opsP1)}</span>
+          <span class="stat-compare-kpi-new">${SFN(opsP2)}</span>
+        </div>
+        <div class="stat-compare-kpi-evo">${statEvoHTML(evoOps)}</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--bo);background:linear-gradient(135deg,rgba(124,58,237,.04),rgba(168,85,247,.04));">
+        <div style="font-size:10px;font-weight:800;color:#7c3aed;letter-spacing:1px;">✈️ Comparaison par Compagnie — Commission</div>
+      </div>
+      <table class="stat-tbl">
+        <thead><tr><th>CIE</th><th class="r compare-col">COMMISSION P1</th><th class="r">COMMISSION P2 (Actuel)</th><th style="width:80px;text-align:center;" class="compare-col">ÉVOL.</th><th class="r">OPS P2</th></tr></thead>
+        <tbody>${rowsH}</tbody>
+        <tfoot><tr><td>TOTAL</td><td class="r">${SFM(totP1)}</td><td class="r">${SFM(totP2)}</td><td class="compare-evo">${statEvoHTML(evoTot)}</td><td class="r">${SFN(opsP2)}</td></tr></tfoot>
+      </table>
+    </div>
+  </div>`;
+}
+
+
 function sCommission(c){
   if(!STAT.comRaw||!STAT.comRaw.length){
     c.innerHTML=`<div class="stat-empty"><div class="big">💼</div><div class="msg">Aucune donnée Commission</div>
@@ -18268,6 +18648,10 @@ function sCommission(c){
 
 /* ── Vue Timeline par FOLIO (mois) ──────────────────────────────── */
 function sTL(c){
+  const depth=STAT.evolDepth||3;
+  const curYear=STAT.year||new Date().getFullYear();
+
+  // ── Agréger données filtrées par mois (folio) ──
   const fm=new Map();
   sRawFiltered().forEach(r=>{
     if(r.folio<1||r.folio>12) return;
@@ -18277,28 +18661,112 @@ function sTL(c){
   const sorted=[...fm.entries()].sort((a,b)=>a[0]-b[0]);
   const max=Math.max(...sorted.map(e=>e[1].ca),1);
   const totCA=sorted.reduce((s,e)=>s+e[1].ca,0);
-  let h=`<div class="stat-ca">
-    <div class="stat-ct">📅 Évolution mensuelle — par FOLIO <span class="stat-cs">CA Débit · ${sCompLabel()}</span></div>
-    <div class="stat-tg">`;
+
+  if(!sorted.length){
+    c.innerHTML=`<div class="stat-empty"><div class="big">📅</div><div class="msg">Aucune donnée</div></div>`;
+    return;
+  }
+
+  // ── Vue graphique barres horizontales ──
+  let barHTML='';
   sorted.forEach(([f,d])=>{
     const pct=Math.round(d.ca/max*100);
     const pctTot=totCA>0?(d.ca/totCA*100).toFixed(1):'0';
     const lbl=`${SMOIS[f-1]||'M'+f} (F${f})`;
     const isOut=pct<22;
-    h+=`<div class="stat-trow">
-      <div class="stat-tl2">${lbl}</div>
+    // Évol vs folio précédent
+    const prevF=f-1; const prevD=fm.get(prevF);
+    const evoPrev=prevD&&prevD.ca>0?_evoBadge(prevD.ca,d.ca,true):'<span class="evo-na">—</span>';
+    // Évol vs N-1 (même mois, année précédente)
+    const n1ca=_sCAForPeriod(curYear-1,f);
+    const evoN1=_evoBadge(n1ca,d.ca,true);
+    barHTML+=`<div class="stat-trow" style="margin-bottom:3px">
+      <div class="stat-tl2" style="font-size:9px">${lbl}</div>
       <div class="stat-to">
         <div class="stat-ti" style="width:${pct}%;background:linear-gradient(90deg,#0c4a6e,var(--sky))">
-          ${!isOut?`<span class="stat-tv">${SFM(d.ca)}</span>`:''}
+          ${!isOut?`<span class="stat-tv" style="font-size:8.5px">${SFM(d.ca)}</span>`:''}
         </div>
-        ${isOut?`<span class="stat-tv out">${SFM(d.ca)}</span>`:''}
+        ${isOut?`<span class="stat-tv out" style="font-size:8.5px">${SFM(d.ca)}</span>`:''}
       </div>
-      <span class="stat-tops">${SFN(d.ops)} ops<br><span style="color:var(--txt4)">${pctTot}%</span></span>
+      <div style="text-align:right;min-width:80px;font-size:9px">
+        <span style="color:var(--txt4)">${pctTot}%</span>&nbsp;
+        ${evoN1}
+      </div>
     </div>`;
   });
-  h+=`</div></div>`;
-  if(!sorted.length) h=`<div class="stat-empty"><div class="big">📅</div><div class="msg">Aucune donnée</div></div>`;
-  c.innerHTML=h;
+
+  // ── Tableau comparatif multi-années ──
+  const nxHeaders=Array.from({length:depth},(_,i)=>
+    `<th class="r" style="color:rgba(255,255,255,.8)">${curYear-(i+1)}</th><th class="r" style="color:rgba(255,255,255,.7)">Évol</th>`
+  ).join('');
+
+  let tblRows='';
+  // Pour chaque mois 1-12 (qu'il soit présent ou non dans les données)
+  let totByYear=[0,...Array.from({length:depth},(_,i)=>0)];
+  for(let m=1;m<=12;m++){
+    const d=fm.get(m);
+    const curCA=d?d.ca:0;
+    const curOps=d?d.ops:0;
+    if(!d&&!sorted.some(([f])=>f===m)) {
+      // vérifier si années précédentes ont des données pour ce mois
+      const anyPrev=Array.from({length:depth},(_,i)=>_sCAForPeriod(curYear-(i+1),m)).some(v=>v>0);
+      if(!anyPrev) continue; // skip mois sans données du tout
+    }
+    totByYear[0]+=curCA;
+    const nxCells=Array.from({length:depth},(_,i)=>{
+      const ny=curYear-(i+1);
+      const nca=_sCAForPeriod(ny,m);
+      totByYear[i+1]+=nca;
+      return `<td class="r m" style="color:var(--txt3)">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,curCA,true)}</td>`;
+    }).join('');
+    // Moyenne sur toutes les années disponibles
+    const allYearVals=[curCA,...Array.from({length:depth},(_,i)=>_sCAForPeriod(curYear-(i+1),m))].filter(v=>v>0);
+    const avg=allYearVals.length?allYearVals.reduce((s,v)=>s+v,0)/allYearVals.length:0;
+    tblRows+=`<tr style="${!d?'opacity:.5':''}">
+      <td style="font-weight:700;color:var(--txt)">${SMOIS[m-1]}</td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800">${curCA>0?SFM(curCA):'—'}</td>
+      <td class="r" style="font-size:9px;color:var(--txt4)">${curOps>0?SFN(curOps)+' ops':'—'}</td>
+      ${nxCells}
+      <td class="r m" style="color:#7c3aed">${avg>0?SFM(avg):'—'}</td>
+    </tr>`;
+  }
+  const totNxCells=Array.from({length:depth},(_,i)=>
+    `<td class="r m">${totByYear[i+1]>0?SFM(totByYear[i+1]):'—'}</td><td class="r">${_evoBadge(totByYear[i+1],totByYear[0],true)}</td>`
+  ).join('');
+
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:10px 14px">
+    <!-- En-tête + profondeur -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:900;color:var(--sky-deep);letter-spacing:1px">📅 ANALYSE MENSUELLE — PAR FOLIO</span>
+      <span style="font-size:9px;color:var(--txt4)">${curYear} · ${sCompLabel()}</span>
+      <span style="margin-left:auto;font-size:9px;color:var(--txt3)">Profondeur : </span>
+      <select class="stat-depth-sel" style="width:60px" onchange="STAT.evolDepth=+this.value;sTL(document.getElementById('stat-content'))">
+        ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>${n} an${n>1?'s':''}</option>`).join('')}
+      </select>
+    </div>
+    <!-- Graphique barres -->
+    <div style="margin-bottom:14px"><div class="stat-tg">${barHTML}</div></div>
+    <!-- Tableau multi-années -->
+    <div style="overflow-x:auto">
+      <table class="evol-ny-tbl">
+        <thead><tr>
+          <th style="text-align:left;min-width:60px">MOIS</th>
+          <th class="r">${curYear} (DA)</th>
+          <th class="r">OPS</th>
+          ${nxHeaders}
+          <th class="r">MOYENNE</th>
+        </tr></thead>
+        <tbody>${tblRows}</tbody>
+        <tfoot><tr>
+          <td>TOTAL</td>
+          <td class="r m">${SFM(totByYear[0])}</td>
+          <td class="r">—</td>
+          ${totNxCells}
+          <td class="r">—</td>
+        </tr></tfoot>
+      </table>
+    </div>
+  </div>`;
 }
 /* ══════════════════════════════════════════════════════════════════════
    VUE ÉVOLUTION PÉRIODIQUE — Graphe SVG barres + courbe tendance
@@ -18322,6 +18790,12 @@ function sEvol(c){
     if(granul==='annee'){ if(r.year) k=String(r.year); }
     else if(granul==='sem'){ if(r.year&&r.month) k=r.year+'-S'+(r.month<=6?1:2); }
     else if(granul==='trim'){ if(r.year&&r.month) k=r.year+'-T'+Math.ceil(r.month/3); }
+    else if(granul==='quinz'){
+      if(r.date&&r.year&&r.month){
+        const q=_dateQ(r.date);
+        k=r.year+'-'+String(r.month).padStart(2,'0')+'-Q'+q;
+      }
+    }
     else { // mois — utiliser DATE si dispo, sinon FOLIO
       if(r.year&&r.month) k=r.year+'-'+String(r.month).padStart(2,'0');
       else if(r.folio>=1&&r.folio<=12) k=String(STAT.year||r.year||'?')+'-'+String(r.folio).padStart(2,'0');
@@ -18425,50 +18899,99 @@ function sEvol(c){
     </g>
   </svg>`;
 
-  // Granularité sélecteur
-  const granulBtns=['mois','trim','sem','annee'].map(g=>
+  // Granularité sélecteur + profondeur
+  const depth=STAT.evolDepth||3;
+  const granulBtns=['mois','trim','sem','annee','quinz'].map(g=>
     `<button onclick="STAT.granul='${g}';sEvol(document.getElementById('stat-content'))"
       style="padding:3px 9px;border-radius:6px;border:1px solid var(--bo);font-size:9px;font-weight:700;cursor:pointer;
       background:${(STAT.granul||'mois')===g?'var(--sky)':'#fff'};color:${(STAT.granul||'mois')===g?'#fff':'var(--txt3)'}"
-    >${g==='mois'?'🗓 Mensuel':g==='trim'?'📊 Trim.':g==='sem'?'📈 Sem.':'📅 Annuel'}</button>`
+    >${g==='mois'?'🗓 Mensuel':g==='trim'?'📊 Trim.':g==='sem'?'📈 Sem.':g==='quinz'?'🔢 Quinz.':'📅 Annuel'}</button>`
   ).join('');
+  const depthSel=`<select class="stat-depth-sel" style="width:65px" onchange="STAT.evolDepth=+this.value;sEvol(document.getElementById('stat-content'))">
+    ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>N-${n}</option>`).join('')}
+  </select>`;
 
-  // Tableau récapitulatif
-  let tbl=`<table class="stat-tbl" style="margin-top:6px"><thead><tr>
-    <th>PÉRIODE</th><th class="r">TOTAL (DA)</th><th class="r">TK NDC (DA)</th>
-    <th class="r">% TOTAL</th><th class="r">ÉVOL. vs PRÉC.</th>
-  </tr></thead><tbody>`;
+  // Tableau récapitulatif avec comparaison multi-années
+  let tbl=`<table class="evol-ny-tbl" style="margin-top:6px">
+    <thead><tr>
+      <th style="text-align:left;min-width:70px">PÉRIODE</th>
+      <th class="r">CA (DA)</th>
+      <th class="r">NDC (DA)</th>
+      <th class="r">PART</th>
+      <th class="r">vs PRÉC.</th>`;
+
+  // En-têtes N-1, N-2... pour le mode MOIS seulement (sinon trop large)
+  const showNx=(granul==='mois');
+  if(showNx){
+    for(let ni=1;ni<=Math.min(depth,3);ni++){
+      tbl+=`<th class="r" style="font-size:7px">N-${ni} (DA)</th><th class="r" style="font-size:7px">Évol</th>`;
+    }
+  }
+  tbl+=`<th class="r">MOY.</th></tr></thead><tbody>`;
+
+  // Totaux par année pour moyenne
+  const yearTotals=new Map();
+  periKeys.forEach((k,i)=>{
+    const yr=granul==='mois'?k.split('-')[0]:k.split('-')[0];
+    yearTotals.set(yr,(yearTotals.get(yr)||0)+vals[i]);
+  });
+
   periKeys.forEach((k,i)=>{
     const v=vals[i], vN=ndcVals[i]||0;
     const pct=totalCA>0?(v/totalCA*100).toFixed(2):'0.00';
     const evo=i>0?((v-vals[i-1])/Math.max(vals[i-1],1)*100):null;
-    const evoBadge=evo!==null
-      ?`<span style="color:${evo>=0?'#059669':'#dc2626'};font-weight:700">${evo>=0?'↑':'↓'}${Math.abs(evo).toFixed(1)}%</span>`
-      :'<span style="color:var(--txt4)">—</span>';
+    const evoBadge=evo!==null?_evoBadge(vals[i-1],v,true):'<span class="evo-na">—</span>';
     let klbl=k;
-    if(granul==='mois'){const[yr,m]=k.split('-');klbl=SMOIS2[+m-1]+' '+yr;}
-    else if(granul==='trim')klbl=k.replace('-T',' T');
-    else if(granul==='sem')klbl=k.replace('-S',' S');
+    let nxCells='';
+    if(granul==='mois'){
+      const[yr,m]=k.split('-');
+      klbl=SMOIS2[+m-1]+' '+yr;
+      if(showNx){
+        for(let ni=1;ni<=Math.min(depth,3);ni++){
+          const ny=parseInt(yr)-ni;
+          const nk=`${ny}-${m}`;
+          const nca=periMap.get(nk)||0;
+          nxCells+=`<td class="r m" style="color:var(--txt3);font-size:9px">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,v,true)}</td>`;
+        }
+      }
+    } else if(granul==='trim'){klbl=k.replace('-T',' T');}
+    else if(granul==='sem'){klbl=k.replace('-S',' S');}
+
+    // Moyenne mensuelle (pour granul=mois: moyenne de ce mois sur toutes les années)
+    let avgCell='—';
+    if(granul==='mois'){
+      const[,m]=k.split('-');
+      const sameMonthVals=periKeys.filter(pk=>pk.endsWith('-'+m)).map(pk=>periMap.get(pk)||0).filter(pv=>pv>0);
+      if(sameMonthVals.length>1){
+        const avg=sameMonthVals.reduce((s,pv)=>s+pv,0)/sameMonthVals.length;
+        avgCell=SFM(avg);
+      }
+    }
     tbl+=`<tr>
-      <td class="m" style="font-weight:600">${klbl}</td>
-      <td class="r m" style="color:var(--sky-deep);font-weight:700">${v.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})} DA</td>
-      <td class="r m" style="color:#00b3e0;font-weight:600">${vN>0?vN.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})+' DA':'—'}</td>
-      <td class="r m" style="color:var(--txt3)">${pct}%</td>
-      <td class="r m">${evoBadge}</td>
+      <td style="font-weight:700;font-size:9.5px;color:var(--txt)">${klbl}</td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800;font-size:9.5px">${SFM(v)}</td>
+      <td class="r m" style="color:#00b3e0;font-size:9.5px">${vN>0?SFM(vN):'—'}</td>
+      <td class="r" style="color:var(--txt3);font-size:9px">${pct}%</td>
+      <td class="r">${evoBadge}</td>
+      ${nxCells}
+      <td class="r m" style="color:#7c3aed;font-size:9px">${avgCell}</td>
     </tr>`;
   });
   const totalNDC=ndcVals.reduce((s,v)=>s+v,0);
-  tbl+=`<tr style="background:var(--bg2);font-weight:800">
+  const totNxCells=showNx?Array.from({length:Math.min(depth,3)},()=>'<td class="r">—</td><td class="r">—</td>').join(''):'';
+  tbl+=`<tr style="font-weight:800">
     <td>TOTAL</td>
-    <td class="r" style="color:var(--sky-deep)">${totalCA.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})} DA</td>
-    <td class="r" style="color:#00b3e0">${totalNDC>0?totalNDC.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})+' DA':'—'}</td>
-    <td class="r">100%</td><td></td>
+    <td class="r m" style="color:var(--sky-deep)">${SFM(totalCA)}</td>
+    <td class="r m" style="color:#00b3e0">${totalNDC>0?SFM(totalNDC):'—'}</td>
+    <td class="r">100%</td><td class="r">—</td>${totNxCells}<td class="r">—</td>
   </tr></tbody></table>`;
 
   c.innerHTML=`<div style="padding:10px 16px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px">📅 ÉVOLUTION PÉRIODIQUE</span>
     <span style="font-size:9px;color:var(--txt3)">${SFN(periKeys.length)} périodes · ${totalCA.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})} DA total</span>
-    <div style="margin-left:auto;display:flex;gap:4px">${granulBtns}</div>
+    <div style="margin-left:auto;display:flex;gap:4px;align-items:center;flex-wrap:wrap">${granulBtns}
+      <span style="font-size:9px;color:var(--txt3)">Profondeur:</span>${depthSel}
+    </div>
   </div>
   <div style="padding:6px 16px 0;overflow-x:auto">${svg}</div>
   <div style="padding:0 16px 16px;overflow-x:auto">${tbl}</div>`;
@@ -18478,170 +19001,231 @@ function sEvol(c){
 /* ══════════════════════════════════════════════════════════════════════
    VUE TOP VENDEURS — Podium + Barres horizontales animées + Sparklines
 ══════════════════════════════════════════════════════════════════════ */
+/* ── Helper : agréger top clients pour une période explicite ── */
+function _sTopAgg(year,month,quinzaine){
+  const rows=_sRawForPeriod(year,month,quinzaine);
+  const map=new Map();
+  rows.forEach(r=>{
+    const aux=r.aux||r.compte;
+    const key=r.compte+'|'+aux;
+    if(!map.has(key)) map.set(key,{compte:r.compte,aux,total:0,ops:0,journals:new Set()});
+    const o=map.get(key);
+    o.total+=r.debit; o.ops++;
+    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    if(sym) o.journals.add(sym);
+  });
+  return [...map.values()].map(o=>({...o,name:sResolveName(o.aux,o.compte,'')}))
+    .sort((a,b)=>b.total-a.total);
+}
+
 function sTopVendeurs(c){
   if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏆</div><div class="msg">Aucune donnée</div></div>`;return;}
-  const all=[...STAT.agg].sort((a,b)=>b.total-a.total);
+  // ── Déterminer la source de données selon le mode ──
+  const mode=STAT.topMode||'global';
+  const tYear=STAT.topYear||(STAT.year||new Date().getFullYear());
+  const tMonth=STAT.topMonth||null;
+  const tQ=STAT.topQ||1;
+  const depth=STAT.evolDepth||3;
+  const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+  let periodData, periodLabel, prevData=[];
+  if(mode==='global'){
+    periodData=[...STAT.agg];
+    periodLabel='Toutes périodes';
+  } else if(mode==='annuel'){
+    periodData=_sTopAgg(tYear);
+    periodLabel=`Année ${tYear}`;
+    prevData=_sTopAgg(tYear-1);
+  } else if(mode==='mensuel'){
+    periodData=_sTopAgg(tYear,tMonth||1);
+    periodLabel=`${SMOIS2[(tMonth||1)-1]} ${tYear}`;
+    const pm=tMonth===1?{y:tYear-1,m:12}:{y:tYear,m:(tMonth||1)-1};
+    prevData=_sTopAgg(pm.y,pm.m);
+  } else if(mode==='quinzaine'){
+    periodData=_sTopAgg(tYear,tMonth||1,tQ);
+    periodLabel=`Q${tQ} ${SMOIS2[(tMonth||1)-1]} ${tYear}`;
+    const pq=_prevQ(tYear,tMonth||1,tQ);
+    prevData=_sTopAgg(pq.year,pq.month,pq.q);
+  }
+  periodData=periodData.sort((a,b)=>b.total-a.total);
+
+  const all=periodData;
   const top3=all.slice(0,3);
   const rest=all.slice(3,20);
   const totCA=all.reduce((s,r)=>s+r.total,0);
   const totOps=all.reduce((s,r)=>s+r.ops,0);
 
-  // Sparkline SVG depuis données mensuelles d'un client
-  function sparkline(r,w=80,h=28){
+  // Carte évolution pour la période précédente
+  const prevMap=new Map(prevData.map(r=>[r.compte+'|'+(r.aux||r.compte),r.total]));
+
+  // ── Sparkline simple ──
+  function sparkline(r,w=70,h=24){
     const mmap=new Map();
     STAT.raw.forEach(row=>{
       if((row.compte+'|'+(row.aux||row.compte))!==(r.compte+'|'+(r.aux||r.compte))) return;
       const k=row.folio||0; if(!k) return;
       mmap.set(k,(mmap.get(k)||0)+row.debit);
     });
-    const keys=[...Array(12)].map((_,i)=>i+1);
-    const vals=keys.map(k=>mmap.get(k)||0);
+    const vals=[...Array(12)].map((_,i)=>mmap.get(i+1)||0);
     const mx=Math.max(...vals,1);
     if(mx===0) return '';
     const pts=vals.map((v,i)=>{
-      const x=Math.round(i*(w/(vals.length-1)));
-      const y=Math.round(h-(v/mx)*(h-4)-2);
-      return `${x},${y}`;
+      return `${Math.round(i*(w/(vals.length-1)))},${Math.round(h-(v/mx)*(h-4)-2)}`;
     }).join(' ');
-    const area=vals.map((v,i)=>{
-      const x=Math.round(i*(w/(vals.length-1)));
-      const y=Math.round(h-(v/mx)*(h-4)-2);
-      return `${x},${y}`;
-    });
-    const areaPath=`M0,${h} `+area.map(p=>`L${p}`).join(' ')+` L${w},${h} Z`;
     return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="overflow:visible">
-      <defs><linearGradient id="spk${r.aux||r.compte}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#22c55e" stop-opacity=".3"/>
-        <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
-      </linearGradient></defs>
-      <path d="${areaPath}" fill="url(#spk${r.aux||r.compte})"/>
-      <polyline points="${pts}" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linejoin="round"/>
+      <polyline points="${pts}" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linejoin="round" opacity=".8"/>
     </svg>`;
   }
 
-  // Tendance du mois actif
-  function getTrend(r){
-    const mmap=new Map();
-    STAT.raw.forEach(row=>{
-      if((row.compte+'|'+(row.aux||row.compte))!==(r.compte+'|'+(r.aux||r.compte))) return;
-      const k=row.folio||0; if(!k) return;
-      mmap.set(k,(mmap.get(k)||0)+row.debit);
-    });
-    const sorted=[...mmap.entries()].sort((a,b)=>a[0]-b[0]);
-    if(sorted.length<2) return null;
-    const last2=sorted.slice(-2);
-    const [,prev]=last2[0]; const [,curr]=last2[1];
-    if(!prev) return null;
-    return (curr-prev)/prev*100;
+  // ── Boutons de sélection mode ──
+  const availYears=STAT.availableYears||[tYear];
+  const yearOpts=availYears.map(y=>`<option value="${y}"${y===tYear?' selected':''}>${y}</option>`).join('');
+  const monthOpts=[...Array(12)].map((_,i)=>`<option value="${i+1}"${(i+1)===(tMonth||1)?' selected':''}>${SMOIS2[i]}</option>`).join('');
+  const qOpts=[1,2].map(q=>`<option value="${q}"${q===tQ?' selected':''}>Q${q} (${q===1?'1-15':'16-31'})</option>`).join('');
+
+  const modeButtons=['global','annuel','mensuel','quinzaine'].map(m=>`
+    <button class="stat-topmode-btn${mode===m?' on':''}"
+      onclick="STAT.topMode='${m}';sTopVendeurs(document.getElementById('stat-content'))">${
+        m==='global'?'🌐 Global':m==='annuel'?'📅 Annuel':m==='mensuel'?'📆 Mensuel':'🔢 Quinzaine'
+      }</button>`).join('');
+
+  let periodPicker='';
+  if(mode==='annuel'){
+    periodPicker=`<select class="stat-depth-sel" onchange="STAT.topYear=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${yearOpts}</select>`;
+  } else if(mode==='mensuel'){
+    periodPicker=`<select class="stat-depth-sel" onchange="STAT.topYear=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${yearOpts}</select>
+      <select class="stat-depth-sel" onchange="STAT.topMonth=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${monthOpts}</select>`;
+  } else if(mode==='quinzaine'){
+    periodPicker=`<select class="stat-depth-sel" onchange="STAT.topYear=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${yearOpts}</select>
+      <select class="stat-depth-sel" onchange="STAT.topMonth=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${monthOpts}</select>
+      <select class="stat-depth-sel" onchange="STAT.topQ=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${qOpts}</select>`;
   }
 
-  const podiumOrder=[1,0,2]; // 2nd, 1st, 3rd
-  const podiumH=['130px','160px','110px'];
-  const podiumColors=['#c0c0c0','#f59e0b','#cd7f32'];
-  const podiumEmoji=['🥈','🥇','🥉'];
-
+  // ── Podium ──
+  const podiumOrder=[1,0,2],podiumH=['130px','160px','110px'];
+  const podiumColors=['#c0c0c0','#f59e0b','#cd7f32'],podiumEmoji=['🥈','🥇','🥉'];
   let podiumHTML='';
   podiumOrder.forEach((idx,pi)=>{
     const r=top3[idx]; if(!r) return;
     const pct=(r.total/totCA*100).toFixed(1);
-    const trend=getTrend(r);
-    const trendHtml=trend!==null
-      ?`<span style="font-size:10px;font-weight:800;color:${trend>=0?'#059669':'#dc2626'}">${trend>=0?'↑':'↓'}${Math.abs(trend).toFixed(1)}%</span>`:'';
-    const spk=sparkline(r);
-    podiumHTML+=`
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0">
-      <div style="font-size:${idx===0?'28px':'22px'}">${podiumEmoji[pi]}</div>
-      <div style="background:var(--surface);border:2px solid ${podiumColors[pi]};border-radius:12px;padding:10px 12px;width:100%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.08)">
+    const pkey=r.compte+'|'+(r.aux||r.compte);
+    const prevCA=prevMap.get(pkey)||0;
+    const evoH=_evoBadge(prevCA,r.total,false);
+    // N-1 from explicit period
+    let nxExtra='';
+    if(mode!=='global'){
+      for(let ni=1;ni<=Math.min(depth,2);ni++){
+        let nca=0;
+        if(mode==='annuel')   nca=_sClientCAForPeriod(r.compte,r.aux||r.compte,tYear-ni);
+        else if(mode==='mensuel') nca=_sClientCAForPeriod(r.compte,r.aux||r.compte,tYear-ni,tMonth||1);
+        else if(mode==='quinzaine') nca=_sClientCAForPeriod(r.compte,r.aux||r.compte,tYear-ni,tMonth||1,tQ);
+        if(nca>0||ni===1) nxExtra+=`<div style="font-size:8.5px;color:var(--txt4)">N-${ni}: ${nca>0?SFM(nca):'—'} ${_evoBadge(nca,r.total,true)}</div>`;
+      }
+    }
+    podiumHTML+=`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0">
+      <div style="font-size:${idx===0?'26px':'20px'}">${podiumEmoji[pi]}</div>
+      <div style="background:var(--surface);border:2px solid ${podiumColors[pi]};border-radius:12px;padding:9px 10px;width:100%;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.08)">
         <div style="font-size:9px;font-weight:800;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</div>
-        <div style="font-size:10px;color:var(--txt3);margin:2px 0">${r.aux||r.compte}</div>
-        <div style="font-size:12px;font-weight:900;color:var(--sky-deep);margin:4px 0">${SFM(r.total)}</div>
-        <div style="display:flex;justify-content:center;gap:8px;font-size:10px;color:var(--txt4);margin-bottom:4px">
-          <span>${SFN(r.ops)} ops</span><span>${pct}% marché</span>
-        </div>
-        ${trendHtml?`<div style="margin-bottom:4px">${trendHtml}</div>`:''}
-        <div style="display:flex;justify-content:center">${spk}</div>
+        <div style="font-size:9px;color:var(--txt3);margin:2px 0">${r.aux||r.compte}</div>
+        <div style="font-size:11px;font-weight:900;color:var(--sky-deep);margin:3px 0">${SFM(r.total)}</div>
+        <div style="font-size:9px;color:var(--txt4);margin-bottom:3px">${SFN(r.ops)} ops · ${pct}%</div>
+        <div style="margin-bottom:3px">${evoH}</div>
+        ${nxExtra}
+        <div style="display:flex;justify-content:center;margin-top:3px">${sparkline(r)}</div>
       </div>
-      <div style="background:${podiumColors[pi]};border-radius:8px 8px 0 0;width:80%;height:${podiumH[pi]};display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px">
+      <div style="background:${podiumColors[pi]};border-radius:8px 8px 0 0;width:80%;height:${podiumH[pi]};display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px">
         <span style="font-size:11px;font-weight:900;color:#fff">#${idx+1}</span>
       </div>
     </div>`;
   });
 
-  // Barres horizontales rang 4–20
+  // ── Tableau rang 4-20 avec évolution ──
+  const nxTh=mode!=='global'?Array.from({length:Math.min(depth,3)},(_,i)=>
+    `<th class="r" style="font-size:7px">N-${i+1}</th><th class="r" style="font-size:7px">Évol</th>`
+  ).join(''):'';
+
   const maxRest=rest.length?rest[0].total:1;
-  let restHTML='';
+  let restRows='';
   rest.forEach((r,i)=>{
     const rk=i+4;
-    const pct=(r.total/maxRest*100).toFixed(0);
+    const barW=Math.round(r.total/maxRest*100);
     const pctTot=(r.total/totCA*100).toFixed(1);
-    const trend=getTrend(r);
-    const trendHtml=trend!==null
-      ?`<span style="font-size:9px;font-weight:700;color:${trend>=0?'#059669':'#dc2626'};min-width:44px">${trend>=0?'▲':'▼'}${Math.abs(trend).toFixed(1)}%</span>`
-      :'<span style="min-width:44px"></span>';
-    const journals=[...r.journals].slice(0,2).map(j=>`<span style="background:${SCOL[j]||'#6b7280'};color:#fff;border-radius:3px;padding:0 4px;font-size:10px;font-weight:700">${j}</span>`).join('');
-    restHTML+=`
-    <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:${i%2===0?'#f9fafb':'#fff'};border-radius:6px">
-      <span style="min-width:22px;font-size:10px;font-weight:800;color:var(--txt4)">#${rk}</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:9.5px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div>
-        <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
-          <div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#16a34a,#38bdf8);border-radius:3px;transition:width .6s"></div>
-          </div>
-          <span style="font-size:10px;color:var(--txt4);min-width:30px;text-align:right">${pctTot}%</span>
-        </div>
-      </div>
-      <div style="text-align:right;min-width:120px">
-        <div style="font-size:10px;font-weight:800;color:var(--sky-deep)">${SFM(r.total)}</div>
-        <div style="font-size:10px;color:var(--txt4)">${SFN(r.ops)} ops</div>
-      </div>
-      ${trendHtml}
-      <div style="display:flex;gap:2px">${journals}</div>
-    </div>`;
+    const pkey=r.compte+'|'+(r.aux||r.compte);
+    const prevCA=prevMap.get(pkey)||0;
+    const evoPrev=_evoBadge(prevCA,r.total,true);
+    const journals=[...r.journals].slice(0,2).map(j=>`<span style="background:${SCOL[j]||'#6b7280'};color:#fff;border-radius:3px;padding:0 3px;font-size:9px;font-weight:700">${j}</span>`).join('');
+    const nxCells=mode!=='global'?Array.from({length:Math.min(depth,3)},(_,ni)=>{
+      let nca=0;
+      if(mode==='annuel')   nca=_sClientCAForPeriod(r.compte,r.aux||r.compte,tYear-(ni+1));
+      else if(mode==='mensuel') nca=_sClientCAForPeriod(r.compte,r.aux||r.compte,tYear-(ni+1),tMonth||1);
+      else if(mode==='quinzaine') nca=_sClientCAForPeriod(r.compte,r.aux||r.compte,tYear-(ni+1),tMonth||1,tQ);
+      return `<td class="r m" style="font-size:9px;color:var(--txt3)">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,r.total,true)}</td>`;
+    }).join(''):'';
+    restRows+=`<tr>
+      <td><span class="srk rn">${rk}</span></td>
+      <td style="font-size:9.5px;font-weight:700;color:var(--txt);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name||r.aux}</td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800;font-size:10px">${SFM(r.total)}</td>
+      <td><div style="width:60px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${barW}%;background:linear-gradient(90deg,#16a34a,#38bdf8);border-radius:3px"></div></div></td>
+      <td class="r" style="font-size:9px;color:var(--txt4)">${pctTot}%</td>
+      <td class="r">${evoPrev}</td>
+      ${nxCells}
+      <td>${journals}</td>
+    </tr>`;
   });
 
-  // KPIs résumé
   const topShare=top3.reduce((s,r)=>s+(r?r.total:0),0);
-  const concHtml=`<div style="font-size:9px;color:var(--txt3)">Top 3 = <b style="color:var(--sky-deep)">${(topShare/totCA*100).toFixed(1)}%</b> du CA</div>`;
 
-  c.innerHTML=`
-  <div style="height:100%;overflow-y:auto;padding:12px 16px">
-    <!-- KPIs rapides -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:8px 12px">
-        <div style="font-size:10px;color:#166534;font-weight:700;letter-spacing:.5px">CA TOTAL</div>
-        <div style="font-size:13px;font-weight:900;color:#15803d">${SFM(totCA)}</div>
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
+    <!-- Mode buttons + period picker -->
+    <div style="margin-bottom:10px">
+      <div class="stat-topmode-grp">${modeButtons}</div>
+      ${periodPicker?`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${periodPicker}
+        <span style="font-size:9px;color:var(--txt4)">Profondeur N-x :</span>
+        <select class="stat-depth-sel" style="width:60px" onchange="STAT.evolDepth=+this.value;sTopVendeurs(document.getElementById('stat-content'))">
+          ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>${n}</option>`).join('')}
+        </select>
+      </div>`:''}
+    </div>
+    <!-- KPIs -->
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#166534;font-weight:700">CA · <span style="font-weight:900">${periodLabel}</span></div>
+        <div style="font-size:12px;font-weight:900;color:#15803d">${SFM(totCA)}</div>
       </div>
-      <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;border-radius:8px;padding:8px 12px">
-        <div style="font-size:10px;color:#1e40af;font-weight:700;letter-spacing:.5px">CLIENTS ACTIFS</div>
-        <div style="font-size:13px;font-weight:900;color:#1d4ed8">${SFN(all.length)}</div>
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#1e40af;font-weight:700">CLIENTS</div>
+        <div style="font-size:12px;font-weight:900;color:#1d4ed8">${SFN(all.length)}</div>
       </div>
-      <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#fef9c3,#fef08a);border:1px solid #fde047;border-radius:8px;padding:8px 12px">
-        <div style="font-size:10px;color:#854d0e;font-weight:700;letter-spacing:.5px">OPÉRATIONS</div>
-        <div style="font-size:13px;font-weight:900;color:#92400e">${SFN(totOps)}</div>
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fef9c3,#fef08a);border:1px solid #fde047;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#854d0e;font-weight:700">OPS</div>
+        <div style="font-size:12px;font-weight:900;color:#92400e">${SFN(totOps)}</div>
       </div>
-      <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border:1px solid #d8b4fe;border-radius:8px;padding:8px 12px">
-        <div style="font-size:10px;color:#6b21a8;font-weight:700;letter-spacing:.5px">PANIER MOYEN</div>
-        <div style="font-size:13px;font-weight:900;color:#7c3aed">${SFM(totCA/Math.max(all.length,1))}</div>
-      </div>
-      <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border:1px solid #fdba74;border-radius:8px;padding:8px 12px">
-        <div style="font-size:10px;color:#9a3412;font-weight:700;letter-spacing:.5px">CONCENTRATION</div>
-        <div style="font-size:13px;font-weight:900;color:#c2410c">${(topShare/totCA*100).toFixed(1)}%</div>
-        ${concHtml}
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border:1px solid #fdba74;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#9a3412;font-weight:700">TOP 3 / TOTAL</div>
+        <div style="font-size:12px;font-weight:900;color:#c2410c">${(topShare/totCA*100).toFixed(1)}%</div>
       </div>
     </div>
     <!-- Podium -->
-    <div style="background:linear-gradient(180deg,#f0f9ff,#e0f2fe);border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px;margin-bottom:12px;text-align:center">🏆 PODIUM — TOP 3 CLIENTS</div>
-      <div style="display:flex;align-items:flex-end;gap:12px;justify-content:center">${podiumHTML}</div>
+    <div style="background:linear-gradient(180deg,#f0f9ff,#e0f2fe);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px;margin-bottom:10px;text-align:center">🏆 PODIUM — TOP 3 · ${periodLabel}</div>
+      <div style="display:flex;align-items:flex-end;gap:10px;justify-content:center">${podiumHTML}</div>
     </div>
-    <!-- Rang 4–20 -->
-    ${rest.length?`
-    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:10px">
-      <div style="font-size:10px;font-weight:800;color:var(--txt);letter-spacing:.5px;margin-bottom:8px">📊 CLASSEMENT COMPLET — Rang 4 à ${Math.min(20,all.length)}</div>
-      <div style="display:flex;flex-direction:column;gap:2px">${restHTML}</div>
-    </div>`:``}
-  </div>`;
+    <!-- Table rang 4-20 -->
+    ${rest.length?`<div style="overflow-x:auto">
+      <table class="evol-ny-tbl">
+        <thead><tr>
+          <th style="text-align:left">#</th>
+          <th style="text-align:left;min-width:140px">CLIENT</th>
+          <th class="r">CA (DA)</th>
+          <th style="min-width:65px"></th>
+          <th class="r">PART</th>
+          <th class="r">vs PRÉC.</th>
+          ${nxTh}
+          <th>CIE</th>
+        </tr></thead>
+        <tbody>${restRows}</tbody>
+      </table>
+    </div>`:''}</div>`;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -18687,6 +19271,11 @@ function sRawFiltered(yearOverride){
     } else if((STAT.periodMode==='date'||STAT.periodMode==='range')&&filterDateFrom&&filterDateTo){
       if(!r.date||r.date<filterDateFrom||r.date>filterDateTo) return false;
     }
+    // ── Filtre QUINZAINE ─────────────────────────────────────────────
+    if(STAT.quinzaine!=='all'&&r.date){
+      const qd=r.date.getDate()<=15?'1':'2';
+      if(qd!==STAT.quinzaine) return false;
+    }
     return true;
   });
 }
@@ -18715,11 +19304,20 @@ function comRawFiltered(yearOverride){
   return (STAT.comRaw||[]).filter(r=>{
     if(!sCompMatch(r.sym)) return false; // chips compagnie partagées avec le CA
     if(STAT.periodMode==='folio'){
-      // SUP COM n'a pas de colonne FOLIO : on filtre par année (+ par mois si des
-      // mois précis sont cochés, en utilisant le mois calendaire de la DATE).
+      // SUP COM n'a pas de colonne FOLIO : on filtre par année, PUIS par mois si des
+      // mois précis sont cochés, en utilisant le mois calendaire de la DATE.
+      // 🔧 FIX — ce filtre par mois manquait complètement : le commentaire l'annonçait
+      // mais le code ne le faisait pas, donc sélectionner un seul mois affichait quand
+      // même toute l'année (P2 = année complète au lieu du mois choisi, comparaison faussée).
       if(!useAllYears&&r.year&&r.year!==targetYear) return false;
+      if(STAT.folios.size>0 && r.month && !STAT.folios.has(r.month)) return false;
     } else if((STAT.periodMode==='date'||STAT.periodMode==='range')&&filterDateFrom&&filterDateTo){
       if(!r.date||r.date<filterDateFrom||r.date>filterDateTo) return false;
+    }
+    // ── Filtre QUINZAINE (SUP COM) ────────────────────────────────────
+    if(STAT.quinzaine!=='all'&&r.date){
+      const qd=r.date.getDate()<=15?'1':'2';
+      if(qd!==STAT.quinzaine) return false;
     }
     return true;
   });
@@ -18820,6 +19418,336 @@ function sPeriodLabel(){
   if(STAT.periodMode==='range'&&STAT.dateFrom&&STAT.dateTo) return `${new Date(STAT.dateFrom).toLocaleDateString('fr-FR')} → ${new Date(STAT.dateTo).toLocaleDateString('fr-FR')}`;
   return 'Période actuelle';
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   HELPERS PÉRIODE EXPLICITE
+   Permettent de calculer le CA pour n'importe quelle combinaison
+   (année, mois, quinzaine) en appliquant les filtres compagnie/type/ndc/red
+   mais EN IGNORANT le filtre de période courant → pour les comparaisons N-1.
+══════════════════════════════════════════════════════════════════════ */
+
+/* Retourne la quinzaine d'une date : 1 = jours 1-15, 2 = jours 16-fin */
+function _dateQ(d){ return d&&d.getDate()<=15?1:2; }
+
+/* Filtre de base partagé (compagnie/type/ndc/red), SANS filtre de période */
+function _sBaseFilter(r){
+  if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+  if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+  const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+  if(!sCompMatch(sym)) return false;
+  if(STAT.ndc!=='all'){
+    const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
+    if(STAT.ndc==='ndc'&&!isNDC) return false;
+    if(STAT.ndc==='std'&&isNDC)  return false;
+  }
+  if(STAT.redMode!=='all'){
+    const isRed=_isRedRow(r);
+    if(STAT.redMode==='excl'&&isRed)  return false;
+    if(STAT.redMode==='only'&&!isRed) return false;
+  }
+  return true;
+}
+
+/*
+  _sRawForPeriod(year?, month?, quinzaine?)
+  Retourne les lignes brutes filtrées pour une période explicite.
+  Tous les paramètres sont optionnels (undefined = pas de filtre sur ce critère).
+*/
+function _sRawForPeriod(year,month,quinzaine){
+  return STAT.raw.filter(r=>{
+    if(!_sBaseFilter(r)) return false;
+    if(year!==undefined&&r.year!==year) return false;
+    if(month!==undefined&&r.month!==month) return false;
+    if(quinzaine!==undefined){
+      if(!r.date) return false;
+      if(_dateQ(r.date)!==quinzaine) return false;
+    }
+    return true;
+  });
+}
+
+/* CA total pour une période explicite */
+function _sCAForPeriod(year,month,quinzaine){
+  return _sRawForPeriod(year,month,quinzaine).reduce((s,r)=>s+r.debit,0);
+}
+
+/* CA d'un client spécifique pour une période explicite */
+function _sClientCAForPeriod(compte,aux,year,month,quinzaine){
+  return _sRawForPeriod(year,month,quinzaine)
+    .filter(r=>r.compte===compte&&(r.aux||r.compte)===(aux||compte))
+    .reduce((s,r)=>s+r.debit,0);
+}
+
+/* CA d'une compagnie spécifique pour une période explicite */
+function _sCompCAForPeriod(sym,year,month,quinzaine){
+  return _sRawForPeriod(year,month,quinzaine)
+    .filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===sym)
+    .reduce((s,r)=>s+r.debit,0);
+}
+
+/* CA commissions pour une compagnie / période explicite (SUP COM) */
+function _sComCAForPeriod(sym,year,month,quinzaine){
+  return (STAT.comRaw||[]).filter(r=>{
+    if(!sCompMatch(r.sym)) return false;
+    if(sym&&r.sym!==sym) return false;
+    if(year!==undefined&&r.year!==year) return false;
+    if(month!==undefined&&r.month!==month) return false;
+    if(quinzaine!==undefined){
+      if(!r.date) return false;
+      if(_dateQ(r.date)!==quinzaine) return false;
+    }
+    return true;
+  }).reduce((s,r)=>s+r.credit,0);
+}
+
+/* Calcule la "quinzaine précédente" d'une (year, month, q) → {year, month, q} */
+function _prevQ(year,month,q){
+  if(q===2) return {year,month,q:1};
+  // q=1 → quinzaine précédente = Q2 du mois d'avant
+  if(month===1) return {year:year-1,month:12,q:2};
+  return {year,month:month-1,q:2};
+}
+
+/* Génère le badge HTML évolution */
+function _evoBadge(oldVal,newVal,small){
+  if(!oldVal||oldVal===0) return `<span class="evo-na">—</span>`;
+  const pct=(newVal-oldVal)/Math.abs(oldVal)*100;
+  const up=pct>=0;
+  const cls=up?'evo-up':'evo-dn';
+  const arrow=up?'▲':'▼';
+  const fs=small?'font-size:8.5px;':'';
+  return `<span class="${cls}" style="${fs}">${arrow} ${Math.abs(pct).toFixed(1)}%</span>`;
+}
+
+/* Toggle filtre quinzaine */
+function sSetQuinzaine(v,btn){
+  STAT.quinzaine=v;
+  document.querySelectorAll('.stat-qnz-btn').forEach(b=>b.classList.toggle('on',b.dataset.qnz===v));
+}
+
+/* Mise à jour profondeur évolution */
+function sSetEvolDepth(v){
+  STAT.evolDepth=parseInt(v)||3;
+}
+/* ══════════════════════════════════════════════════════════════════════
+   VUE QUINZAINE — Analyse par quinzaine (Q1=1-15, Q2=16-fin)
+   Affiche pour chaque quinzaine :
+     • CA de la période
+     • Évolution vs quinzaine précédente
+     • Évolution vs même quinzaine / même mois / N-1, N-2, N-3…
+     • Classement compagnies par quinzaine
+     • TOP 20 clients par quinzaine
+══════════════════════════════════════════════════════════════════════ */
+function sQuinzaine(c){
+  if(!STAT.raw.length){
+    c.innerHTML=`<div class="stat-empty"><div class="big">🔢</div><div class="msg">Aucune donnée</div><div class="sub">Importez un fichier Excel pour démarrer</div></div>`;
+    return;
+  }
+  // ── Construire toutes les quinzaines disponibles dans les données ──
+  const qmap=new Map(); // clé: 'YYYY-MM-Q' → {year,month,q,ca,ops,byComp,byClient}
+  STAT.raw.forEach(r=>{
+    if(!_sBaseFilter(r)) return;
+    if(!r.date||!r.year||!r.month) return;
+    const q=_dateQ(r.date);
+    const k=`${r.year}-${String(r.month).padStart(2,'0')}-${q}`;
+    if(!qmap.has(k)) qmap.set(k,{year:r.year,month:r.month,q,ca:0,ops:0,byComp:new Map(),byClient:new Map()});
+    const o=qmap.get(k);
+    o.ca+=r.debit; o.ops++;
+    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    o.byComp.set(sym,(o.byComp.get(sym)||0)+r.debit);
+    const ckey=r.compte+'|'+(r.aux||r.compte);
+    if(!o.byClient.has(ckey)) o.byClient.set(ckey,{compte:r.compte,aux:r.aux||r.compte,ca:0,name:''});
+    o.byClient.get(ckey).ca+=r.debit;
+  });
+  if(!qmap.size){
+    c.innerHTML=`<div class="stat-empty"><div class="big">🔢</div><div class="msg">Aucune donnée avec DATE renseignée</div><div class="sub">La vue Quinzaine nécessite la colonne DATE dans le fichier GL</div></div>`;
+    return;
+  }
+  const qkeys=[...qmap.keys()].sort();
+  const depth=STAT.evolDepth||3;
+
+  // ── Mode affiché : tableau principal quinzaines ──
+  const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+  // Construire les en-têtes N-x
+  const nxHeaders=Array.from({length:depth},(_,i)=>`<th class="r">N-${i+1}</th><th class="r">Évol N-${i+1}</th>`).join('');
+
+  // Calculer moyenne par quinzaine (même Q, même mois, sur toutes les années)
+  // clé: 'MM-Q' → [CA1, CA2, ...]
+  const avgMap=new Map();
+  qmap.forEach((d,k)=>{
+    const mk=`${String(d.month).padStart(2,'0')}-${d.q}`;
+    if(!avgMap.has(mk)) avgMap.set(mk,[]);
+    avgMap.get(mk).push(d.ca);
+  });
+
+  let rows='';
+  qmap.forEach((d,k)=>{
+    const {year,month,q,ca,ops}=d;
+    const lbl=`${SMOIS2[month-1]} ${year} — Q${q} (${q===1?'1-15':'16-fin'})`;
+    const pq=_prevQ(year,month,q);
+    const prevCA=_sCAForPeriod(pq.year,pq.month,pq.q);
+    const mk=`${String(month).padStart(2,'0')}-${q}`;
+    const avgVals=avgMap.get(mk)||[];
+    const avg=avgVals.length?avgVals.reduce((s,v)=>s+v,0)/avgVals.length:0;
+
+    // N-1, N-2, N-3 cells
+    const nxCells=Array.from({length:depth},(_,i)=>{
+      const ny=year-(i+1);
+      const nca=_sCAForPeriod(ny,month,q);
+      return `<td class="r m">${nca>0?SFM(nca):'<span class="evo-na">—</span>'}</td><td class="r">${_evoBadge(nca,ca,true)}</td>`;
+    }).join('');
+
+    rows+=`<tr>
+      <td style="white-space:nowrap;font-size:9.5px;font-weight:700;color:var(--txt)">${lbl}</td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800">${SFM(ca)}</td>
+      <td class="r">${SFN(ops)}</td>
+      <td class="r">${_evoBadge(prevCA,ca,true)}</td>
+      ${nxCells}
+      <td class="r m" style="color:var(--txt3)">${avg>0?SFM(avg):'—'}</td>
+    </tr>`;
+  });
+
+  const totalCA=qkeys.reduce((s,k)=>s+(qmap.get(k)?.ca||0),0);
+
+  // ── Classement compagnies par quinzaine ──
+  // Agréger par compagnie sur toutes les quinzaines visibles
+  const compMap=new Map();
+  qmap.forEach(d=>{
+    d.byComp.forEach((v,sym)=>{
+      compMap.set(sym,(compMap.get(sym)||0)+v);
+    });
+  });
+  const compSorted=[...compMap.entries()].sort((a,b)=>b[1]-a[1]);
+  const compTot=compSorted.reduce((s,[,v])=>s+v,0);
+
+  let compRows='';
+  compSorted.forEach(([sym,ca],i)=>{
+    // évolution N-1 pour cette compagnie : même période mais année précédente
+    const years=[...new Set(qkeys.map(k=>qmap.get(k)?.year))];
+    const curYear=Math.max(...years);
+    const prevYear=curYear-1;
+    const curCA=_sCompCAForPeriod(sym,curYear);
+    const prevCA2=_sCompCAForPeriod(sym,prevYear);
+    compRows+=`<tr>
+      <td><span class="stat-chip on" style="background:${SCOL[sym]||'#6b7280'};border-color:${SCOL[sym]||'#6b7280'}">${sym||'?'}</span></td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800">${SFM(ca)}</td>
+      <td class="r" style="color:var(--txt3)">${(ca/compTot*100).toFixed(1)}%</td>
+      <td class="r m">${prevCA2>0?SFM(prevCA2):'—'}</td>
+      <td class="r">${_evoBadge(prevCA2,ca,true)}</td>
+    </tr>`;
+  });
+
+  // ── TOP 20 clients toutes quinzaines ──
+  const clientMap=new Map();
+  qmap.forEach(d=>{
+    d.byClient.forEach((v,ckey)=>{
+      if(!clientMap.has(ckey)) clientMap.set(ckey,{...v,ca:0});
+      clientMap.get(ckey).ca+=v.ca;
+    });
+  });
+  // Résoudre noms
+  clientMap.forEach((v,k)=>{
+    v.name=sResolveName(v.aux,v.compte,'');
+  });
+  const top20=[...clientMap.values()].sort((a,b)=>b.ca-a.ca).slice(0,20);
+  const maxTop=top20.length?top20[0].ca:1;
+
+  let top20rows='';
+  top20.forEach((cl,i)=>{
+    const pct=(cl.ca/totalCA*100).toFixed(1);
+    const barW=Math.round(cl.ca/maxTop*100);
+    const curYear=Math.max(...[...new Set(qkeys.map(k=>qmap.get(k)?.year))]);
+    // évolution N-1 global pour ce client
+    const nxCells=Array.from({length:Math.min(depth,2)},(_,ni)=>{
+      const ny=curYear-(ni+1);
+      const nca=_sClientCAForPeriod(cl.compte,cl.aux,ny);
+      return `<td class="r m">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,cl.ca,true)}</td>`;
+    }).join('');
+    top20rows+=`<tr class="${i<3?'top3':''}">
+      <td><span class="${i===0?'srk r1':i===1?'srk r2':i===2?'srk r3':'srk rn'}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span></td>
+      <td style="font-size:9.5px;font-weight:700;color:var(--txt);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cl.name||cl.aux}</td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800">${SFM(cl.ca)}</td>
+      <td><div style="width:80px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${barW}%;background:linear-gradient(90deg,#16a34a,#38bdf8);border-radius:3px"></div></div></td>
+      <td class="r" style="color:var(--txt3)">${pct}%</td>
+      ${nxCells}
+    </tr>`;
+  });
+
+  // ── Render ──
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
+    <!-- Titre + contrôles -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:11px;font-weight:900;color:#7c3aed;letter-spacing:1px">🔢 ANALYSE QUINZAINE (Q1 = 1-15 / Q2 = 16-fin)</span>
+      <span style="font-size:9px;color:var(--txt4)">${SFN(qkeys.length)} quinzaines · ${SFM(totalCA)}</span>
+      <span style="font-size:9px;padding:2px 8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:8px;color:#7c3aed">Profondeur : N-${depth} ans</span>
+    </div>
+
+    <!-- Table principale quinzaines -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px;margin-bottom:6px">📅 ÉVOLUTION PAR QUINZAINE</div>
+      <div style="overflow-x:auto">
+        <table class="evol-ny-tbl">
+          <thead><tr>
+            <th style="text-align:left;min-width:160px">QUINZAINE</th>
+            <th class="r">CA (DA)</th>
+            <th class="r">OPS</th>
+            <th class="r">vs Q préc.</th>
+            ${Array.from({length:depth},(_,i)=>`<th class="r">N-${i+1} (DA)</th><th class="r">Évol N-${i+1}</th>`).join('')}
+            <th class="r">MOY. Q/AN</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr>
+            <td>TOTAL</td>
+            <td class="r">${SFM(totalCA)}</td>
+            <td class="r">${SFN(qkeys.reduce((s,k)=>s+(qmap.get(k)?.ops||0),0))}</td>
+            <td class="r">—</td>
+            ${Array.from({length:depth},()=>'<td class="r">—</td><td class="r">—</td>').join('')}
+            <td class="r">—</td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grille : Compagnies + Top 20 -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:16px">
+      <!-- Classement compagnies -->
+      <div>
+        <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px;margin-bottom:6px">✈️ COMPAGNIES / QUINZAINE</div>
+        <div style="overflow-x:auto">
+          <table class="evol-ny-tbl">
+            <thead><tr>
+              <th style="text-align:left">CIE</th>
+              <th class="r">CA</th>
+              <th class="r">PART</th>
+              <th class="r">N-1</th>
+              <th class="r">ÉVOL</th>
+            </tr></thead>
+            <tbody>${compRows}</tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Top 20 clients -->
+      <div>
+        <div style="font-size:10px;font-weight:800;color:#f59e0b;letter-spacing:.5px;margin-bottom:6px">🏆 TOP 20 CLIENTS — Toutes quinzaines</div>
+        <div style="overflow-x:auto">
+          <table class="evol-ny-tbl">
+            <thead><tr>
+              <th style="text-align:left">#</th>
+              <th style="text-align:left;min-width:120px">CLIENT</th>
+              <th class="r">CA</th>
+              <th style="min-width:80px"></th>
+              <th class="r">PART</th>
+              ${Array.from({length:Math.min(depth,2)},(_,i)=>`<th class="r">N-${i+1}</th><th class="r">Évol</th>`).join('')}
+            </tr></thead>
+            <tbody>${top20rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
 /* ── Agrège sRawFiltered → Map compte|aux → {total,ops,journals,folios} */
 function sAggFiltered(rows){
   const map=new Map();
@@ -19517,12 +20445,110 @@ function sCompare(c){
         </table>
       </div>
     </div>
+
+    <!-- Comparaison PAR COMPAGNIE (P1 vs P2) -->
+    <div style="margin-top:16px;background:var(--surface);border-radius:10px;border:1.5px solid var(--bo);overflow:hidden;">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--bo);background:linear-gradient(135deg,rgba(14,165,233,.05),rgba(59,130,246,.05));">
+        <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px;">✈️ Comparaison par Compagnie — CA</div>
+      </div>
+      <div style="max-height:280px;overflow-y:auto;">
+        <table class="stat-tbl">
+          <thead><tr><th>CIE</th><th class="r compare-col">CA P1</th><th class="r">CA P2 (Actuel)</th><th style="width:80px;text-align:center;" class="compare-col">ÉVOL.</th></tr></thead>
+          <tbody>${(()=>{
+            const p2Comp=sCompanyAggForPeriod({folios:STAT.periodMode==='folio'?STAT.folios:undefined,year:STAT.year,dateFrom:STAT.periodMode!=='folio'?STAT.dateFrom:undefined,dateTo:STAT.periodMode!=='folio'?STAT.dateTo:undefined});
+            const p1Comp=comparePeriod?sCompanyAggForPeriod(comparePeriod):[];
+            const p1Map=new Map(p1Comp.map(o=>[o.sym,o.total]));
+            const allSyms=new Set([...p2Comp.map(o=>o.sym),...p1Comp.map(o=>o.sym)]);
+            const merged=[...allSyms].map(sym=>({sym,p2:(p2Comp.find(o=>o.sym===sym)||{}).total||0,p1:p1Map.get(sym)||0})).sort((a,b)=>b.p2-a.p2);
+            return merged.map(o=>{
+              const evo=statCalcEvolution(o.p1,o.p2);
+              return `<tr><td><span class="sbdg" style="background:${SCOL[o.sym]||'#6b7280'};color:#fff">${o.sym||'—'}</span></td>
+                <td class="r compare-val">${SFM(o.p1)}</td>
+                <td class="r m" style="font-weight:700;color:var(--sky-deep)">${SFM(o.p2)}</td>
+                <td class="compare-evo">${statEvoHTML(evo)}</td></tr>`;
+            }).join('');
+          })()}</tbody>
+        </table>
+      </div>
+    </div>
   </div>`;
   
   c.innerHTML = h;
 }
 
 /* ── Filter data for a specific period ─────────────────────────────── */
+/* ── Comme sFilterForPeriod, mais agrégé PAR COMPAGNIE (pour le tableau
+   de comparaison P1/P2 par compagnie) plutôt que par client ── */
+function sCompanyAggForPeriod(period){
+  if(!period) return [];
+  let filterDateFrom = null, filterDateTo = null;
+  if(period.dateFrom && period.dateTo){
+    filterDateFrom = new Date(period.dateFrom);
+    filterDateTo = new Date(period.dateTo);
+    filterDateTo.setHours(23,59,59,999);
+  }
+  const map = new Map();
+  STAT.raw.forEach(r => {
+    if(STAT.type === '411' && !r.compte.startsWith('411')) return;
+    if(STAT.type === '18' && !r.compte.startsWith('18')) return;
+    const sym = SJMAP[r.journal] || (r.journal ? 'AUT' : null);
+    if(!sCompMatch(sym)) return;
+    if(STAT.ndc!=='all'){
+      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
+      if(STAT.ndc==='ndc'&&!isNDC) return;
+      if(STAT.ndc==='std'&&isNDC)  return;
+    }
+    if(STAT.redMode!=='all'){
+      const isRed=_isRedRow(r);
+      if(STAT.redMode==='excl'&&isRed)  return;
+      if(STAT.redMode==='only'&&!isRed) return;
+    }
+    if(period.folios !== undefined){
+      const year = period.year || STAT.year;
+      if(r.year && r.year !== year) return;
+      if(period.folios.size > 0 && !period.folios.has(r.folio)) return;
+    }
+    if(filterDateFrom && filterDateTo){
+      if(!r.date) return;
+      if(r.date < filterDateFrom || r.date > filterDateTo) return;
+    }
+    if(!map.has(sym)) map.set(sym, {sym, total:0, ops:0});
+    const o = map.get(sym);
+    o.total += r.debit;
+    o.ops++;
+  });
+  return [...map.values()].sort((a,b) => b.total - a.total);
+}
+
+/* ── Idem, côté COMMISSION (SUP COM) — même principe que comAnalyze()
+   mais pour une période de référence (P1) arbitraire, année ET mois.
+   Filtre STAT.comRaw directement (comme sCompanyAggForPeriod côté CA) plutôt
+   que de passer par comRawFiltered(), qui applique le mois GLOBALEMENT
+   sélectionné (STAT.folios) — ce qui casserait le mode "Mois précédent" où
+   la période de référence porte sur un mois différent de celui affiché. ── */
+function sComCompanyAggForPeriod(period){
+  if(!period) return [];
+  const targetYear = period.year || STAT.year;
+  let filterDateFrom=null, filterDateTo=null;
+  if(period.dateFrom && period.dateTo){
+    filterDateFrom=new Date(period.dateFrom); filterDateTo=new Date(period.dateTo);
+    filterDateTo.setHours(23,59,59,999);
+  }
+  const map = new Map();
+  (STAT.comRaw||[]).forEach(r=>{
+    if(!sCompMatch(r.sym)) return;
+    if(period.folios !== undefined){
+      if(r.year && r.year !== targetYear) return;
+      if(period.folios.size > 0 && r.month && !period.folios.has(r.month)) return;
+    } else if(filterDateFrom && filterDateTo){
+      if(!r.date || r.date < filterDateFrom || r.date > filterDateTo) return;
+    }
+    if(!map.has(r.sym)) map.set(r.sym,{sym:r.sym,total:0,ops:0});
+    const o=map.get(r.sym); o.total+=r.credit; o.ops++;
+  });
+  return [...map.values()].sort((a,b)=>b.total-a.total);
+}
+
 function sFilterForPeriod(period){
   if(!period) return [];
   
@@ -24293,6 +25319,35 @@ function fluxCreateEcriture() {
             🔍 Critère : LIBELLE ou RÉFÉRENCE contient <strong>RED</strong> (insensible casse) — <strong>aucun seuil de montant</strong>, toute valeur (positive, négative, faible ou très élevée) est concernée.
           </div>
         </div>
+        <!-- QUINZAINE -->
+        <div style="margin-top:8px">
+          <div class="stat-sect-title">🔢 QUINZAINE</div>
+          <div class="stat-qnz-grp">
+            <button class="stat-qnz-btn on" data-qnz="all" onclick="sSetQuinzaine('all',this)" title="Toutes les dates">TOUT</button>
+            <button class="stat-qnz-btn" data-qnz="1"   onclick="sSetQuinzaine('1',this)"   title="Jours 1 à 15">Q1 (1-15)</button>
+            <button class="stat-qnz-btn" data-qnz="2"   onclick="sSetQuinzaine('2',this)"   title="Jours 16 à fin">Q2 (16-fin)</button>
+          </div>
+          <div style="font-size:9px;color:var(--txt4);margin-top:4px;line-height:1.4;padding:3px 6px;background:var(--bg2);border-radius:4px;">
+            🔍 Filtre sur le jour de la colonne DATE.<br>Q1 = jours 1-15 · Q2 = jours 16-fin.<br>Nécessite que la colonne DATE soit renseignée.
+          </div>
+        </div>
+        <!-- PROFONDEUR ÉVOLUTION N-x -->
+        <div style="margin-top:8px">
+          <div class="stat-sect-title">📐 PROFONDEUR ÉVOLUTION</div>
+          <div class="stat-depth-row">
+            <span class="stat-depth-lbl">Années N-x à afficher :</span>
+            <select class="stat-depth-sel" onchange="sSetEvolDepth(this.value)" id="stat-depth-sel">
+              <option value="1">N-1 seulement</option>
+              <option value="2">N-1 et N-2</option>
+              <option value="3" selected>N-1 à N-3</option>
+              <option value="4">N-1 à N-4</option>
+              <option value="5">N-1 à N-5</option>
+            </select>
+          </div>
+          <div style="font-size:9px;color:var(--txt4);margin-top:4px;line-height:1.4;padding:3px 6px;background:var(--bg2);border-radius:4px;">
+            Appliqué aux vues : Par Folio, Évolution,<br>Compagnies, Top Vendeurs, Quinzaine, SUP COM.
+          </div>
+        </div>
       </div>
 
       <!-- Analyser -->
@@ -24348,6 +25403,7 @@ function fluxCreateEcriture() {
         <button class="stat-vtab"    data-view="comp"    onclick="statSetView('comp')">✈️ Compagnies</button>
         <button class="stat-vtab"    data-view="commission" onclick="statSetView('commission')" title="1 clic = vue commission · 2ème clic = désactiver mode commission">💼 Commissions</button>
         <button class="stat-vtab"    data-view="tl"      onclick="statSetView('tl')">📅 Par Folio</button>
+        <button class="stat-vtab"    data-view="quinz"   onclick="statSetView('quinz')">🔢 Quinzaine</button>
         <button class="stat-vtab"    data-view="evol"    onclick="statSetView('evol')">📈 Évolution</button>
         <button class="stat-vtab"    data-view="clievol" onclick="statSetView('clievol')">👤 Évol. Client</button>
         <button class="stat-vtab"    data-view="heat"    onclick="statSetView('heat')">🔥 Heatmap</button>
@@ -24596,17 +25652,13 @@ function fluxCreateEcriture() {
       importIATAClients({files:[file]});
       await ghWaitTick();
     } else if(f.name==='JBR.xlsx'){
-      // importClients() demande normalement le type (411/165/181) via prompt() ;
-      // le fichier JBR.xlsx contient des codes 1650xxx (comptes 165 = Caution)
-      // donc on répond automatiquement "165" à sa place pour un chargement silencieux.
-      // ⚠️ Le prompt() n'est en réalité appelé que dans le callback ASYNCHRONE du
-      // FileReader (après lecture) : on ne restaure prompt() qu'après avoir attendu
-      // que ce traitement soit terminé, sinon la vraie boîte de dialogue reprend le
-      // dessus et l'import échoue silencieusement.
+      // Le fichier JBR.xlsx a 3 colonnes CODE / AUXILIAIRE / LIBELLE, avec les
+      // deux types (411 et 165) mélangés dans le même fichier. processImportRows()
+      // détecte maintenant le type ligne par ligne depuis la colonne AUXILIAIRE
+      // (préfixe 411/165/18) — plus besoin de forcer une réponse au prompt().
       if(typeof importClients!=='function') throw new Error('importClients indisponible');
-      const _origPrompt=window.prompt;
-      window.prompt=()=>'165';
-      try{ importClients({files:[file]}); await ghWaitTick(); } finally { window.prompt=_origPrompt; }
+      importClients({files:[file]});
+      await ghWaitTick();
     } else if(f.name==='STAT.xlsx'){
       if(typeof sLoad!=='function') throw new Error('sLoad indisponible');
       sLoad(file);
@@ -24621,16 +25673,20 @@ function fluxCreateEcriture() {
     const lbl=document.getElementById('gh-autoload-lbl');
     if(dot) dot.style.background='#f59e0b';
     if(lbl) lbl.textContent='Chargement…';
-    // Pendant le chargement silencieux automatique, on évite les alert()
-    // internes des fonctions d'import pour ne pas bloquer l'ouverture de page.
+    // Pendant le chargement silencieux automatique, on supprime alert() ET prompt()
+    // pour ne pas bloquer l'ouverture de page.
+    // IMPORTANT : prompt() supprimé → processImportRows() retourne null pour
+    // les types non reconnus → les lignes sont skippées plutôt que forcées en 411.
+    // La détection par préfixe (411/1650/18) fonctionne sans prompt pour JBR.xlsx.
     const _origAlert=window.alert;
-    if(silent) window.alert=function(){};
+    const _origPrompt=window.prompt;
+    if(silent){ window.alert=function(){}; window.prompt=function(){return null;}; }
     const results=[];
     for(const f of GH_FILES){
       try{ await ghLoadOne(f); results.push({...f,ok:true}); }
       catch(e){ console.warn('[GitHub AutoLoad] échec '+f.name+' :',e.message); results.push({...f,ok:false,err:e.message}); }
     }
-    if(silent) window.alert=_origAlert;
+    if(silent){ window.alert=_origAlert; window.prompt=_origPrompt; }
     const ok=results.filter(r=>r.ok).length;
     if(dot) dot.style.background=ok===results.length?'#059669':ok>0?'#f59e0b':'#dc2626';
     if(lbl) lbl.textContent=`Bases GitHub (${ok}/${results.length})`;
