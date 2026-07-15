@@ -2202,6 +2202,25 @@ html.dark-mode .stat-tbl tbody tr.top3{background:linear-gradient(90deg,rgba(212
 /* ── Quinzaine tab ── */
 .stat-vtab[data-view="quinz"]    { border-color:rgba(139,92,246,.35);color:#7c3aed; }
 .stat-vtab[data-view="quinz"].on { background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-color:transparent;color:#fff; }
+.stat-vtab[data-view="mv"]    { border-color:rgba(225,29,72,.35);color:#e11d48; }
+.stat-vtab[data-view="mv"].on { background:linear-gradient(135deg,#fb7185,#e11d48);border-color:transparent;color:#fff; }
+.stat-mv-comp-btn{padding:3px 9px;border:1.5px solid var(--bo);border-radius:6px;font-size:9px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--txt3);transition:.15s;}
+.stat-mv-comp-btn:hover:not(.on){border-color:#e11d48;color:#e11d48;background:rgba(225,29,72,.06);}
+.stat-mv-comp-btn.on{background:#e11d48;border-color:#e11d48;color:#fff;}
+.stat-mv-tbl{width:100%;border-collapse:collapse;font-size:10.5px;}
+.stat-mv-tbl th{text-align:left;padding:6px 8px;font-size:8.5px;font-weight:800;color:var(--txt4);letter-spacing:.5px;border-bottom:1.5px solid var(--bo);white-space:nowrap;}
+.stat-mv-tbl td{padding:6px 8px;border-bottom:1px solid var(--bo);vertical-align:middle;}
+.stat-mv-tbl tr:hover td{background:var(--sky-pale);}
+.stat-mv-tbl th.r,.stat-mv-tbl td.r{text-align:right;}
+.stat-mv-tbl td.m{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+.stat-mv-tbl tr.mv-top1 td{background:linear-gradient(90deg,rgba(245,158,11,.12),transparent);}
+.stat-mv-tbl tr.mv-top2 td{background:linear-gradient(90deg,rgba(192,192,192,.14),transparent);}
+.stat-mv-tbl tr.mv-top3 td{background:linear-gradient(90deg,rgba(205,127,50,.12),transparent);}
+.mv-rank-badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:6px;font-weight:900;font-size:10px;background:var(--bg3);color:var(--txt3);}
+.mv-taux{display:inline-block;padding:1px 6px;border-radius:5px;font-size:9px;font-weight:800;}
+.mv-taux.up{background:rgba(22,163,74,.12);color:#16a34a;}
+.mv-taux.dn{background:rgba(220,38,38,.12);color:#dc2626;}
+.mv-taux.na{background:var(--bg3);color:var(--txt4);}
 /* ── Quinzaine filter buttons in sidebar ── */
 .stat-qnz-grp{display:flex;gap:3px;margin-top:5px;}
 .stat-qnz-btn{flex:1;padding:5px 4px;border:1.5px solid rgba(139,92,246,.3);border-radius:5px;font-size:9px;font-weight:800;cursor:pointer;background:var(--surface);color:#7c3aed;transition:.15s;text-align:center;}
@@ -16221,7 +16240,13 @@ const STAT={
   topMode: 'global',     // 'global'|'annuel'|'mensuel'|'quinzaine' — mode de la vue Top Vendeurs
   topYear: null,         // année sélectionnée en mode annuel/mensuel/quinzaine
   topMonth: null,        // mois sélectionné en mode mensuel/quinzaine (1-12)
-  topQ: 1                // quinzaine sélectionnée en mode quinzaine (1 ou 2)
+  topQ: 1,                // quinzaine sélectionnée en mode quinzaine (1 ou 2)
+  // ══ NOUVEAU : Vue MEILLEURS VENDEURS (basée sur filtres quinzaine/mois courants) ══
+  mvComp: 'ALL',          // filtre compagnie local à la vue (indépendant du chip global)
+  mvLimit: 10,            // nombre de lignes affichées (TOP 10 par défaut, extensible)
+  mvYear: null,           // année sélectionnée dans la vue (null = année la plus récente)
+  mvMonth: null,          // mois sélectionné dans la vue (null = mois calendaire courant)
+  mvQ: 1                  // quinzaine sélectionnée dans la vue (1 ou 2)
 };
 
 /* ── Formateur ─────────────────────────────────────────────────────── */
@@ -17779,6 +17804,7 @@ function statSetView(v){
   else if(v==='segment') sSegment(c);
   else if(v==='insights') sInsights(c);
   else if(v==='quinz')   sQuinzaine(c);
+  else if(v==='mv')      sMeilleursVendeurs(c);
 }
 /* ── Vue Quinzaine en mode COMMISSION ── */
 function sQuinzaineCommission(c){
@@ -19008,13 +19034,14 @@ function _sTopAgg(year,month,quinzaine){
   rows.forEach(r=>{
     const aux=r.aux||r.compte;
     const key=r.compte+'|'+aux;
-    if(!map.has(key)) map.set(key,{compte:r.compte,aux,total:0,ops:0,journals:new Set()});
+    if(!map.has(key)) map.set(key,{compte:r.compte,aux,libFichier:r.libelle,total:0,ops:0,journals:new Set()});
     const o=map.get(key);
     o.total+=r.debit; o.ops++;
     const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
     if(sym) o.journals.add(sym);
+    if(r.libelle&&r.libelle.length>(o.libFichier||'').length) o.libFichier=r.libelle;
   });
-  return [...map.values()].map(o=>({...o,name:sResolveName(o.aux,o.compte,'')}))
+  return [...map.values()].map(o=>({...o,name:sResolveName(o.aux,o.compte,o.libFichier)}))
     .sort((a,b)=>b.total-a.total);
 }
 
@@ -19226,6 +19253,230 @@ function sTopVendeurs(c){
         <tbody>${restRows}</tbody>
       </table>
     </div>`:''}</div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   VUE MEILLEURS VENDEURS — Classement sur une période EXPLICITE choisie
+   dans la vue (Année / Mois / Quinzaine), indépendante des filtres du
+   panneau latéral. Affiche en plus :
+     • l'évolution vs la quinzaine précédente
+     • l'évolution vs N-1, N-2… N-x (même mois + même quinzaine, années
+       antérieures), profondeur réglable
+     • la moyenne de CA par quinzaine active de l'année sélectionnée
+     • le taux de réalisation de la période courante vs cette moyenne
+══════════════════════════════════════════════════════════════════════ */
+function sSetMVComp(sym){
+  STAT.mvComp=sym;
+  sMeilleursVendeurs(document.getElementById('stat-content'));
+}
+function sSetMVLimit(n){
+  STAT.mvLimit=n;
+  sMeilleursVendeurs(document.getElementById('stat-content'));
+}
+function sSetMVPeriod(field,val){
+  if(field==='year')  STAT.mvYear=+val;
+  if(field==='month') STAT.mvMonth=+val;
+  if(field==='q')     STAT.mvQ=+val;
+  sMeilleursVendeurs(document.getElementById('stat-content'));
+}
+function sSetMVDepth(v){
+  STAT.evolDepth=+v||3;
+  sMeilleursVendeurs(document.getElementById('stat-content'));
+}
+
+/* ── Agrégation par client pour une période EXPLICITE (année, mois, Q),
+     avec filtre compagnie local optionnel, indépendant du chip global ── */
+function _mvAgg(year,month,quinzaine,compFilter){
+  let rows=_sRawForPeriod(year,month,quinzaine);
+  if(compFilter&&compFilter!=='ALL'){
+    rows=rows.filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===compFilter);
+  }
+  const map=new Map();
+  rows.forEach(r=>{
+    const aux=r.aux||r.compte;
+    const key=r.compte+'|'+aux;
+    if(!map.has(key)) map.set(key,{compte:r.compte,aux,libFichier:r.libelle,total:0,ops:0,comps:new Set()});
+    const o=map.get(key);
+    o.total+=r.debit; o.ops++;
+    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    if(sym) o.comps.add(sym);
+    if(r.libelle&&r.libelle.length>(o.libFichier||'').length) o.libFichier=r.libelle;
+  });
+  return [...map.values()].map(o=>({...o,name:sResolveName(o.aux,o.compte,o.libFichier)}))
+    .sort((a,b)=>b.total-a.total);
+}
+/* ── CA d'un client précis pour une période explicite, avec filtre
+     compagnie local (utilisé pour vs PRÉC. et N-1…N-x) ── */
+function _mvClientCA(compte,aux,year,month,quinzaine,compFilter){
+  return _sRawForPeriod(year,month,quinzaine).filter(r=>{
+    if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return false;
+    if(compFilter&&compFilter!=='ALL'){
+      const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+      if(sym!==compFilter) return false;
+    }
+    return true;
+  }).reduce((s,r)=>s+r.debit,0);
+}
+
+function sMeilleursVendeurs(c){
+  if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏅</div><div class="msg">Aucune donnée</div></div>`;return;}
+
+  const availYears=(STAT.availableYears&&STAT.availableYears.length)?STAT.availableYears:[STAT.year||new Date().getFullYear()];
+  const year =STAT.mvYear ||availYears[0];
+  const month=STAT.mvMonth||(new Date().getMonth()+1);
+  const q    =STAT.mvQ    ||1;
+  const depth=STAT.evolDepth||3;
+  const mvComp=STAT.mvComp||'ALL';
+
+  // ── 1) Classement pour la sélection Année/Mois/Quinzaine ──
+  const all=_mvAgg(year,month,q,mvComp);
+
+  if(!all.length){
+    c.innerHTML=`<div class="stat-empty"><div class="big">🏅</div><div class="msg">Aucun client sur cette sélection</div><div class="sub">${SMOIS[month-1]} ${year} · Q${q} — ajustez Année / Mois / Quinzaine / Compagnie</div></div>`;
+    return;
+  }
+
+  const totCA=all.reduce((s,r)=>s+r.total,0);
+  const limit=STAT.mvLimit||10;
+  const shown=all.slice(0,limit);
+  const shownKeys=new Set(shown.map(r=>r.compte+'|'+r.aux));
+
+  // ── 2) Moyenne de CA par quinzaine ACTIVE, sur l'ANNÉE sélectionnée ──
+  const bucketMap=new Map(); // clientKey -> Map(mois-Q -> somme)
+  STAT.raw.forEach(r=>{
+    if(!_sBaseFilter(r)) return;
+    if(r.year!==year) return;
+    if(mvComp!=='ALL'){
+      const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+      if(sym!==mvComp) return;
+    }
+    if(!r.date) return;
+    const aux=r.aux||r.compte;
+    const ck=r.compte+'|'+aux;
+    if(!shownKeys.has(ck)) return;
+    const qq=_dateQ(r.date);
+    const bKey=String(r.month||0).padStart(2,'0')+'-Q'+qq;
+    if(!bucketMap.has(ck)) bucketMap.set(ck,new Map());
+    const bm=bucketMap.get(ck);
+    bm.set(bKey,(bm.get(bKey)||0)+r.debit);
+  });
+  const avgMap=new Map();
+  bucketMap.forEach((bm,ck)=>{
+    const vals=[...bm.values()];
+    const sum=vals.reduce((s,v)=>s+v,0);
+    avgMap.set(ck, vals.length?sum/vals.length:0);
+  });
+
+  // ── 3) Quinzaine précédente (pour vs PRÉC.) ──
+  const pq=_prevQ(year,month,q);
+
+  // ── 4) Boutons compagnie (dérivés des données présentes) ──
+  const compSet=new Set();
+  STAT.raw.forEach(r=>{const s=SJMAP[r.journal]||(r.journal?'AUT':null);if(s) compSet.add(s);});
+  const compBtns=`<span class="stat-mv-comp-btn${mvComp==='ALL'?' on':''}" onclick="sSetMVComp('ALL')">Toutes compagnies</span>`+
+    [...compSet].sort().map(s=>`<span class="stat-mv-comp-btn${mvComp===s?' on':''}" onclick="sSetMVComp('${s}')">${s}</span>`).join('');
+
+  // ── 5) Sélecteurs Année / Mois / Quinzaine / Profondeur ──
+  const yearOpts=availYears.map(y=>`<option value="${y}"${y===year?' selected':''}>${y}</option>`).join('');
+  const monthOpts=[...Array(12)].map((_,i)=>`<option value="${i+1}"${(i+1)===month?' selected':''}>${SMOIS[i]}</option>`).join('');
+  const qOpts=[1,2].map(qq=>`<option value="${qq}"${qq===q?' selected':''}>Q${qq} (${qq===1?'1-15':'16-fin'})</option>`).join('');
+  const depthOpts=[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>N-${n}</option>`).join('');
+
+  const medals=['🥇','🥈','🥉'];
+  const nxTh=Array.from({length:depth},(_,i)=>`<th class="r" style="font-size:7.5px">N-${i+1}</th>`).join('');
+
+  let bodyRows='';
+  shown.forEach((r,i)=>{
+    const ck=r.compte+'|'+r.aux;
+    const avgQ=avgMap.get(ck)||0;
+    const taux=avgQ>0?(r.total/avgQ*100):null;
+    const tauxHTML=taux===null?'<span class="mv-taux na">—</span>'
+      :`<span class="mv-taux ${taux>=100?'up':'dn'}">${taux>=100?'▲':'▼'} ${taux.toFixed(0)}%</span>`;
+    const rankHTML=i<3?`<span style="font-size:16px">${medals[i]}</span>`:`<span class="mv-rank-badge">${i+1}</span>`;
+    const compsHTML=[...r.comps].sort().map(s=>
+      `<span style="background:${SCOL[s]||'#6b7280'};color:#fff;border-radius:4px;padding:1px 5px;font-size:8.5px;font-weight:700;margin-right:2px;display:inline-block;margin-bottom:2px">${s}</span>`
+    ).join('');
+    const prevCA=_mvClientCA(r.compte,r.aux,pq.year,pq.month,pq.q,mvComp);
+    const evoPrec=_evoBadge(prevCA,r.total,true);
+    const nxCells=Array.from({length:depth},(_,ni)=>{
+      const nca=_mvClientCA(r.compte,r.aux,year-(ni+1),month,q,mvComp);
+      return `<td class="r" style="font-size:8.5px">${nca>0?`<div style="color:var(--txt3)">${SFM(nca)}</div>${_evoBadge(nca,r.total,true)}`:'—'}</td>`;
+    }).join('');
+    const rowCls=i===0?'mv-top1':i===1?'mv-top2':i===2?'mv-top3':'';
+    bodyRows+=`<tr class="${rowCls}">
+      <td>${rankHTML}</td>
+      <td style="font-weight:700;color:var(--txt);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.name}">${r.name}</td>
+      <td style="color:var(--txt3);font-size:9.5px">${r.aux||r.compte}</td>
+      <td class="r m" style="color:var(--sky-deep);font-weight:800">${SFM(r.total)}</td>
+      <td>${compsHTML}</td>
+      <td class="r">${evoPrec}</td>
+      ${nxCells}
+      <td class="r m" style="color:var(--txt3);font-size:9.5px">${avgQ>0?SFM(avgQ):'—'}</td>
+      <td class="r">${tauxHTML}</td>
+    </tr>`;
+  });
+
+  const moreCount=all.length-shown.length;
+  const limitBtns=[10,25,50].map(n=>
+    `<button class="stat-topmode-btn${limit===n?' on':''}" onclick="sSetMVLimit(${n})">TOP ${n}</button>`
+  ).join('')+`<button class="stat-topmode-btn${limit>=all.length?' on':''}" onclick="sSetMVLimit(${all.length})">Tout (${SFN(all.length)})</button>`;
+
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <span style="font-size:11px;font-weight:900;color:#e11d48;letter-spacing:.5px">🏅 MEILLEURS VENDEURS</span>
+      <span style="font-size:9px;color:var(--txt4)">${SMOIS[month-1]} ${year} · Q${q} (${q===1?'1-15':'16-fin'})</span>
+    </div>
+    <!-- Sélecteurs période -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+      <span style="font-size:9px;color:var(--txt4)">Année :</span>
+      <select class="stat-depth-sel" onchange="sSetMVPeriod('year',this.value)">${yearOpts}</select>
+      <span style="font-size:9px;color:var(--txt4)">Mois :</span>
+      <select class="stat-depth-sel" onchange="sSetMVPeriod('month',this.value)">${monthOpts}</select>
+      <span style="font-size:9px;color:var(--txt4)">Quinzaine :</span>
+      <select class="stat-depth-sel" onchange="sSetMVPeriod('q',this.value)">${qOpts}</select>
+      <span style="font-size:9px;color:var(--txt4)">Profondeur évolution :</span>
+      <select class="stat-depth-sel" onchange="sSetMVDepth(this.value)">${depthOpts}</select>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${compBtns}</div>
+    <!-- KPIs -->
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:1px solid #fda4af;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#9f1239;font-weight:700">CA · ${SMOIS[month-1]} ${year} · Q${q}</div>
+        <div style="font-size:12px;font-weight:900;color:#be123c">${SFM(totCA)}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#1e40af;font-weight:700">CLIENTS ACTIFS</div>
+        <div style="font-size:12px;font-weight:900;color:#1d4ed8">${SFN(all.length)}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#166534;font-weight:700">AFFICHÉS</div>
+        <div style="font-size:12px;font-weight:900;color:#15803d">${SFN(shown.length)}${moreCount>0?` <span style="font-size:9px;font-weight:700;color:#16a34a">(+${SFN(moreCount)} restants)</span>`:''}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border:1px solid #fdba74;border-radius:8px;padding:6px 10px">
+        <div style="font-size:9px;color:#9a3412;font-weight:700">MOYENNE ANNÉE ${year}</div>
+        <div style="font-size:12px;font-weight:900;color:#c2410c">/ client · par quinzaine active</div>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="stat-mv-tbl">
+        <thead><tr>
+          <th>RANG</th>
+          <th>CLIENT</th>
+          <th>CODE AUX.</th>
+          <th class="r">MONTANT</th>
+          <th>COMPAGNIE(S)</th>
+          <th class="r">vs PRÉC.</th>
+          ${nxTh}
+          <th class="r">MOY. / QZ (${year})</th>
+          <th class="r">TAUX RÉALIS.</th>
+        </tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px">
+      <span style="font-size:9px;color:var(--txt4)">Afficher :</span>${limitBtns}
+    </div>
+  </div>`;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -19556,8 +19807,10 @@ function sQuinzaine(c){
     const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
     o.byComp.set(sym,(o.byComp.get(sym)||0)+r.debit);
     const ckey=r.compte+'|'+(r.aux||r.compte);
-    if(!o.byClient.has(ckey)) o.byClient.set(ckey,{compte:r.compte,aux:r.aux||r.compte,ca:0,name:''});
-    o.byClient.get(ckey).ca+=r.debit;
+    if(!o.byClient.has(ckey)) o.byClient.set(ckey,{compte:r.compte,aux:r.aux||r.compte,ca:0,name:'',libFichier:r.libelle});
+    const co=o.byClient.get(ckey);
+    co.ca+=r.debit;
+    if(r.libelle&&r.libelle.length>(co.libFichier||'').length) co.libFichier=r.libelle;
   });
   if(!qmap.size){
     c.innerHTML=`<div class="stat-empty"><div class="big">🔢</div><div class="msg">Aucune donnée avec DATE renseignée</div><div class="sub">La vue Quinzaine nécessite la colonne DATE dans le fichier GL</div></div>`;
@@ -19642,13 +19895,15 @@ function sQuinzaine(c){
   const clientMap=new Map();
   qmap.forEach(d=>{
     d.byClient.forEach((v,ckey)=>{
-      if(!clientMap.has(ckey)) clientMap.set(ckey,{...v,ca:0});
-      clientMap.get(ckey).ca+=v.ca;
+      if(!clientMap.has(ckey)) clientMap.set(ckey,{...v,ca:0,libFichier:v.libFichier});
+      const cm=clientMap.get(ckey);
+      cm.ca+=v.ca;
+      if(v.libFichier&&v.libFichier.length>(cm.libFichier||'').length) cm.libFichier=v.libFichier;
     });
   });
   // Résoudre noms
   clientMap.forEach((v,k)=>{
-    v.name=sResolveName(v.aux,v.compte,'');
+    v.name=sResolveName(v.aux,v.compte,v.libFichier);
   });
   const top20=[...clientMap.values()].sort((a,b)=>b.ca-a.ca).slice(0,20);
   const maxTop=top20.length?top20[0].ca:1;
@@ -19754,16 +20009,17 @@ function sAggFiltered(rows){
   rows.forEach(r=>{
     const aux=r.aux||r.compte;
     const key=r.compte+'|'+aux;
-    if(!map.has(key)) map.set(key,{compte:r.compte,aux,total:0,ops:0,journals:new Set(),folios:new Set(),name:''});
+    if(!map.has(key)) map.set(key,{compte:r.compte,aux,total:0,ops:0,journals:new Set(),folios:new Set(),name:'',libFichier:r.libelle});
     const o=map.get(key);
     o.total+=r.debit; o.ops++;
     o.journals.add(SJMAP[r.journal]||(r.journal||'AUT'));
     if(r.folio>=1&&r.folio<=12) o.folios.add(r.folio);
+    if(r.libelle&&r.libelle.length>(o.libFichier||'').length) o.libFichier=r.libelle;
   });
   _sBuildIdx();
   map.forEach((o,k)=>{
     const [cpt,aux]=k.split('|');
-    o.name=sResolveName(aux,cpt,'');
+    o.name=sResolveName(aux,cpt,o.libFichier);
   });
   return map;
 }
@@ -21617,12 +21873,13 @@ const _reportSectionDefs=[
   {k:'segment',   icon:'🎯', label:'8. Segmentation RFM',              sub:'Champions · Réguliers · En déclin · Marginaux'},
   {k:'insights',  icon:'💡', label:'9. Insights & recommandations',    sub:'Risques identifiés + plan d\'action priorisé'},
   {k:'annexe',    icon:'📋', label:'11. Annexe — Liste complète',      sub:'Tous les clients du portefeuille, classés par CA'},
+  {k:'mv',        icon:'🏅', label:'12. Meilleurs Vendeurs — période sélectionnée', sub:'Classement sur l\'Année/Mois/Quinzaine choisis dans la vue « Meilleurs Vendeurs » + moyenne/quinzaine + taux de réalisation'},
 ];
 function sOpenReportSectionModal(){
   if(!STAT.agg.length){alert('Aucune donnée analysée. Lancez une analyse d\'abord.');return;}
   const hasCom=!!(STAT.comAgg&&STAT.comAgg.length);
   const sel=Object.assign({rank:true,evol:true,stats:true,pareto:true,comp:true,
-    commission:hasCom,heat:true,segment:true,insights:true,annexe:true},STAT.reportSections||{});
+    commission:hasCom,heat:true,segment:true,insights:true,annexe:true,mv:true},STAT.reportSections||{});
   if(!hasCom) sel.commission=false; // pas de données SUP COM → forcément décoché
   STAT.reportSections=sel;
   const list=document.getElementById('stat-rsm-list');
@@ -21674,7 +21931,7 @@ async function exportRapportWord(){
   // Si aucune sélection n'a été faite (appel direct), on inclut tout par défaut.
   const SECT=Object.assign({
     rank:true, evol:true, stats:true, pareto:true, comp:true,
-    commission:true, heat:true, segment:true, insights:true, annexe:true
+    commission:true, heat:true, segment:true, insights:true, annexe:true, mv:true
   },STAT.reportSections||{});
   // La section Commission n'a de sens que si des données SUP COM ont été importées
   SECT.commission = SECT.commission && !!(STAT.comAgg && STAT.comAgg.length);
@@ -23330,6 +23587,97 @@ ${rows.join('')}</w:tbl>`;
     bodyParts.push(tableWrap(annexRows,9020));
     bodyParts.push(pageBreak());
     } // fin if(SECT.annexe)
+
+    // ════════════════════════════════════════════
+    // SECTION 12 : MEILLEURS VENDEURS — SÉLECTION PÉRIODE (vue dédiée)
+    // Reprend EXACTEMENT l'Année / Mois / Quinzaine / Compagnie choisis
+    // dans la vue « Meilleurs Vendeurs » du module STAT (STAT.mvYear,
+    // STAT.mvMonth, STAT.mvQ, STAT.mvComp) — indépendante des filtres
+    // globaux utilisés par le reste du rapport (STAT.agg).
+    // ════════════════════════════════════════════
+    if(SECT.mv){
+    const availYearsMV=(STAT.availableYears&&STAT.availableYears.length)?STAT.availableYears:[STAT.year||new Date().getFullYear()];
+    const mvYear=STAT.mvYear||availYearsMV[0];
+    const mvMonth=STAT.mvMonth||(new Date().getMonth()+1);
+    const mvQ=STAT.mvQ||1;
+    const mvComp=STAT.mvComp||'ALL';
+    const mvAll=_mvAgg(mvYear,mvMonth,mvQ,mvComp);
+    const mvMoisLbl=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][mvMonth-1];
+
+    bodyParts.push(heading('12. MEILLEURS VENDEURS — SÉLECTION PÉRIODE',1));
+    bodyParts.push(separator());
+    const mvCompLbl=mvComp==='ALL'?'Toutes compagnies':mvComp;
+    bodyParts.push(para(`Cette section reprend la sélection exacte réalisée dans la vue « Meilleurs Vendeurs » du module STAT : ${mvMoisLbl} ${mvYear}, Quinzaine ${mvQ} (${mvQ===1?'1-15':'16-fin'}), filtre compagnie : ${mvCompLbl}. Le classement ci-dessous trie les clients par montant décroissant sur cette période précise, avec la moyenne de CA par quinzaine active de l'année ${mvYear} et le taux de réalisation associé.`,0,'374151'));
+
+    if(!mvAll.length){
+      bodyParts.push(para('Aucun client n\'a généré de chiffre d\'affaires sur cette sélection.',0,'6b7280',false,18));
+    }else{
+      const mvTot=mvAll.reduce((s,r)=>s+r.total,0);
+      const mvShown=mvAll.slice(0,15);
+      const mvShownKeys=new Set(mvShown.map(r=>r.compte+'|'+r.aux));
+
+      // Moyenne de CA par quinzaine active, sur l'année mvYear (même logique que la vue écran)
+      const bucketMapR=new Map();
+      STAT.raw.forEach(r=>{
+        if(!_sBaseFilter(r)) return;
+        if(r.year!==mvYear) return;
+        if(mvComp!=='ALL'){
+          const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+          if(sym!==mvComp) return;
+        }
+        if(!r.date) return;
+        const aux=r.aux||r.compte;
+        const ck=r.compte+'|'+aux;
+        if(!mvShownKeys.has(ck)) return;
+        const qq=_dateQ(r.date);
+        const bKey=String(r.month||0).padStart(2,'0')+'-Q'+qq;
+        if(!bucketMapR.has(ck)) bucketMapR.set(ck,new Map());
+        const bm=bucketMapR.get(ck);
+        bm.set(bKey,(bm.get(bKey)||0)+r.debit);
+      });
+      const avgMapR=new Map();
+      bucketMapR.forEach((bm,ck)=>{
+        const vals2=[...bm.values()];
+        const sum2=vals2.reduce((s,v)=>s+v,0);
+        avgMapR.set(ck, vals2.length?sum2/vals2.length:0);
+      });
+
+      bodyParts.push(para(`CA total de la sélection : ${fmtDAFull(mvTot)} · ${mvAll.length} clients actifs.`,0,'1e40af',true,20));
+
+      const mvHdr=tableRow(
+        tc('#','be123c',true,'ffffff',400,16,'center'),
+        tc('CLIENT','be123c',true,'ffffff',2600,16,'left'),
+        tc('CODE AUX.','be123c',true,'ffffff',1000,15,'center'),
+        tc('CIE(S)','be123c',true,'ffffff',800,15,'center'),
+        tc('MONTANT (DA)','be123c',true,'ffffff',1800,16,'right'),
+        tc('MOY./QZ '+mvYear,'be123c',true,'ffffff',1200,15,'right'),
+        tc('TAUX RÉAL.','be123c',true,'ffffff',1220,16,'center')
+      );
+      const mvRows=[mvHdr];
+      mvShown.forEach((r,i)=>{
+        const ck=r.compte+'|'+r.aux;
+        const avgQ=avgMapR.get(ck)||0;
+        const taux=avgQ>0?(r.total/avgQ*100):null;
+        const tauxTxt=taux===null?'—':(taux>=100?'▲ ':'▼ ')+taux.toFixed(0)+'%';
+        const tauxCol=taux===null?'6b7280':(taux>=100?'059669':'dc2626');
+        const bg=i%2===0?'ffffff':'fff1f2';
+        const hdBg=i<3?'fef3c7':bg;
+        const jrnls=[...r.comps].slice(0,3).join(', ');
+        mvRows.push(tableRow(
+          tc(String(i+1),hdBg,true,i===0?'dc2626':i===1?'d97706':i===2?'059669':'374151',400,17,'center'),
+          tc(r.name,hdBg,i<3,i<3?'111827':'374151',2600,16),
+          tc(r.aux||r.compte,hdBg,false,'6b7280',1000,14,'center'),
+          tc(jrnls,hdBg,false,'6b7280',800,14,'center'),
+          tc(fmtDAFull(r.total),hdBg,true,'be123c',1800,16,'right'),
+          tc(avgQ>0?fmtDAFull(avgQ):'—',hdBg,false,'6b7280',1200,14,'right'),
+          tc(tauxTxt,hdBg,true,tauxCol,1220,15,'center')
+        ));
+      });
+      bodyParts.push(tableWrap(mvRows,9020));
+      bodyParts.push(para('Taux de réalisation = Montant de la sélection ÷ Moyenne de CA par quinzaine active du client sur l\'année analysée. ▲ = au-dessus de sa moyenne habituelle, ▼ = en-dessous.',0,'6b7280',false,17));
+    }
+    bodyParts.push(pageBreak());
+    } // fin if(SECT.mv)
 
     // Pied de rapport
     bodyParts.push(`<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="400" w:after="80"/></w:pPr></w:p>`);
@@ -25400,6 +25748,7 @@ function fluxCreateEcriture() {
         <button class="stat-vtab on" data-view="rank"    onclick="statSetView('rank')">📋 Classement</button>
         <button class="stat-vtab"    data-view="chart"   onclick="statSetView('chart')">📊 Graphique</button>
         <button class="stat-vtab"    data-view="top"     onclick="statSetView('top')">🏆 Top Vendeurs</button>
+        <button class="stat-vtab"    data-view="mv"      onclick="statSetView('mv')">🏅 Meilleurs Vendeurs</button>
         <button class="stat-vtab"    data-view="comp"    onclick="statSetView('comp')">✈️ Compagnies</button>
         <button class="stat-vtab"    data-view="commission" onclick="statSetView('commission')" title="1 clic = vue commission · 2ème clic = désactiver mode commission">💼 Commissions</button>
         <button class="stat-vtab"    data-view="tl"      onclick="statSetView('tl')">📅 Par Folio</button>
