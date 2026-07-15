@@ -9007,6 +9007,11 @@ function importIATAClients(inp){
         }
       },50);
       
+      // SBAS vient d'être (re)chargée → invalider le cache d'index STAT
+      // pour que sResolveName() ré-indexe CORR (aux 411**** → nom) tout
+      // de suite, sans attendre un rechargement de page.
+      if(typeof statInvalidateAuxIndex==='function') statInvalidateAuxIndex();
+
       console.log('═══ FIN IMPORT ═══\n');
       alert('✅ Import réussi!\n\nAjoutés: '+added+'\nMis à jour: '+updated+'\nTotal: '+Object.keys(CORR).length+'\n\nOuvre Console (F12) pour voir les détails');
       
@@ -16154,6 +16159,23 @@ const SCOL2={...SCOL,'NDC FACTURE':'#7c3aed'}; // couleur dédiée pour la caté
 
 /* ── Index plan comptable depuis BASE (JBR/EBV) ───────────────────── */
 let _SIDX=null;
+/* ── Index dédié SBAS (base IATA, chargée depuis SBAS.xls sur GitHub) ──
+   CORR est peuplé par importIATAClients() et est indexé par NOM PLANNING ;
+   ici on construit l'index inverse par code AUXILIAIRE (411****, 165****,
+   181****) → NOM COMPTABLE, pour que STAT puisse résoudre un client 411
+   directement depuis la base SBAS, indépendamment du plan comptable
+   BASE (statique) ou du moteur V2 (BAS RAP). */
+let _SIDX_SBAS=null;
+function _sBuildIdxSBAS(){
+  if(_SIDX_SBAS) return;
+  _SIDX_SBAS=new Map();
+  if(typeof CORR!=='undefined'&&CORR&&typeof CORR==='object'){
+    Object.values(CORR).forEach(c=>{
+      const k=String(c&&c.aux||'').trim().toUpperCase();
+      if(k&&c.nom) _SIDX_SBAS.set(k,c.nom);
+    });
+  }
+}
 function _sBuildIdx(){
   if(_SIDX) return;
   _SIDX=new Map();
@@ -16164,8 +16186,8 @@ function _sBuildIdx(){
     });
   }
 }
-/* Appelée quand BASE est rechargé dans JBR/EBV */
-function statInvalidateAuxIndex(){ _SIDX=null; }
+/* Appelée quand BASE est rechargé dans JBR/EBV, ou quand SBAS est rechargé */
+function statInvalidateAuxIndex(){ _SIDX=null; _SIDX_SBAS=null; }
 
 /* ── Résolution du nom client ─────────────────────────────────────── */
 /* Priorité : BASE[aux] → BASE[compte] → LIBELLE fichier → fallback */
@@ -16191,6 +16213,12 @@ function sCleanClientName(lib){
 }
 function sResolveName(aux,cpt,lib){
   _sBuildIdx();
+  _sBuildIdxSBAS();
+  // Priorité 1 : base SBAS (SBAS.xls, chargée depuis GitHub) — source vivante,
+  // notamment pour les auxiliaires 411**** (agences/clients facturés).
+  if(aux){const v=_SIDX_SBAS?.get(aux.toUpperCase());if(v) return v;}
+  if(cpt){const v=_SIDX_SBAS?.get(cpt.toUpperCase());if(v) return v;}
+  // Priorité 2 : plan comptable statique BASE (JBR/EBV)
   if(aux){const v=_SIDX?.get(aux.toUpperCase());if(v) return v;}
   if(cpt){const v=_SIDX?.get(cpt.toUpperCase());if(v) return v;}
   // Même moteur d'identification que RAP/JBR (base de correspondances V2),
