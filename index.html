@@ -9978,6 +9978,88 @@ function rapLoadGL(inp){
   const f=inp.files[0]; if(f) rapParseGL(f); inp.value='';
 }
 
+// v74 : rapParseGL — corrige la perte silencieuse de lignes GL.
+// Deux causes identifiées :
+//  1) Seule la 1ʳᵉ feuille du classeur était lue (wb.SheetNames[0]) — si le
+//     fichier GL exporté par la compta contient plusieurs feuilles (une par
+//     mois, par journal ou par compte bancaire), toutes les feuilles suivantes
+//     étaient purement et simplement ignorées. → on parcourt maintenant TOUTES
+//     les feuilles et on fusionne les lignes de chacune qui possède un en-tête
+//     GL valide (DATE + DÉBIT/CRÉDIT).
+//  2) Aucun diagnostic n'était donné sur les lignes rejetées (libellé vide ou
+//     montant nul des deux côtés) — impossible de savoir pourquoi le compte
+//     de lignes ne correspondait pas au fichier source. → le message de statut
+//     détaille maintenant : lignes brutes lues, lignes gardées, lignes
+//     ignorées (libellé vide) et lignes ignorées (débit=crédit=0).
+function _rapParseGLSheet(rows, sheetLabel, gl, diag){
+  // v21 : Mode DUAL — lire à la fois DÉBIT et CRÉDIT du GL
+  // Le sens sera déterminé automatiquement au moment du rapprochement
+  let hdrIdx=-1;
+  let colDate=-1, colRef=-1, colLib=-1, colDebitGL=-1, colCreditGL=-1;
+
+  // v74 : fenêtre de recherche d'en-tête élargie (15→40 lignes) — certains
+  // exports GL ont un bandeau (banque/compte/période) plus long que 15 lignes.
+  for(let i=0;i<Math.min(rows.length,40);i++){
+    const rn=(rows[i]||[]).map(v=>String(v||'').toUpperCase().replace(/[\s]/g,''));
+    const hasDate=rn.some(v=>v.includes('DATE'));
+    const hasDebit=rn.some(v=>v.includes('DEBIT')||v.includes('DÉBIT'));
+    const hasCredit=rn.some(v=>v.includes('CREDIT')||v.includes('CRÉDIT'));
+    if(hasDate && (hasDebit||hasCredit)){
+      hdrIdx=i;
+      rn.forEach((v,ci)=>{
+        if(v.includes('DATE')&&colDate<0) colDate=ci;
+        if((v.includes('REF')||v.includes('RÉF'))&&colRef<0) colRef=ci;
+        if((v.includes('LIB')||v.includes('LIBEL'))&&colLib<0) colLib=ci;
+        if((v.includes('DEBIT')||v.includes('DÉBIT'))&&colDebitGL<0) colDebitGL=ci;
+        if((v.includes('CREDIT')||v.includes('CRÉDIT'))&&colCreditGL<0) colCreditGL=ci;
+      });
+      break;
+    }
+  }
+
+  // Si cette feuille n'a pas d'en-tête GL reconnaissable, on l'ignore
+  // proprement (ex: feuille annexe / résumé) plutôt que de tenter un import
+  // hasardeux avec des positions par défaut qui ne correspondraient à rien.
+  if(hdrIdx<0){
+    if(rows.length>1) diag.sheetsSkipped.push(sheetLabel);
+    return;
+  }
+
+  // Fallback positions par défaut (au cas où une colonne serait détectée
+  // mais pas toutes)
+  if(colDate<0) colDate=0;
+  if(colRef<0)  colRef=1;
+  if(colLib<0)  colLib=2;
+  if(colDebitGL<0) colDebitGL=4;
+  if(colCreditGL<0) colCreditGL=5;
+
+  const dataRows=rows.slice(hdrIdx+1);
+  dataRows.forEach((r,i)=>{
+    if(!r||r.length<1||r.every(v=>String(v||'').trim()==='')) return; // ligne totalement vide
+    diag.totalDataRows++;
+    // v25 : convertir numéro de série Excel → DD/MM/YYYY (même logique que RV)
+    const _rawDateGL = r[colDate];
+    let dateGL = String(_rawDateGL||'').trim();
+    if(typeof _rawDateGL === 'number' || (!isNaN(parseFloat(dateGL)) && /^\d+$/.test(dateGL))){
+      const n = typeof _rawDateGL === 'number' ? _rawDateGL : parseFloat(dateGL);
+      if(n > 10000 && n < 60000){
+        const d = new Date(Math.round((n - 25569) * 86400 * 1000));
+        if(!isNaN(d.getTime()))
+          dateGL = String(d.getUTCDate()).padStart(2,'0') + '/'
+                  + String(d.getUTCMonth()+1).padStart(2,'0') + '/'
+                  + d.getUTCFullYear();
+      }
+    }
+    const ref    = r[colRef]||'';
+    const libelle= r[colLib]||'';
+    let debit  = rapParseAmt(r[colDebitGL]||'');
+    let credit = rapParseAmt(r[colCreditGL]||'');
+    if(!libelle||libelle.length<=1){ diag.skippedNoLibelle++; return; }
+    if(!(debit>0||credit>0)){ diag.skippedZeroAmount++; return; }
+    gl.push({idx:gl.length, date:dateGL, ref, libelle, debit, credit, status:'ko', score:0, rvMatch:null, manual:false});
+  });
+}
+
 function rapParseGL(file){
   rapSetStatus('gl','inf','⏳ Lecture en cours...');
   rapShowProg('gl');
@@ -9985,76 +10067,41 @@ function rapParseGL(file){
   const r=new FileReader();
   r.onload=e=>{
     try{
-      let rows=[];
+      const gl=[];
+      const diag={totalDataRows:0, skippedNoLibelle:0, skippedZeroAmount:0, sheetsSkipped:[], sheetsUsed:[]};
+
       if(ext==='csv'||ext==='txt'){
         const txt=e.target.result;
         const sep=txt.indexOf('\t')>-1?'\t':';';
-        rows=txt.split(/\r?\n/).map(l=>l.split(sep).map(v=>String(v||'').replace(/"/g,'').trim()));
+        const rows=txt.split(/\r?\n/).map(l=>l.split(sep).map(v=>String(v||'').replace(/"/g,'').trim()));
+        _rapParseGLSheet(rows,file.name,gl,diag);
+        if(gl.length||diag.totalDataRows) diag.sheetsUsed.push(file.name);
       }else{
+        // v74 : parcourir TOUTES les feuilles du classeur, pas seulement la
+        // première — un fichier GL peut être scindé en plusieurs feuilles
+        // (mois, journal, compte bancaire...) et chacune était perdue avant.
         const wb=XLSX.read(e.target.result,{type:'array'});
-        const ws=wb.Sheets[wb.SheetNames[0]];
-        rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-        rows=rows.map(r=>r.map(v=>String(v||'').trim()));
+        wb.SheetNames.forEach(sh=>{
+          const ws=wb.Sheets[sh];
+          const rowsRaw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+          const rows=rowsRaw.map(row=>row.map(v=>String(v||'').trim()));
+          const before=gl.length;
+          _rapParseGLSheet(rows,sh,gl,diag);
+          if(gl.length>before) diag.sheetsUsed.push(sh);
+        });
       }
 
-      // v21 : Mode DUAL — lire à la fois DÉBIT et CRÉDIT du GL
-      // Le sens sera déterminé automatiquement au moment du rapprochement
-      let hdrIdx=-1;
-      let colDate=-1, colRef=-1, colLib=-1, colDebitGL=-1, colCreditGL=-1;
-
-      for(let i=0;i<Math.min(rows.length,15);i++){
-        const rn=rows[i].map(v=>String(v||'').toUpperCase().replace(/[\s]/g,''));
-        const hasDate=rn.some(v=>v.includes('DATE'));
-        const hasDebit=rn.some(v=>v.includes('DEBIT')||v.includes('DÉBIT'));
-        const hasCredit=rn.some(v=>v.includes('CREDIT')||v.includes('CRÉDIT'));
-        if(hasDate && (hasDebit||hasCredit)){
-          hdrIdx=i;
-          rn.forEach((v,ci)=>{
-            if(v.includes('DATE')&&colDate<0) colDate=ci;
-            if((v.includes('REF')||v.includes('RÉF'))&&colRef<0) colRef=ci;
-            if((v.includes('LIB')||v.includes('LIBEL'))&&colLib<0) colLib=ci;
-            if((v.includes('DEBIT')||v.includes('DÉBIT'))&&colDebitGL<0) colDebitGL=ci;
-            if((v.includes('CREDIT')||v.includes('CRÉDIT'))&&colCreditGL<0) colCreditGL=ci;
-          });
-          break;
-        }
-      }
-
-      // Fallback positions par défaut
-      if(colDate<0) colDate=0;
-      if(colRef<0)  colRef=1;
-      if(colLib<0)  colLib=2;
-      if(colDebitGL<0) colDebitGL=4;
-      if(colCreditGL<0) colCreditGL=5;
-
-      const dataRows=hdrIdx>=0?rows.slice(hdrIdx+1):rows.slice(1);
-      const gl=[];
-      dataRows.forEach((r,i)=>{
-        if(!r||r.length<3) return;
-        // v25 : convertir numéro de série Excel → DD/MM/YYYY (même logique que RV)
-        const _rawDateGL = r[colDate];
-        let dateGL = String(_rawDateGL||'').trim();
-        if(typeof _rawDateGL === 'number' || (!isNaN(parseFloat(dateGL)) && /^\d+$/.test(dateGL))){
-          const n = typeof _rawDateGL === 'number' ? _rawDateGL : parseFloat(dateGL);
-          if(n > 10000 && n < 60000){
-            const d = new Date(Math.round((n - 25569) * 86400 * 1000));
-            if(!isNaN(d.getTime()))
-              dateGL = String(d.getUTCDate()).padStart(2,'0') + '/'
-                      + String(d.getUTCMonth()+1).padStart(2,'0') + '/'
-                      + d.getUTCFullYear();
-          }
-        }
-        const ref    = r[colRef]||'';
-        const libelle= r[colLib]||'';
-        let debit  = rapParseAmt(r[colDebitGL]||'');
-        let credit = rapParseAmt(r[colCreditGL]||'');
-        if((debit>0||credit>0)&&libelle&&libelle.length>1){
-          gl.push({idx:i, date:dateGL, ref, libelle, debit, credit, status:'ko', score:0, rvMatch:null, manual:false});
-        }
-      });
       RAP.gl=gl;
-      const colLabel='débit+crédit';
-      rapSetStatus('gl','ok',`✅ ${file.name} — ${gl.length} lignes GL chargées (${colLabel})`);
+      const parts=[`✅ ${file.name} — ${gl.length} lignes GL chargées (débit+crédit)`];
+      if(diag.sheetsUsed.length>1) parts.push(`${diag.sheetsUsed.length} feuilles fusionnées : ${diag.sheetsUsed.join(', ')}`);
+      if(diag.sheetsSkipped.length) parts.push(`⚠ feuille(s) sans en-tête GL reconnu ignorée(s) : ${diag.sheetsSkipped.join(', ')}`);
+      if(diag.skippedNoLibelle) parts.push(`${diag.skippedNoLibelle} ligne(s) ignorée(s) — libellé vide`);
+      if(diag.skippedZeroAmount) parts.push(`${diag.skippedZeroAmount} ligne(s) ignorée(s) — débit et crédit tous deux à 0`);
+      if(diag.totalDataRows && diag.totalDataRows!==gl.length){
+        parts.push(`(${diag.totalDataRows} ligne(s) de données lues au total avant filtrage)`);
+      }
+      console.log('[rapParseGL] diagnostic :',diag);
+      rapSetStatus('gl', diag.sheetsSkipped.length?'inf':'ok', parts.join(' — '));
       rapHideProg('gl');
       rapUpdateBtn();
     }catch(err){
@@ -16274,7 +16321,9 @@ const STAT={
   mvLimit: 10,            // nombre de lignes affichées (TOP 10 par défaut, extensible)
   mvYear: null,           // année sélectionnée dans la vue (null = année la plus récente)
   mvMonth: null,          // mois sélectionné dans la vue (null = mois calendaire courant)
-  mvQ: 1                  // quinzaine sélectionnée dans la vue (1 ou 2)
+  mvQ: 1,                 // quinzaine sélectionnée dans la vue (1 ou 2)
+  // ══ v75 : CA MOYEN / QUINZAINE + évolution moyenne ══
+  quinzScope: 'all'        // 'all' = toute la période disponible · 'sel' = période sélectionnée (STAT.year/folios/dateFrom-dateTo)
 };
 
 /* ── Formateur ─────────────────────────────────────────────────────── */
@@ -19798,6 +19847,12 @@ function _evoBadge(oldVal,newVal,small){
   return `<span class="${cls}" style="${fs}">${arrow} ${Math.abs(pct).toFixed(1)}%</span>`;
 }
 
+/* v75 : Toggle scope de la vue Quinzaine — toute la période dispo vs période sélectionnée */
+function sSetQuinzScope(v){
+  STAT.quinzScope=v;
+  sQuinzaine(document.getElementById('stat-content'));
+}
+
 /* Toggle filtre quinzaine */
 function sSetQuinzaine(v,btn){
   STAT.quinzaine=v;
@@ -19822,10 +19877,15 @@ function sQuinzaine(c){
     c.innerHTML=`<div class="stat-empty"><div class="big">🔢</div><div class="msg">Aucune donnée</div><div class="sub">Importez un fichier Excel pour démarrer</div></div>`;
     return;
   }
+  // v75 : scope de la vue — 'all' = toute la période disponible dans le fichier
+  // chargé (comportement historique) · 'sel' = respecte la période actuellement
+  // sélectionnée dans le panneau STAT (année/folios ou plage de dates, + filtres
+  // compagnie/type/NDC/redressement/quinzaine du panneau).
+  const quinzScope=STAT.quinzScope||'all';
+  const srcRows=quinzScope==='sel'?sRawFiltered():STAT.raw.filter(_sBaseFilter);
   // ── Construire toutes les quinzaines disponibles dans les données ──
   const qmap=new Map(); // clé: 'YYYY-MM-Q' → {year,month,q,ca,ops,byComp,byClient}
-  STAT.raw.forEach(r=>{
-    if(!_sBaseFilter(r)) return;
+  srcRows.forEach(r=>{
     if(!r.date||!r.year||!r.month) return;
     const q=_dateQ(r.date);
     const k=`${r.year}-${String(r.month).padStart(2,'0')}-${q}`;
@@ -19841,11 +19901,23 @@ function sQuinzaine(c){
     if(r.libelle&&r.libelle.length>(co.libFichier||'').length) co.libFichier=r.libelle;
   });
   if(!qmap.size){
-    c.innerHTML=`<div class="stat-empty"><div class="big">🔢</div><div class="msg">Aucune donnée avec DATE renseignée</div><div class="sub">La vue Quinzaine nécessite la colonne DATE dans le fichier GL</div></div>`;
+    c.innerHTML=`<div class="stat-empty"><div class="big">🔢</div><div class="msg">Aucune donnée avec DATE renseignée${quinzScope==='sel'?' sur la période sélectionnée':''}</div><div class="sub">La vue Quinzaine nécessite la colonne DATE dans le fichier GL${quinzScope==='sel'?' — essayez « Toute la période disponible »':''}</div></div>`;
     return;
   }
   const qkeys=[...qmap.keys()].sort();
   const depth=STAT.evolDepth||3;
+
+  // v75 : CA MOYEN / QUINZAINE (sur le scope actif) + ÉVOLUTION MOYENNE
+  // (moyenne des variations successives quinzaine → quinzaine suivante)
+  const qcaSeries=qkeys.map(k=>qmap.get(k).ca);
+  const scopeTotalCA=qcaSeries.reduce((s,v)=>s+v,0);
+  const scopeAvgCA=qcaSeries.length?scopeTotalCA/qcaSeries.length:0;
+  let evoSum=0, evoCount=0;
+  for(let i=1;i<qcaSeries.length;i++){
+    const prev=qcaSeries[i-1], cur=qcaSeries[i];
+    if(prev>0){ evoSum+=(cur-prev)/prev; evoCount++; }
+  }
+  const avgEvoPct=evoCount?(evoSum/evoCount*100):null;
 
   // ── Mode affiché : tableau principal quinzaines ──
   const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
@@ -19960,10 +20032,31 @@ function sQuinzaine(c){
   // ── Render ──
   c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
     <!-- Titre + contrôles -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
       <span style="font-size:11px;font-weight:900;color:#7c3aed;letter-spacing:1px">🔢 ANALYSE QUINZAINE (Q1 = 1-15 / Q2 = 16-fin)</span>
       <span style="font-size:9px;color:var(--txt4)">${SFN(qkeys.length)} quinzaines · ${SFM(totalCA)}</span>
       <span style="font-size:9px;padding:2px 8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:8px;color:#7c3aed">Profondeur : N-${depth} ans</span>
+    </div>
+
+    <!-- v75 : toggle scope — toute période dispo vs période sélectionnée -->
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:9px;color:var(--txt4)">Scope :</span>
+      <button class="stat-topmode-btn${quinzScope==='all'?' on':''}" onclick="sSetQuinzScope('all')" title="Toutes les quinzaines présentes dans le fichier chargé">🗂 Toute la période disponible</button>
+      <button class="stat-topmode-btn${quinzScope==='sel'?' on':''}" onclick="sSetQuinzScope('sel')" title="Respecte l'année/les mois (ou la plage de dates) et les filtres compagnie/type/NDC/red./quinzaine sélectionnés dans le panneau STAT">🎯 Période sélectionnée</button>
+    </div>
+
+    <!-- v75 : CA MOYEN / QUINZAINE + ÉVOLUTION MOYENNE (scope actif) -->
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.10),rgba(124,58,237,.04));border:1px solid rgba(139,92,246,.3)">
+        <div style="font-size:9px;font-weight:800;color:#7c3aed;letter-spacing:.5px;margin-bottom:4px">📊 CA MOYEN / QUINZAINE</div>
+        <div style="font-size:18px;font-weight:900;color:var(--txt)">${SFM(scopeAvgCA)}</div>
+        <div style="font-size:8.5px;color:var(--txt4);margin-top:2px">sur ${SFN(qkeys.length)} quinzaine${qkeys.length>1?'s':''} · ${quinzScope==='sel'?'période sélectionnée':'toute la période disponible'}</div>
+      </div>
+      <div style="flex:1;min-width:200px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.10),rgba(124,58,237,.04));border:1px solid rgba(139,92,246,.3)">
+        <div style="font-size:9px;font-weight:800;color:#7c3aed;letter-spacing:.5px;margin-bottom:4px">📈 ÉVOLUTION MOYENNE (Q → Q suivante)</div>
+        <div style="font-size:18px;font-weight:900">${avgEvoPct===null?'<span class="evo-na">—</span>':`<span class="${avgEvoPct>=0?'evo-up':'evo-dn'}">${avgEvoPct>=0?'▲':'▼'} ${Math.abs(avgEvoPct).toFixed(1)}%</span>`}</div>
+        <div style="font-size:8.5px;color:var(--txt4);margin-top:2px">${evoCount?`moyenne de ${SFN(evoCount)} variation${evoCount>1?'s':''} successives`:'pas assez de quinzaines pour une tendance'}</div>
+      </div>
     </div>
 
     <!-- Table principale quinzaines -->
