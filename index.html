@@ -4,7 +4,7 @@
     at <anonymous> (${n}:${i}:${a})`:""),filename:o,line:u,column:l}))}function _(e){let t;v({source:"unhandledrejection",name:(t=$(e.reason,"Unhandled promise rejection")).name,message:t.message,stack:t.stack})}let x=window.reportError,w=null;function E(e){let t=e.data;t&&"object"==typeof t&&t.type===s&&y()}function $(e,t){return e instanceof Error?{name:e.name||"Error",message:e.message||t,stack:e.stack||""}:e&&"object"==typeof e?{name:"string"==typeof e.name?e.name:"Error",message:"string"==typeof e.message?e.message:function(e){try{return JSON.stringify(e)}catch{return""}}(e)||t,stack:"string"==typeof e.stack?e.stack:""}:{name:"Error",message:"string"==typeof e?e:null==e?t:String(e),stack:""}}async function S(e){var t,r;let n=(t=String(e.stack).split("\n").map(P).filter(Boolean),r=e.filename,t.map(e=>({...e,file:function(e,t){var r,n;if("string"!=typeof e||0===e.length)return;let i=I(e);if(i)return O(i);if(r=e,/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(r))return e;if(t&&R(t)===R(e)){let e=I(t);return e?O(e):t}let a=e.startsWith("_next/")?`/${e}`:e;return a.startsWith("/_next/")?O(a):!(n=a).includes("/")&&n.endsWith(".js")&&(n.startsWith("_")||n.includes("._.")||n.startsWith("node_modules_")||n.startsWith("turbopack-"))?O(`/_next/static/chunks/${a}`):e}(e.file,r)})));return{message:e.message,stack:e.stack,frames:n,mappedFrames:n.length>0?await k(n):[]}}async function k(e){try{let t=function(e){try{return new URL(e,window.location.href).origin!==window.location.origin}catch{return!1}}(c),r={body:JSON.stringify({frames:e,isServer:!1,isEdgeServer:!1,isAppDirectory:l,sourceOrigin:window.location.origin}),cache:"no-store",credentials:t?"omit":"same-origin",method:"POST",mode:t?"cors":"same-origin"};t||(r.headers={"content-type":"application/json"});let n=await fetch(c,{...r});if(!n.ok||204===n.status){let t=await n.text().catch(()=>"");return e.map(()=>({status:"rejected",reason:t||"No original stack frame response from Next dev server."}))}let i=await n.json();if(!Array.isArray(i))return e.map(()=>({status:"rejected",reason:"Invalid original stack frame response from Next dev server."}));return e.map((e,t)=>i[t]||{status:"rejected",reason:"No original stack frame response for frame."})}catch(t){return e.map(()=>({status:"rejected",reason:t instanceof Error?t.message:String(t)}))}}function O(e){return d?`${d}/${e.replace(/^\/_next\/static\/?/,"")}`:e}function I(e){if(e.startsWith("/_next/"))return e;if(e.startsWith("_next/"))return`/${e}`;try{let t=new URL(e);return t.pathname.startsWith("/_next/")?t.pathname:""}catch{return""}}function R(e){return e.split("?")[0].split(/[\\/]/).pop()||e}function P(e){let t=e.trim();if(!t.startsWith("at "))return null;let r=t.slice(3),n="<anonymous>",i=r,a=r.indexOf("("),s=r.endsWith(")")?r.length-1:-1;-1!==a&&-1!==s&&s>a&&(n=r.slice(0,a).trim()||"<anonymous>",i=r.slice(a+1,s));let o=/^(.*):(\d+):(\d+)$/.exec(i);return o?{file:o[1],methodName:n,arguments:[],line1:Number(o[2]),column1:Number(o[3])}:null}function T(e){return"number"==typeof e&&Number.isFinite(e)&&e>0?e:void 0}"function"==typeof x&&(w=function(e){let t;return v({source:"reported-error",name:(t=$(e,"Reported runtime error")).name,message:t.message,stack:t.stack}),x.call(window,e)},window.reportError=w),window.addEventListener("error",b),window.addEventListener("unhandledrejection",_),window.addEventListener("message",E),window[t]={windowId:h,getSnapshot:()=>({errors:f.errors.slice()}),reset:y,stop:function(){window.removeEventListener("error",b),window.removeEventListener("unhandledrejection",_),window.removeEventListener("message",E),w&&window.reportError===w&&(window.reportError=x),delete window[t]}},g(a,{existing:!1,href:window.location.href,windowId:h})})({"messageType":"next-dev-bridge:event","sourceMapFrameRoot":"file:///vercel/share/v0-project/.next/dev/static"});</script><script async src="/v0-runtime-dist.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FWT — Comptabilité ✈ v33</title>
+<title>FWT — Comptabilité ✈ v34</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9291,7 +9291,7 @@ function _v2BuildIndexes(basData, acctData, clientsData) {
             String(c.client).toUpperCase()
                 .replace(/[^A-Z0-9\s]/g,' ')
                 .split(/\s+/)
-                .filter(t => t.length >= 3)
+                .filter(t => t.length >= 2)   // FIX: >= 2 au lieu de >= 3 — couvre BA TOURS, 5 S, etc.
         );
         _V2_CLIENT_IDX.push({ client: c.client, code_client: c.code_client, tokens });
     });
@@ -9313,7 +9313,7 @@ function _v2BuildIndexes(basData, acctData, clientsData) {
     });
     
     _V2_LOADED = true;
-    console.log(`[BAS_RAP v33] Index V2 initialisé: ${_V2_ALL_LIBS.length} libellés, ${Object.keys(_V2_ACCT_MAP).length} N°comptes, ${_V2_CLIENT_IDX.length} clients`);
+    console.log(`[BAS_RAP v34-FIX] Index V2 initialisé: ${_V2_ALL_LIBS.length} libellés, ${Object.keys(_V2_ACCT_MAP).length} N°comptes, ${_V2_CLIENT_IDX.length} clients — Seuil FUZZY:0.72 TOKEN_MIN:2`);
 }
 
 // ── Moteur V2 : 4 stratégies d'identification ────────────────────────────────
@@ -9367,7 +9367,7 @@ function _v2TokenSetSim(a, b) {
     const bonus = ([...ta].every(x=>tb.has(x)) || [...tb].every(x=>ta.has(x))) ? 0.15 : 0;
     return Math.min(1, base + bonus);
 }
-function _v2MatchFuzzy(lib, seuil=0.65) {
+function _v2MatchFuzzy(lib, seuil=0.72) {   // FIX: seuil 0.65→0.72 — évite faux positifs (ex: GHARB TOURS au lieu de LOST IN THE WORLD)
     if (!_V2_ALL_LIBS || !_V2_LIBELLE_MAP) return null;
     let best = null, bestScore = 0;
     for (const k of _V2_ALL_LIBS) {
@@ -9376,7 +9376,7 @@ function _v2MatchFuzzy(lib, seuil=0.65) {
     }
     if (best && bestScore >= seuil) {
         const r = _V2_LIBELLE_MAP[best];
-        return { client: r.client, auxiliaire: r.code_client, score: bestScore, methode: 'FUZZY', confiance: bestScore>=0.8?'ÉLEVÉE':'MOYENNE', libelle_base: best };
+        return { client: r.client, auxiliaire: r.code_client, score: bestScore, methode: 'FUZZY', confiance: bestScore>=0.85?'ÉLEVÉE':'MOYENNE', libelle_base: best };
     }
     return null;
 }
@@ -9384,9 +9384,10 @@ function _v2MatchFuzzy(lib, seuil=0.65) {
 // S4 — Tokens nom client dans le libellé
 function _v2MatchToken(lib, seuil=0.4) {
     if (!_V2_CLIENT_IDX) return null;
-    const libTokens = new Set(_v2Norm(lib).split(' ').filter(t=>t.length>=3));
+    const libTokens = new Set(_v2Norm(lib).split(' ').filter(t=>t.length>=2)); // FIX: >= 2 cohérent avec buildIndexes
     let best = null, bestScore = 0, bestCount = 0;
     for (const c of _V2_CLIENT_IDX) {
+        if (!c.tokens.size) continue;
         const common = [...c.tokens].filter(t => libTokens.has(t));
         if (!common.length) continue;
         const score = common.length / c.tokens.size;
@@ -9489,6 +9490,10 @@ function rapGetPaymentType(lib) {
   if (/\bRET\s+CH[NQ°]?\b/.test(s)) return 'cheque';
   if (/\bCH[NQ°]?\s+(?:NOS|CLT|RET|SORT|NTRE|NON|BNA)\b/.test(s)) return 'cheque';
   if (/\bCHN[°o]\d/.test(s)) return 'cheque';  // CHN°043 format GL compact
+  // ── FIX : Format GL dépense "CH N°XXXXXXX" (espace entre CH et N°) ──────────
+  // Ex: "CH N°0748705 REG 1-15 JUIN 25 TK" → non couvert par CHN°\d (compact)
+  // ni par CH[NQ°]\s+(?:NOS|CLT|...) car N° n'est pas dans la liste des mots-clés
+  if (/\bCH\s+N[°o]?\s*\d/.test(s)) return 'cheque';
   // Versement / dépôt (avant virement car VRT peut être dans "VERSEMENT")
   if (/\bVERSEMENT\b/.test(s) || /\bDEPOT\b/.test(s) || /\bDEP\b/.test(s)) return 'versement';
   // Virement
@@ -9868,8 +9873,36 @@ function rapParseBAS(file){
   r.onload=e=>{
     try{
       const wb=XLSX.read(e.target.result,{type:'array'});
-      const ws=wb.Sheets[wb.SheetNames[0]];
+
+      // ── FIX BUG FEUILLE : chercher la feuille contenant les libellés relevé
+      // BAS_RAP.xlsx a 2 feuilles : Feuil2 (clients CODE|LIBELLE) et Feuil3 (LIBELLE RELEVE|client|AUX)
+      // On privilégie la feuille qui a une colonne LIBELLE RELEVE/RELEVÉ (Feuil3)
+      // Si absent, fallback sur la dernière feuille, puis la première
+      let selSheet = null;
+      for(const sn of wb.SheetNames){
+        const s = wb.Sheets[sn];
+        const firstRow = XLSX.utils.sheet_to_json(s,{header:1,range:0,defval:''})[0]||[];
+        const hdTest = firstRow.map(v=>String(v||'').toUpperCase().trim());
+        const hasLib = hdTest.some(h=>h.includes('LIBELLE')&&(h.includes('RELEVE')||h.includes('RELEVÉ')));
+        const hasClientAndAux = hdTest.some(h=>h.includes('CLIENT')||h.includes('NOM')) &&
+                                hdTest.some(h=>h.includes('AUX')||h.includes('CODE'));
+        if(hasLib || hasClientAndAux){ selSheet=sn; break; }
+      }
+      // Fallback : prendre la feuille avec le plus de lignes (= la table de correspondance)
+      if(!selSheet){
+        let maxRows=0;
+        for(const sn of wb.SheetNames){
+          const s=wb.Sheets[sn];
+          const ref=s['!ref'];
+          if(!ref) continue;
+          const range=XLSX.utils.decode_range(ref);
+          if(range.e.r>maxRows){ maxRows=range.e.r; selSheet=sn; }
+        }
+        selSheet=selSheet||wb.SheetNames[wb.SheetNames.length-1]||wb.SheetNames[0];
+      }
+      const ws=wb.Sheets[selSheet];
       const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      console.log(`[BAS_RAP] Feuille sélectionnée: "${selSheet}" (${rows.length-1} lignes) parmi [${wb.SheetNames.join(', ')}]`);
 
       // ── Détecter colonnes (structure: CLIENT | AUX | LIBELLE_RELEVE)
       const hdr=rows[0].map(v=>String(v||'').toUpperCase().trim());
@@ -11159,15 +11192,12 @@ function rapLancer(){
           if(parMontant.length===1) return doChequeMatch(parMontant[0],1.0);
           if(parMontant.length>1){
             // ── v35 : Match par numéro de chèque exact (7 chiffres sig., zéros gauche ignorés) ──
-            // GL: "CHN°0431700" → "431700" ; RV: "RET CHQ CLT DZ 431700" → "431700"
-            // Si exactement 1 RV parmi les candidats a le MÊME numéro → match direct score 1.0
             const glChqNum = String(parseInt(chqRaw, 10));
             const parNumero = parMontant.filter(i => {
               const rvChqNum = rapExtractChequeNum(RAP.rv[i].libelle);
               return rvChqNum && String(parseInt(rvChqNum, 10)) === glChqNum;
             });
             if(parNumero.length === 1) return doChequeMatch(parNumero[0], 1.0);
-            // Si plusieurs RV ont le même numéro (cas rare) → prendre le premier
             if(parNumero.length > 1) return doChequeMatch(parNumero[0], 0.98);
             // Fallback trigramme si aucun numéro ne correspond
             let bestRi=-1, bestSc=0;
@@ -11175,6 +11205,45 @@ function rapLancer(){
             if(bestRi>=0 && bestSc>=0.30) return doChequeMatch(bestRi,bestSc);
           }
         }
+
+        // ── FIX : Fuzzy match numéro chèque (distance édition ≤ 1 + montant exact) ─────
+        // Couvre les cas où GL et RV ont un numéro légèrement différent :
+        //   GL "CH N°07485642"  → extrait "7485642"
+        //   RV "RET CHQ CLT DZ 748642" → extrait "748642"
+        //   Distance édition = 1 (un chiffre inséré/omis lors de la saisie GL)
+        // Condition stricte : montant EXACT + distance ≤ 1 + numéro ≥ 5 chiffres
+        if(!cands.length || true) {  // toujours tenter si pas encore matché
+          const glChqNum = String(parseInt(chqRaw, 10));
+          if(glChqNum.length >= 5) {
+            // Calculer distance de Levenshtein entre deux chaînes de chiffres
+            function _chqEditDist(a, b) {
+              const R = a.length, C = b.length;
+              const dp = Array.from({length:R+1}, (_,i) => Array.from({length:C+1}, (_,j) => j===0?i:i===0?j:0));
+              for(let i=1;i<=R;i++) for(let j=1;j<=C;j++)
+                dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+              return dp[R][C];
+            }
+            // Chercher parmi TOUS les RV chèques non utilisés avec montant exact
+            const fuzzyByAmount = RAP.rv
+              .map((rv,i) => ({rv,i}))
+              .filter(({rv,i}) => {
+                if(rv['_used'+sens]) return false;
+                if(rapGetPaymentType(rv.libelle) !== 'cheque') return false;
+                if(Math.abs(rvAmt(rv) - glAmt(gl)) > TOL) return false;
+                const rvNum = rapExtractChequeNum(rv.libelle);
+                if(!rvNum) return false;
+                const rvChqNum = String(parseInt(rvNum, 10));
+                if(rvChqNum === glChqNum) return false; // déjà traité par exact
+                const dist = _chqEditDist(glChqNum, rvChqNum);
+                return dist <= 1;
+              });
+            if(fuzzyByAmount.length === 1) {
+              console.log(`[RAP FuzzyChq] GL "${gl.libelle}" (${glChqNum}) ↔ RV "${RAP.rv[fuzzyByAmount[0].i].libelle}" (dist=1 montant=OK)`);
+              return doChequeMatch(fuzzyByAmount[0].i, 0.93);
+            }
+          }
+        }
+
         gl._chequeUnmatchedSens=true;
       });
     }
@@ -16892,6 +16961,10 @@ function sSetComp(c,el){
     STAT.comp=curSet.size?curSet:'ALL';
   }
   sRefreshCompChips();
+  // ── Re-analyser immédiatement si des données sont chargées ──
+  // (comportement identique à sCrossFilterComp — les chips sidebar doivent
+  //  se comporter comme un slicer Power BI : sélection → résultat instantané)
+  if(STAT.raw && STAT.raw.length) statAnalyze();
 }
 
 /* ── NDC ────────────────────────────────────────────────────────────── */
@@ -19516,7 +19589,11 @@ function _rankBadge(curRank,refRank){
 }
 
 function sMeilleursVendeurs(c){
-  if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏅</div><div class="msg">Aucune donnée</div></div>`;return;}
+  // ── Meilleurs Vendeurs utilise son propre pipeline (_mvAgg → STAT.raw)
+  //    indépendant des chips compagnie du panneau latéral (STAT.comp).
+  //    On vérifie donc STAT.raw et non STAT.agg pour éviter d'afficher
+  //    "Aucune donnée" quand un filtre compagnie latéral vide STAT.agg. ──
+  if(!STAT.raw || !STAT.raw.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏅</div><div class="msg">Aucune donnée</div><div class="sub">Importez un fichier STAT.xlsx pour lancer l'analyse</div></div>`;return;}
 
   const availYears=(STAT.availableYears&&STAT.availableYears.length)?STAT.availableYears:[STAT.year||new Date().getFullYear()];
   const year =STAT.mvYear ||availYears[0];
