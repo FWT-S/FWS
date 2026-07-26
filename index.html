@@ -20715,6 +20715,7 @@ function sCliEvol(c){
       style="font-size:9px;padding:2px 4px;border:1px solid var(--bo);border-radius:5px;background:var(--bg2)">
       ${[10,25,50,100].map(n=>`<option value="${n}"${n===pageSize?' selected':''} >${n}/p</option>`).join('')}
     </select>
+    <button onclick="printCliEvol()" class="stat-topmode-btn" style="margin-left:auto">🖨️ Imprimer</button>
   </div>`;
 
   // ── En-têtes N-x ─────────────────────────────────────────────────────────
@@ -25406,7 +25407,7 @@ function printCurrentSegment(){
     'comp': printCompagnies,
     'tl': printParFolio,
     'evol': printEvolution,
-    'clievol': printEvolClient,
+    'clievol': printCliEvol,
     'heat': printHeatmap,
     'compare': printComparaison,
     'pareto': printPareto,
@@ -25741,6 +25742,199 @@ ${totalRow}
   const a=document.createElement('a');
   a.href=url; a.download=fname;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+  alert('📄 Fichier téléchargé.\nDouble-clic pour ouvrir → impression paysage automatique.\nFichier : '+fname);
+ }catch(e){
+  alert('⚠️ Erreur : '+(e&&e.message?e.message:e));
+ }
+}
+
+// ══ Évolution Client (impression) ══
+function printCliEvol(){
+ try{
+  if(!STAT.raw||!STAT.raw.length){alert('❌ Aucune donnée');return;}
+  const curYear=STAT.year||new Date().getFullYear();
+  const depth=Math.max(1,Math.min(8,_cliEvolDepth||3));
+  const MOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const FM=v=>new Intl.NumberFormat('fr-FR').format(Math.round(v))+' DA';
+  const FN=v=>new Intl.NumberFormat('fr-FR').format(v);
+  const periodLabel=sPeriodLabel();
+
+  // YTD cap — même logique que sCliEvol
+  const _ytdMCap2=(STAT.periodMode==='folio'&&(!STAT.folios||STAT.folios.size===0))
+    ?_ytdMonth(curYear):12;
+  const isPartial=_ytdMCap2<12;
+  const ytdLbl=MOIS[_ytdMCap2-1]||'';
+
+  // Agrégation
+  function aggFromRaw(rows){
+    const m=new Map();
+    rows.forEach(r=>{
+      const k=r.compte+'|'+(r.aux||r.compte);
+      if(!m.has(k))m.set(k,{compte:r.compte,aux:r.aux||r.compte,name:'',total:0,ops:0,months:new Set()});
+      const o=m.get(k);o.total+=r.debit;o.ops++;
+      if(r.month)o.months.add(r.month);
+      if(!o.name||(r.libelle||'').length>o.name.length)o.name=sResolveName(r.aux,r.compte,r.libelle);
+    });
+    return [...m.values()].sort((a,b)=>b.total-a.total);
+  }
+
+  const rawCur=sRawFiltered();
+  const curClients=aggFromRaw(rawCur);
+  if(!curClients.length){alert('❌ Aucun client sur cette période');return;}
+  const totCA=curClients.reduce((s,r)=>s+r.total,0);
+  const curRankMap=new Map(curClients.map((r,i)=>[r.compte+'|'+(r.aux||r.compte),i+1]));
+
+  // N-x avec même cap YTD
+  const nxData=Array.from({length:depth},(_,ni)=>{
+    const y=curYear-(ni+1);
+    const rawNx=sRawFiltered(y);
+    const agg=aggFromRaw(rawNx);
+    const totMap=new Map(agg.map(r=>[r.compte+'|'+(r.aux||r.compte),r.total]));
+    const rankMap=new Map(agg.map((r,i)=>[r.compte+'|'+(r.aux||r.compte),i+1]));
+    return{y,totMap,rankMap,totCANx:agg.reduce((s,r)=>s+r.total,0)};
+  });
+
+  const activeMonths=new Set(rawCur.filter(r=>r.month).map(r=>r.month));
+  const nMonthsGlobal=activeMonths.size||1;
+  const avgMoisGlobal=totCA/nMonthsGlobal;
+  const totN1=nxData[0]?.totCANx||0;
+  const globEvo=totN1>0?((totCA-totN1)/totN1*100):null;
+
+  // Helpers badges
+  const pEvoBadge=(prev,cur)=>{
+    if(!prev)return'<span class="na">—</span>';
+    const pct=(cur-prev)/prev*100;
+    return pct>=0?`<span class="up">▲${pct.toFixed(0)}%</span>`:`<span class="dn">▼${Math.abs(pct).toFixed(0)}%</span>`;
+  };
+  const pRankBadge=(curRk,refRk)=>{
+    if(!refRk)return'<span class="na">nv.</span>';
+    const d=refRk-curRk;
+    if(d===0)return`<span class="eq">#${refRk}=</span>`;
+    return d>0?`<span class="up">#${refRk} ▲${d}</span>`:`<span class="dn">#${refRk} ▼${Math.abs(d)}</span>`;
+  };
+
+  // En-têtes N-x
+  const nxTh=nxData.map(d=>`<th>CA ${d.y}${isPartial?' (Jan-'+ytdLbl+')':''}</th><th>ÉVO.</th><th>RANG ${d.y}</th>`).join('');
+
+  // Lignes
+  const medals=['🥇','🥈','🥉'];
+  let rows='';
+  curClients.forEach((r,i)=>{
+    const ck=r.compte+'|'+(r.aux||r.compte);
+    const curRank=curRankMap.get(ck)||i+1;
+    const nMonthsCli=r.months.size||nMonthsGlobal;
+    const avgMoisCli=r.total/nMonthsCli;
+    const taux=avgMoisGlobal>0?(avgMoisCli/avgMoisGlobal*100):null;
+    const tauxHTML=taux===null?'<span class="na">—</span>'
+      :`<span class="${taux>=100?'up':'dn'}">${taux>=100?'▲':'▼'}${taux.toFixed(0)}%</span>`;
+    const rankBadge=i<3?`<span class="medal">${medals[i]}</span>`:`<span class="rk">${i+1}</span>`;
+    const nxCells=nxData.map(d=>{
+      const ck2=r.compte+'|'+(r.aux||r.compte);
+      const nca=d.totMap.get(ck2)||0;
+      const nrk=d.rankMap.get(ck2)||null;
+      if(!nca)return'<td class="r na">—</td><td class="r na">—</td><td class="r na">nv.</td>';
+      return`<td class="r amt">${FM(nca)}</td><td class="r">${pEvoBadge(nca,r.total)}</td><td class="r">${pRankBadge(curRank,nrk)}</td>`;
+    }).join('');
+    const rowCls=i===0?'top1':i===1?'top2':i===2?'top3':'';
+    rows+=`<tr class="${rowCls}">
+      <td class="c">${rankBadge}</td>
+      <td class="name" title="${r.name}">${r.name}</td>
+      <td class="mono">${r.aux||r.compte}</td>
+      <td class="r ca">${FM(r.total)}</td>
+      <td class="r">${FM(avgMoisCli)}</td>
+      <td class="r">${tauxHTML}</td>
+      ${nxCells}
+    </tr>`;
+  });
+
+  const totalRow=`<tr class="total"><td colspan="3">TOTAL · ${FN(curClients.length)} clients · ${FN(curClients.reduce((s,r)=>s+r.ops,0))} ops</td><td class="r ca">${FM(totCA)}</td><td colspan="${2+depth*3}"></td></tr>`;
+
+  const alertYTD=isPartial
+    ?`<div class="alert-box warn">⚠️ Données ${curYear} disponibles jusqu'à ${ytdLbl} — colonnes N-x limitées à Jan–${ytdLbl} sur toutes les années (comparaison équitable)</div>`:'';
+
+  const html=`<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="UTF-8">
+<title>Évol. Client — ${periodLabel}</title>
+<style>
+@page{size:landscape;margin:4mm 5mm 4mm 5mm}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:7.2pt;color:#111;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{padding:3mm 2mm}
+.hdr{border-bottom:2.5pt solid #0891b2;padding-bottom:3px;margin-bottom:4px;display:flex;gap:8px;align-items:flex-start}
+.h1{font-size:12pt;font-weight:900;color:#0891b2}
+.h2{font-size:7pt;color:#374151;font-weight:700;margin-top:2px}
+.h3{font-size:6pt;color:#9ca3af;margin-top:1px}
+.alert-box{font-size:6pt;background:#fff7ed;border-left:2pt solid #f97316;padding:2px 5px;margin-bottom:3px;color:#7c2d12}
+.alert-box.warn{background:#fef2f2;border-color:#dc2626;color:#7f1d1d}
+.kpis{display:flex;gap:4px;margin-bottom:4px;flex-wrap:wrap}
+.kpi{flex:1;min-width:70px;border-radius:4px;padding:3px 5px;border:1pt solid}
+.kpi.blue{border-color:#93c5fd;background:#eff6ff}.kpi.blue .kv{color:#1d4ed8}
+.kpi.sky{border-color:#7dd3fc;background:#f0f9ff}.kpi.sky .kv{color:#0369a1}
+.kpi.green{border-color:#86efac;background:#f0fdf4}.kpi.green .kv{color:#15803d}
+.kpi.purple{border-color:#c4b5fd;background:#f5f3ff}.kpi.purple .kv{color:#6d28d9}
+.kpi.amber{border-color:#fde68a;background:#fffbeb}.kpi.amber .kv{color:#b45309}
+.kv{font-size:8pt;font-weight:900}.kl{font-size:5.5pt;text-transform:uppercase;color:#6b7280;letter-spacing:.4px}
+table{width:100%;border-collapse:collapse;font-size:6.5pt}
+thead th{background:#05101f;color:#fff;padding:2.5px 3px;text-align:right;font-size:5.8pt;font-weight:700;letter-spacing:.2px;white-space:nowrap;border-right:1pt solid rgba(255,255,255,.08)}
+thead th:first-child,thead th.c,thead th.lft{text-align:center}
+thead th.lft{text-align:left}
+tbody tr{border-bottom:.4pt solid #e5e7eb}
+tbody tr:nth-child(even){background:#fafafa}
+tbody tr.top1{background:#fffbeb;border-left:2.5pt solid #d97706}
+tbody tr.top2{background:#f9fafb;border-left:2.5pt solid #94a3b8}
+tbody tr.top3{background:#fdf2f8;border-left:2.5pt solid #b45309}
+tbody tr.total{background:#05101f;color:#fff!important;font-weight:800}
+tbody tr.total td{color:#fff!important}
+td{padding:2px 3px;vertical-align:middle}
+td.r{text-align:right}td.c{text-align:center}
+td.name{font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td.mono{font-family:'Courier New',monospace;font-size:6pt}
+td.ca{font-weight:900;color:#0369a1}td.na,.na{color:#9ca3af}
+.amt{color:#374151}.up{color:#059669;font-weight:700}.dn{color:#dc2626;font-weight:700}
+.eq{color:#6b7280}.rk{display:inline-block;background:#e5e7eb;border-radius:50%;width:13px;height:13px;text-align:center;line-height:13px;font-size:6pt;font-weight:800}
+.medal{font-size:13px;line-height:1}div{line-height:1.3}
+.footer{margin-top:3px;font-size:5pt;color:#9ca3af;text-align:right}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}thead{display:table-header-group}}
+</style></head>
+<body><div class="page">
+<div class="hdr"><div>
+  <div class="h1">👤 ÉVOLUTION CLIENT</div>
+  <div class="h2">${periodLabel} &nbsp;|&nbsp; ${sCompLabel()}</div>
+  <div class="h3">FWT — Four Winds Travels &nbsp;·&nbsp; Imprimé le ${new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} &nbsp;·&nbsp; ${FN(curClients.length)} clients · Profondeur N-${depth}</div>
+</div></div>
+${alertYTD}
+<div class="kpis">
+  <div class="kpi sky"><div class="kv">${FM(totCA)}</div><div class="kl">CA · ${periodLabel}</div></div>
+  <div class="kpi blue"><div class="kv">${FN(curClients.length)}</div><div class="kl">Clients actifs</div></div>
+  <div class="kpi purple"><div class="kv">${FM(avgMoisGlobal)}</div><div class="kl">Moy. mensuelle globale / ${nMonthsGlobal} mois</div></div>
+  <div class="kpi ${globEvo===null||globEvo>=0?'green':'amber'}"><div class="kv">${globEvo===null?'—':(globEvo>=0?'▲ +':'▼ ')+globEvo.toFixed(1)+'%'}</div><div class="kl">Évo. vs même période N-1</div></div>
+</div>
+<table>
+<thead><tr>
+  <th class="c" style="width:16px">RANG</th>
+  <th class="lft" style="min-width:120px">CLIENT</th>
+  <th class="lft" style="width:50px">CODE AUX.</th>
+  <th style="width:78px">CA · ${periodLabel}</th>
+  <th style="width:65px">MOY./MOIS</th>
+  <th style="width:42px">TAUX vs MOY.GLOB</th>
+  ${nxTh}
+</tr></thead>
+<tbody>${rows}${totalRow}</tbody>
+</table>
+<div class="footer">FWT Comptabilité &nbsp;·&nbsp; ${periodLabel} &nbsp;·&nbsp; ${FN(curClients.length)} clients &nbsp;·&nbsp; Profondeur N-${depth} &nbsp;·&nbsp; ${new Date().toLocaleString('fr-FR')}</div>
+</div>
+<script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
+</body></html>`;
+
+  const dts=new Date().toISOString().slice(0,10);
+  const fname=`CliEvol_${curYear}_N${depth}_${dts}.html`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),3000);
   alert('📄 Fichier téléchargé.\nDouble-clic pour ouvrir → impression paysage automatique.\nFichier : '+fname);
  }catch(e){
