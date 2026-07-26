@@ -4,7 +4,7 @@
     at <anonymous> (${n}:${i}:${a})`:""),filename:o,line:u,column:l}))}function _(e){let t;v({source:"unhandledrejection",name:(t=$(e.reason,"Unhandled promise rejection")).name,message:t.message,stack:t.stack})}let x=window.reportError,w=null;function E(e){let t=e.data;t&&"object"==typeof t&&t.type===s&&y()}function $(e,t){return e instanceof Error?{name:e.name||"Error",message:e.message||t,stack:e.stack||""}:e&&"object"==typeof e?{name:"string"==typeof e.name?e.name:"Error",message:"string"==typeof e.message?e.message:function(e){try{return JSON.stringify(e)}catch{return""}}(e)||t,stack:"string"==typeof e.stack?e.stack:""}:{name:"Error",message:"string"==typeof e?e:null==e?t:String(e),stack:""}}async function S(e){var t,r;let n=(t=String(e.stack).split("\n").map(P).filter(Boolean),r=e.filename,t.map(e=>({...e,file:function(e,t){var r,n;if("string"!=typeof e||0===e.length)return;let i=I(e);if(i)return O(i);if(r=e,/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(r))return e;if(t&&R(t)===R(e)){let e=I(t);return e?O(e):t}let a=e.startsWith("_next/")?`/${e}`:e;return a.startsWith("/_next/")?O(a):!(n=a).includes("/")&&n.endsWith(".js")&&(n.startsWith("_")||n.includes("._.")||n.startsWith("node_modules_")||n.startsWith("turbopack-"))?O(`/_next/static/chunks/${a}`):e}(e.file,r)})));return{message:e.message,stack:e.stack,frames:n,mappedFrames:n.length>0?await k(n):[]}}async function k(e){try{let t=function(e){try{return new URL(e,window.location.href).origin!==window.location.origin}catch{return!1}}(c),r={body:JSON.stringify({frames:e,isServer:!1,isEdgeServer:!1,isAppDirectory:l,sourceOrigin:window.location.origin}),cache:"no-store",credentials:t?"omit":"same-origin",method:"POST",mode:t?"cors":"same-origin"};t||(r.headers={"content-type":"application/json"});let n=await fetch(c,{...r});if(!n.ok||204===n.status){let t=await n.text().catch(()=>"");return e.map(()=>({status:"rejected",reason:t||"No original stack frame response from Next dev server."}))}let i=await n.json();if(!Array.isArray(i))return e.map(()=>({status:"rejected",reason:"Invalid original stack frame response from Next dev server."}));return e.map((e,t)=>i[t]||{status:"rejected",reason:"No original stack frame response for frame."})}catch(t){return e.map(()=>({status:"rejected",reason:t instanceof Error?t.message:String(t)}))}}function O(e){return d?`${d}/${e.replace(/^\/_next\/static\/?/,"")}`:e}function I(e){if(e.startsWith("/_next/"))return e;if(e.startsWith("_next/"))return`/${e}`;try{let t=new URL(e);return t.pathname.startsWith("/_next/")?t.pathname:""}catch{return""}}function R(e){return e.split("?")[0].split(/[\\/]/).pop()||e}function P(e){let t=e.trim();if(!t.startsWith("at "))return null;let r=t.slice(3),n="<anonymous>",i=r,a=r.indexOf("("),s=r.endsWith(")")?r.length-1:-1;-1!==a&&-1!==s&&s>a&&(n=r.slice(0,a).trim()||"<anonymous>",i=r.slice(a+1,s));let o=/^(.*):(\d+):(\d+)$/.exec(i);return o?{file:o[1],methodName:n,arguments:[],line1:Number(o[2]),column1:Number(o[3])}:null}function T(e){return"number"==typeof e&&Number.isFinite(e)&&e>0?e:void 0}"function"==typeof x&&(w=function(e){let t;return v({source:"reported-error",name:(t=$(e,"Reported runtime error")).name,message:t.message,stack:t.stack}),x.call(window,e)},window.reportError=w),window.addEventListener("error",b),window.addEventListener("unhandledrejection",_),window.addEventListener("message",E),window[t]={windowId:h,getSnapshot:()=>({errors:f.errors.slice()}),reset:y,stop:function(){window.removeEventListener("error",b),window.removeEventListener("unhandledrejection",_),window.removeEventListener("message",E),w&&window.reportError===w&&(window.reportError=x),delete window[t]}},g(a,{existing:!1,href:window.location.href,windowId:h})})({"messageType":"next-dev-bridge:event","sourceMapFrameRoot":"file:///vercel/share/v0-project/.next/dev/static"});</script><script async src="/v0-runtime-dist.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FWT — Comptabilité ✈ v35</title>
+<title>FWT — Comptabilité ✈ v36</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16247,9 +16247,26 @@ const SJMAP={
   '19':'V7','26':'TK','261':'TK NDC','26-1':'TK NDC',
   '29':'TO','30':'IB'
 };
+/* ── Résolution fine NDC : le journal 26-1 / TK NDC couvre 2 sous-types.
+   La distinction définitive se fait APRÈS lecture du libellé/ref de l'écriture :
+   - isNDCFac(r) → libellé ou ref contient /NDC/ (pattern ANNEE/NDC/TK/NNN)
+                   → sous-type NDC_FAC, commission compte 706012
+   - sinon       → sous-type NDC_EBV, commission compte 7081111
+   Ces sous-types sont utilisés dans toutes les vues STAT pour séparer
+   les deux flux, sans jamais mélanger leurs CA ni leurs commissions. ── */
+function isNDCFac(r){
+  return (/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
+}
+function sNDCSym(r){
+  // Résout le sous-type d'une ligne journal 26-1 ('TK NDC')
+  const base=SJMAP[r.journal];
+  if(base!=='TK NDC') return base;
+  return isNDCFac(r)?'NDC_FAC':'NDC_EBV';
+}
 const SCOL={
   BA:'#002050',VY:'#fdb913',BJ:'#e3000f',AC:'#f01428',
   V7:'#ff6900',TK:'#e3000f','TK NDC':'#00b3e0',
+  NDC_FAC:'#7c3aed',NDC_EBV:'#0891b2',
   TO:'#f37021',IB:'#d4002a',AUT:'#6b7280'
 };
 const SMOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
@@ -16261,8 +16278,8 @@ const SMOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov'
    706012 = NDC FACTURE (catégorie globale, pas liée à une compagnie précise)
    708xxxx = commission par compagnie ────────────────────────────────── */
 const SCMAP={
-  '706012':'NDC FACTURE', // catégorie à part (facturation NDC globale)
-  '7081111':'TK NDC',
+  '706012':'NDC_FAC', // TK NDC Facture — ref contient ANNEE/NDC/TK/NNN, commission 706012
+  '7081111':'NDC_EBV', // TK NDC EBV — libellé distinct, commission 7081111
   '708102':'BA',
   '708104':'IB',
   '708111':'TK',
@@ -16272,7 +16289,7 @@ const SCMAP={
   '708118':'V7',
   '708119':'TO'
 };
-const SCOL2={...SCOL,'NDC FACTURE':'#7c3aed'}; // couleur dédiée pour la catégorie NDC FACTURE
+const SCOL2={...SCOL,'NDC_FAC':'#7c3aed','NDC_EBV':'#0891b2'};
 
 /* ── Index plan comptable depuis BASE (JBR/EBV) ───────────────────── */
 let _SIDX=null;
@@ -16942,7 +16959,7 @@ function sRefreshCompChips(){
 function sBuildChips(){
   const cs=new Set();
   STAT.raw.forEach(r=>{
-    const c=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const c=sNDCSym(r)||(r.journal?'AUT':null);
     if(c) cs.add(c);
   });
   const w=document.getElementById('stat-chips');
@@ -17012,13 +17029,15 @@ function statAnalyze(){
     const rows=STAT.raw.filter(r=>{
       if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
       if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
-      const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+      const sym=sNDCSym(r)||(r.journal?'AUT':null);
       if(!sCompMatch(sym)) return false;
       if(STAT.ndc!=='all'){
-        // NDC = LIBELLE ou REFERENCE contient /NDC/ (insensible casse)
-        const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-        if(STAT.ndc==='ndc'&&!isNDC) return false;
-        if(STAT.ndc==='std'&&isNDC)  return false;
+        // NDC_FAC = TK NDC Facture (ref ANNEE/NDC/TK/NNN) ; NDC_EBV = TK NDC EBV
+        // Le symbole sNDCSym(r) encode déjà la distinction — on filtre directement dessus
+        const rSym=sNDCSym(r)||(r.journal?'AUT':null);
+        if(STAT.ndc==='ndc'&&rSym!=='NDC_FAC') return false;  // Facture /NDC/ uniquement
+        if(STAT.ndc==='ebv'&&rSym!=='NDC_EBV') return false;  // EBV uniquement
+        if(STAT.ndc==='std'&&(rSym==='NDC_FAC'||rSym==='NDC_EBV')) return false; // sans NDC
       }
       if(STAT.redMode!=='all'){
         // Redressement = LIBELLE ou REFERENCE contient RED, sans seuil de montant
@@ -17063,7 +17082,7 @@ function statAnalyze(){
       if(!map.has(key)) map.set(key,{compte:r.compte,aux,libFichier:r.libelle,total:0,ops:0,journals:new Set(),journalCA:new Map(),folios:new Set()});
       const o=map.get(key);
       o.total+=r.debit;o.ops++;
-      const symJ=SJMAP[r.journal]||(r.journal||'AUT');
+      const symJ=sNDCSym(r)||(r.journal||'AUT');
       o.journals.add(symJ);
       o.journalCA.set(symJ,(o.journalCA.get(symJ)||0)+r.debit); // 🆕 v51 — CA généré par compagnie (pour trier CIE(S) par poids réel)
       if(r.folio>=1&&r.folio<=12) o.folios.add(r.folio);
@@ -17104,7 +17123,7 @@ function statAnalyze(){
       }
       const ct=sCompLabel();
       const tt=STAT.type==='all'?'411+18xx':STAT.type==='411'?'Agences 411':'Unités 18xx';
-      const nt=STAT.ndc==='ndc'?'· Avec /NDC/':STAT.ndc==='std'?'· Sans /NDC/':'';
+      const nt=STAT.ndc==='ndc'?'· NDC Facture':STAT.ndc==='ebv'?'· NDC EBV':STAT.ndc==='std'?'· Hors NDC':'';
       const rt=STAT.redMode==='excl'?'· Sans Redress.':STAT.redMode==='only'?'· Redress. seuls':'';
       const qt=STAT.quinzaine!=='all'?`· Q${STAT.quinzaine} (${STAT.quinzaine==='1'?'1-15':'16-fin'})`:'';
       pill.textContent=`${ft} · ${ct} · ${tt} ${nt} ${rt} ${qt}`.replace(/\s+/g,' ').trim();
@@ -17172,7 +17191,7 @@ function sRenderFilterBar(){
   // Compagnie (= aussi le cross-filter posé en cliquant un graphique)
   if(STAT.comp!=='ALL') chips.push({k:'comp',lbl:`✈️ ${sCompLabel()}`,xfilter:true});
   // NDC
-  if(STAT.ndc!=='all') chips.push({k:'ndc',lbl:`🔍 ${STAT.ndc==='ndc'?'Facture /NDC/':'EBV (sans /NDC/)'}`});
+  if(STAT.ndc!=='all') chips.push({k:'ndc',lbl:`🔍 ${STAT.ndc==='ndc'?'NDC Facture (706012)':STAT.ndc==='ebv'?'NDC EBV (7081111)':'Hors NDC'}`});
   if(STAT.redMode!=='all') chips.push({k:'red',lbl:`⚖ ${STAT.redMode==='excl'?'Sans Redressements':'Redressements seuls'}`});
 
   if(!chips.length){w.classList.remove('on');w.innerHTML='';return;}
@@ -17223,12 +17242,13 @@ function sClientMonthly(compte,aux,yearOverride){
     if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return;
     if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
     if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(!sCompMatch(sym)) return;
     if(STAT.ndc!=='all'){
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(STAT.ndc==='ndc'&&!isNDC) return;
-      if(STAT.ndc==='std'&&isNDC)  return;
+      const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return;
+      if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return;
+      if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return;
     }
     if(STAT.redMode!=='all'){
       const isRed=_isRedRow(r);
@@ -17355,12 +17375,13 @@ function sClientRawValues(compte,aux,year,allYears){
     if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return;
     if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
     if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(!sCompMatch(sym)) return;
     if(STAT.ndc!=='all'){
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(STAT.ndc==='ndc'&&!isNDC) return;
-      if(STAT.ndc==='std'&&isNDC)  return;
+      const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return;
+      if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return;
+      if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return;
     }
     if(STAT.redMode!=='all'){
       const isRed=_isRedRow(r);
@@ -17851,7 +17872,7 @@ function sInsights(c){
 
   // Répartition compagnies
   const cm=new Map();
-  sRawFiltered().forEach(r=>{const sym=SJMAP[r.journal]||(r.journal?'AUT':null);cm.set(sym,(cm.get(sym)||0)+r.debit);});
+  sRawFiltered().forEach(r=>{const sym=sNDCSym(r)||(r.journal?'AUT':null);cm.set(sym,(cm.get(sym)||0)+r.debit);});
   const compSorted=[...cm.entries()].sort((a,b)=>b[1]-a[1]);
   const leadComp=compSorted[0];
 
@@ -18073,7 +18094,7 @@ function _statAgg(){
     if(!m.has(k)) m.set(k,{compte:r.compte,aux:r.aux||'',name:r.name||r.compte,
       total:0,ops:0,journals:new Set(),folios:new Set()});
     const o=m.get(k);o.total+=r.debit;o.ops++;
-    if(r.journal)o.journals.add(SJMAP[r.journal]||r.journal);
+    if(r.journal)o.journals.add(sNDCSym(r)||r.journal);
     if(r.folio>=1&&r.folio<=12)o.folios.add(r.folio);
   });
   STAT.agg=[...m.values()].sort((a,b)=>b.total-a.total);
@@ -18196,7 +18217,7 @@ function sChart(c){
 function sComp(c){
   const cm=new Map();
   sRawFiltered().forEach(r=>{
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(!cm.has(sym)) cm.set(sym,0);
     cm.set(sym,cm.get(sym)+r.debit);
   });
@@ -18249,7 +18270,7 @@ function sComp(c){
     // Meilleur mois pour cette compagnie
     const bestMonth=((mm)=>{
       const bmap=new Map();
-      STAT.raw.filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===comp&&r.month)
+      STAT.raw.filter(r=>(sNDCSym(r)||(r.journal?'AUT':null))===comp&&r.month)
         .forEach(r=>bmap.set(r.month,(bmap.get(r.month)||0)+r.debit));
       if(!bmap.size) return '—';
       const best=[...bmap.entries()].sort((a,b)=>b[1]-a[1])[0];
@@ -18291,12 +18312,8 @@ function sComp(c){
     </div>
     <!-- Tableau évolution par compagnie -->
     <div>
-      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:8px">
-        📊 ÉVOLUTION ANNUELLE PAR COMPAGNIE
-        <span style="font-size:9px;color:var(--txt3);font-weight:400">Profondeur :</span>
-        <select class="stat-depth-sel" style="width:65px" onchange="STAT.evolDepth=+this.value;sComp(document.getElementById('stat-content'))">
-          ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>N-${n}</option>`).join('')}
-        </select>
+      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px;margin-bottom:6px">
+        📊 ÉVOLUTION ANNUELLE PAR COMPAGNIE <span style="font-size:8px;font-weight:400;color:var(--txt4)">(profondeur N-${depth} — réglable dans le panneau latéral)</span>
       </div>
       <div style="overflow-x:auto">
         <table class="evol-ny-tbl">
@@ -18650,19 +18667,20 @@ function sCommission(c){
   // compagnie précise — donc son CA de référence = total des ventes
   // déjà flaguées /NDC/ (bouton "FACTURE" du filtre NDC/EBV existant),
   // toutes compagnies confondues, sur la même période/filtres actifs.
-  const ndcFactureCA=sRawFiltered().filter(r=>(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'')).reduce((s,r)=>s+r.debit,0);
-  const caRefFor=sym=>sym==='NDC FACTURE'?ndcFactureCA:(caMap.get(sym)||0);
+  const ndcFacCA=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_FAC').reduce((s,r)=>s+r.debit,0);
+  const ndcEbvCA=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_EBV').reduce((s,r)=>s+r.debit,0);
+  const caRefFor=sym=>sym==='NDC_FAC'?ndcFacCA:sym==='NDC_EBV'?ndcEbvCA:(caMap.get(sym)||0);
 
   const totCom=agg.reduce((s,o)=>s+o.total,0);
   const totCA=[...caMap.values()].reduce((s,v)=>s+v,0); // CA portefeuille total (toutes Cies, NDC inclus)
   const tauxGlobal=totCA>0?(totCom/totCA*100):0;
-  const ndcFact=agg.find(o=>o.sym==='NDC FACTURE');
+  const ndcFact=agg.find(o=>o.sym==='NDC_FAC');
   const sortedAgg=[...agg].sort((a,b)=>b.total-a.total);
-  const top=sortedAgg.find(o=>o.sym!=='NDC FACTURE');
+  const top=sortedAgg.find(o=>o.sym!=='NDC_FAC'&&o.sym!=='NDC_EBV');
 
   // ── Lignes "par compagnie" (hors NDC FACTURE — catégorie transverse,
   // exclue des stats inter-compagnies pour ne pas fausser corrélation/variance) ──
-  const compRows=sortedAgg.filter(o=>o.sym!=='NDC FACTURE').map(o=>{
+  const compRows=sortedAgg.filter(o=>o.sym!=='NDC_FAC'&&o.sym!=='NDC_EBV').map(o=>{
     const ca=caRefFor(o.sym);
     return{sym:o.sym,commission:o.total,ca,ops:o.ops,taux:ca>0?o.total/ca*100:null};
   });
@@ -18694,7 +18712,7 @@ function sCommission(c){
   sortedAgg.forEach(o=>{
     const ca=caRefFor(o.sym);
     const taux=ca>0?(o.total/ca*100):null;
-    const isNdcF=o.sym==='NDC FACTURE';
+    const isNdcF=o.sym==='NDC_FAC';
     rowsH+=`<tr${isNdcF?' style="background:rgba(124,58,237,.06)"':''}>
       <td><span class="sbdg" style="background:${SCOL2[o.sym]||'#6b7280'};color:#fff">${o.sym}</span></td>
       <td class="r m" style="font-weight:800;color:#047857">${SFM(o.total)}</td>
@@ -18806,7 +18824,22 @@ function sCommission(c){
       <div class="stat-kpi kg"><div class="kl">💼 Commission Totale</div><div class="kv">${SFM(totCom)}</div></div>
       <div class="stat-kpi kb"><div class="kl">📊 Taux réel moyen</div><div class="kv">${tauxGlobal.toFixed(2)}%</div><div class="ks">commission / CA total</div></div>
       <div class="stat-kpi ka"><div class="kl">🥇 Top compagnie</div><div class="kv" style="font-size:13px">${top?top.sym:'—'}</div><div class="ks">${top?SFM(top.total):''}</div></div>
-      <div class="stat-kpi kp"><div class="kl">🧾 NDC Facture</div><div class="kv" style="font-size:13px">${ndcFact?SFM(ndcFact.total):'—'}</div><div class="ks">catégorie globale 706012</div></div>
+      ${(()=>{
+        const ndcFac=agg.find(o=>o.sym==='NDC_FAC');
+        const ndcEbv=agg.find(o=>o.sym==='NDC_EBV');
+        const ndcFacCA=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_FAC').reduce((s,r)=>s+r.debit,0);
+        const ndcEbvCA=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_EBV').reduce((s,r)=>s+r.debit,0);
+        return `<div class="stat-kpi kp" style="border-left:3px solid #7c3aed">
+          <div class="kl">🧾 NDC Facture <span style="font-size:8px;color:#7c3aed">(706012)</span></div>
+          <div class="kv" style="font-size:12px;color:#7c3aed">${ndcFac?SFM(ndcFac.total):'—'}</div>
+          <div class="ks">CA: ${SFM(ndcFacCA)} · Ref ANNEE/NDC/TK/NNN</div>
+        </div>
+        <div class="stat-kpi kp" style="border-left:3px solid #0891b2">
+          <div class="kl">🧾 NDC EBV <span style="font-size:8px;color:#0891b2">(7081111)</span></div>
+          <div class="kv" style="font-size:12px;color:#0891b2">${ndcEbv?SFM(ndcEbv.total):'—'}</div>
+          <div class="ks">CA: ${SFM(ndcEbvCA)} · Journal 26-1 EBV</div>
+        </div>`;
+      })()}
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1.35fr;gap:12px;margin-bottom:12px;align-items:start">
@@ -18952,10 +18985,7 @@ function sTL(c){
       <span style="font-size:10px;font-weight:900;color:var(--sky-deep);letter-spacing:1px">📅 ANALYSE MENSUELLE — PAR FOLIO</span>
       <span style="font-size:9px;color:var(--txt4)">${curYear} · ${sCompLabel()}</span>
       ${_ytdMonth(curYear)<12?`<span style="font-size:8.5px;background:#fff7ed;border:1px solid #f97316;border-radius:5px;padding:2px 7px;color:#7c2d12;font-weight:700">⚠️ Données jusqu'à ${SMOIS[_ytdMonth(curYear)-1]} — N-x limités à Jan-${SMOIS[_ytdMonth(curYear)-1]}</span>`:''}
-      <span style="margin-left:auto;font-size:9px;color:var(--txt3)">Profondeur : </span>
-      <select class="stat-depth-sel" style="width:60px" onchange="STAT.evolDepth=+this.value;sTL(document.getElementById('stat-content'))">
-        ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>${n} an${n>1?'s':''}</option>`).join('')}
-      </select>
+      <span style="font-size:8px;color:var(--txt4);margin-left:auto">N-${depth} — profondeur réglable dans le panneau latéral</span>
     </div>
     <!-- Graphique barres -->
     <div style="margin-bottom:14px"><div class="stat-tg">${barHTML}</div></div>
@@ -18995,7 +19025,7 @@ function sEvol(c){
     // Filtres de base sauf période
     if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
     if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(!sCompMatch(sym)) return;
 
     let k=null;
@@ -19189,7 +19219,7 @@ function sEvol(c){
     <span style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px">📅 ÉVOLUTION PÉRIODIQUE</span>
     <span style="font-size:9px;color:var(--txt3)">${SFN(periKeys.length)} périodes · ${totalCA.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2})} DA total</span>
     <div style="margin-left:auto;display:flex;gap:4px;align-items:center;flex-wrap:wrap">${granulBtns}
-      <span style="font-size:9px;color:var(--txt3)">Profondeur:</span>${depthSel}
+      <span style="font-size:8px;color:var(--txt4)">N-${depth} — profondeur réglable dans le panneau latéral</span>
     </div>
   </div>
   <div style="padding:6px 16px 0;overflow-x:auto">${svg}</div>
@@ -19251,7 +19281,7 @@ function sTopVendeurs(c){
     STAT.raw.forEach(r=>{
       if(!_sBaseFilter(r)) return;
       if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=SJMAP[r.journal]||(r.journal?'AUT':null); if(sym!==tComp) return; }
+      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
       if(!r.date) return;
       const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
       if(!shownKeys.has(ck)) return;
@@ -19269,7 +19299,7 @@ function sTopVendeurs(c){
     STAT.raw.forEach(r=>{
       if(!_sBaseFilter(r)) return;
       if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=SJMAP[r.journal]||(r.journal?'AUT':null); if(sym!==tComp) return; }
+      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
       if(!r.date) return;
       const qq=_dateQ(r.date), mkey=r.month||0;
       const gm=globalQBuckets[qq]; gm.set(mkey,(gm.get(mkey)||0)+r.debit);
@@ -19411,7 +19441,7 @@ function sTopVendeurs(c){
 
   // ── Filtre compagnie + limite (repris de l'ex-vue Meilleurs Vendeurs) ──
   const compSet=new Set();
-  STAT.raw.forEach(r=>{const s=SJMAP[r.journal]||(r.journal?'AUT':null);if(s) compSet.add(s);});
+  STAT.raw.forEach(r=>{const s=sNDCSym(r)||(r.journal?'AUT':null);if(s) compSet.add(s);});
   const compBtns=mode!=='global'?(`<span class="stat-mv-comp-btn${tComp==='ALL'?' on':''}" onclick="STAT.topComp='ALL';sTopVendeurs(document.getElementById('stat-content'))">Toutes compagnies</span>`+
     [...compSet].sort().map(s=>`<span class="stat-mv-comp-btn${tComp===s?' on':''}" onclick="STAT.topComp='${s}';sTopVendeurs(document.getElementById('stat-content'))">${s}</span>`).join('')):'';
   const limitBtns=mode!=='global'?[10,25,50].map(n=>
@@ -19436,12 +19466,6 @@ function sTopVendeurs(c){
     </div>
     <div style="margin-bottom:10px">
       <div class="stat-topmode-grp">${modeButtons}</div>
-      ${periodPicker?`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px">${periodPicker}
-        <span style="font-size:9px;color:var(--txt4)">Profondeur N-x :</span>
-        <select class="stat-depth-sel" style="width:60px" onchange="STAT.evolDepth=+this.value;sTopVendeurs(document.getElementById('stat-content'))">
-          ${[1,2,3,4,5].map(n=>`<option value="${n}"${n===depth?' selected':''}>${n}</option>`).join('')}
-        </select>
-      </div>`:''}
       ${compBtns?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">${compBtns}</div>`:''}
       ${limitBtns?`<div style="display:flex;gap:5px;flex-wrap:wrap">${limitBtns}</div>`:''}
     </div>
@@ -19499,10 +19523,7 @@ function sTopVendeurs(c){
      • la moyenne de CA par quinzaine active de l'année sélectionnée
      • le taux de réalisation de la période courante vs cette moyenne
 ══════════════════════════════════════════════════════════════════════ */
-function sSetMVComp(sym){
-  STAT.mvComp=sym;
-  sMeilleursVendeurs(document.getElementById('stat-content'));
-}
+// sSetMVComp supprimé — filtre compagnie géré par la sidebar globale
 function sSetMVLimit(n){
   STAT.mvLimit=n;
   sMeilleursVendeurs(document.getElementById('stat-content'));
@@ -19529,9 +19550,37 @@ function sSetMVDepth(v){
 /* ── Agrégation par client pour une période EXPLICITE (année, mois, Q),
      avec filtre compagnie local optionnel, indépendant du chip global ── */
 function _mvAgg(year,month,quinzaine,compFilter){
-  let rows=_sRawForPeriod(year,month,quinzaine);
+  // NE PAS utiliser _sRawForPeriod ni _sBaseFilter ici — ils appliquent
+  // STAT.comp (filtre global sidebar) qui bloquerait le filtre LOCAL mvComp.
+  // On applique manuellement : type de compte + NDC + redressements + période,
+  // mais PAS le filtre compagnie global — c'est compFilter qui s'en charge.
+  let rows=STAT.raw.filter(r=>{
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+    if(STAT.ndc!=='all'){
+      const rSym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSym!=='NDC_FAC') return false;
+      if(STAT.ndc==='ebv'&&rSym!=='NDC_EBV') return false;
+      if(STAT.ndc==='std'&&(rSym==='NDC_FAC'||rSym==='NDC_EBV')) return false;
+    }
+    if(STAT.redMode!=='all'){
+      const isRed=_isRedRow(r);
+      if(STAT.redMode==='excl'&&isRed)  return false;
+      if(STAT.redMode==='only'&&!isRed) return false;
+    }
+    if(year!==undefined&&r.year!==year) return false;
+    if(month!==undefined&&r.month!==month) return false;
+    if(quinzaine!==undefined){
+      if(!r.date) return false;
+      if(_dateQ(r.date)!==quinzaine) return false;
+    }
+    return true;
+  });
   if(compFilter&&compFilter!=='ALL'){
-    rows=rows.filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===compFilter);
+    rows=rows.filter(r=>{
+      const s=sNDCSym(r)||(r.journal?'AUT':null);
+      return compFilter instanceof Set?compFilter.has(s):s===compFilter;
+    });
   }
   const map=new Map();
   rows.forEach(r=>{
@@ -19540,7 +19589,7 @@ function _mvAgg(year,month,quinzaine,compFilter){
     if(!map.has(key)) map.set(key,{compte:r.compte,aux,libFichier:r.libelle,total:0,ops:0,comps:new Set()});
     const o=map.get(key);
     o.total+=r.debit; o.ops++;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(sym) o.comps.add(sym);
     if(r.libelle&&r.libelle.length>(o.libFichier||'').length) o.libFichier=r.libelle;
   });
@@ -19554,9 +19603,28 @@ function _mvAgg(year,month,quinzaine,compFilter){
      jusqu'à juin seulement) à des années complètes de 12 mois, ce qui
      fausserait toute évolution/classement ── */
 function _mvAggYTD(year,maxMonth,compFilter){
-  let rows=STAT.raw.filter(r=>_sBaseFilter(r)&&r.year===year&&r.month&&r.month<=maxMonth);
+  let rows=STAT.raw.filter(r=>{
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+    if(STAT.ndc!=='all'){
+      const rSym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSym!=='NDC_FAC') return false;
+      if(STAT.ndc==='ebv'&&rSym!=='NDC_EBV') return false;
+      if(STAT.ndc==='std'&&(rSym==='NDC_FAC'||rSym==='NDC_EBV')) return false;
+    }
+    if(STAT.redMode!=='all'){
+      const isRed=_isRedRow(r);
+      if(STAT.redMode==='excl'&&isRed)  return false;
+      if(STAT.redMode==='only'&&!isRed) return false;
+    }
+    if(r.year!==year||!r.month||r.month>maxMonth) return false;
+    return true;
+  });
   if(compFilter&&compFilter!=='ALL'){
-    rows=rows.filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===compFilter);
+    rows=rows.filter(r=>{
+      const s=sNDCSym(r)||(r.journal?'AUT':null);
+      return compFilter instanceof Set?compFilter.has(s):s===compFilter;
+    });
   }
   const map=new Map();
   rows.forEach(r=>{
@@ -19565,7 +19633,7 @@ function _mvAggYTD(year,maxMonth,compFilter){
     if(!map.has(key)) map.set(key,{compte:r.compte,aux,libFichier:r.libelle,total:0,ops:0,comps:new Set()});
     const o=map.get(key);
     o.total+=r.debit; o.ops++;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(sym) o.comps.add(sym);
     if(r.libelle&&r.libelle.length>(o.libFichier||'').length) o.libFichier=r.libelle;
   });
@@ -19574,12 +19642,24 @@ function _mvAggYTD(year,maxMonth,compFilter){
 }
 function _mvClientCAYTD(compte,aux,year,maxMonth,compFilter){
   return STAT.raw.filter(r=>{
-    if(!_sBaseFilter(r)) return false;
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+    if(STAT.ndc!=='all'){
+      const rSym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSym!=='NDC_FAC') return false;
+      if(STAT.ndc==='ebv'&&rSym!=='NDC_EBV') return false;
+      if(STAT.ndc==='std'&&(rSym==='NDC_FAC'||rSym==='NDC_EBV')) return false;
+    }
+    if(STAT.redMode!=='all'){
+      const isRed=_isRedRow(r);
+      if(STAT.redMode==='excl'&&isRed)  return false;
+      if(STAT.redMode==='only'&&!isRed) return false;
+    }
     if(r.year!==year||!r.month||r.month>maxMonth) return false;
     if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return false;
     if(compFilter&&compFilter!=='ALL'){
-      const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
-      if(sym!==compFilter) return false;
+      const sym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(compFilter instanceof Set?!compFilter.has(sym):sym!==compFilter) return false;
     }
     return true;
   }).reduce((s,r)=>s+r.debit,0);
@@ -19608,7 +19688,7 @@ function _sCompCAYTD(sym,year,maxMonth){
   return STAT.raw.filter(r=>{
     if(!_sBaseFilter(r)) return false;
     if(r.year!==year||!r.month||r.month>maxMonth) return false;
-    if((SJMAP[r.journal]||(r.journal?'AUT':null))!==sym) return false;
+    if((sNDCSym(r)||(r.journal?'AUT':null))!==sym) return false;
     return true;
   }).reduce((s,r)=>s+r.debit,0);
 }
@@ -19622,11 +19702,30 @@ function _sClientCAYTD(compte,aux,year,maxMonth){
 }
 
 function _mvClientCA(compte,aux,year,month,quinzaine,compFilter){
-  return _sRawForPeriod(year,month,quinzaine).filter(r=>{
+  return STAT.raw.filter(r=>{
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+    if(STAT.ndc!=='all'){
+      const rSym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSym!=='NDC_FAC') return false;
+      if(STAT.ndc==='ebv'&&rSym!=='NDC_EBV') return false;
+      if(STAT.ndc==='std'&&(rSym==='NDC_FAC'||rSym==='NDC_EBV')) return false;
+    }
+    if(STAT.redMode!=='all'){
+      const isRed=_isRedRow(r);
+      if(STAT.redMode==='excl'&&isRed)  return false;
+      if(STAT.redMode==='only'&&!isRed) return false;
+    }
+    if(year!==undefined&&r.year!==year) return false;
+    if(month!==undefined&&r.month!==month) return false;
+    if(quinzaine!==undefined){
+      if(!r.date) return false;
+      if(_dateQ(r.date)!==quinzaine) return false;
+    }
     if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return false;
     if(compFilter&&compFilter!=='ALL'){
-      const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
-      if(sym!==compFilter) return false;
+      const sym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(compFilter instanceof Set?!compFilter.has(sym):sym!==compFilter) return false;
     }
     return true;
   }).reduce((s,r)=>s+r.debit,0);
@@ -19657,7 +19756,8 @@ function sMeilleursVendeurs(c){
   const month=STAT.mvMonth||(new Date().getMonth()+1);
   const q    =STAT.mvQ    ||1;
   const depth=STAT.evolDepth||3;
-  const mvComp=STAT.mvComp||'ALL';
+  // mvComp supprimé — on utilise directement le filtre global STAT.comp
+  const mvComp=STAT.comp||'ALL'; // string | Set | 'ALL'
   const periodType=STAT.mvPeriodType||'quinzaine'; // 'quinzaine' | 'annee'
   const isAnnee=periodType==='annee';
 
@@ -19693,7 +19793,7 @@ function sMeilleursVendeurs(c){
       if(r.year>=year) return; // strictement AVANT l'année sélectionnée
       if(!r.month||r.month>ytdMonth) return; // même fenêtre Jan→ytdMonth que l'année sélectionnée
       if(mvComp!=='ALL'){
-        const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+        const sym=sNDCSym(r)||(r.journal?'AUT':null);
         if(sym!==mvComp) return;
       }
       const aux=r.aux||r.compte;
@@ -19713,7 +19813,7 @@ function sMeilleursVendeurs(c){
       if(!_sBaseFilter(r)) return;
       if(r.year!==year) return;
       if(mvComp!=='ALL'){
-        const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+        const sym=sNDCSym(r)||(r.journal?'AUT':null);
         if(sym!==mvComp) return;
       }
       if(!r.date) return;
@@ -19742,7 +19842,7 @@ function sMeilleursVendeurs(c){
       if(!_sBaseFilter(r)) return;
       if(r.year!==year) return;
       if(mvComp!=='ALL'){
-        const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+        const sym=sNDCSym(r)||(r.journal?'AUT':null);
         if(sym!==mvComp) return;
       }
       if(!r.date) return;
@@ -19789,10 +19889,7 @@ function sMeilleursVendeurs(c){
   });
 
   // ── 4) Boutons compagnie (dérivés des données présentes) ──
-  const compSet=new Set();
-  STAT.raw.forEach(r=>{const s=SJMAP[r.journal]||(r.journal?'AUT':null);if(s) compSet.add(s);});
-  const compBtns=`<span class="stat-mv-comp-btn${mvComp==='ALL'?' on':''}" onclick="sSetMVComp('ALL')">Toutes compagnies</span>`+
-    [...compSet].sort().map(s=>`<span class="stat-mv-comp-btn${mvComp===s?' on':''}" onclick="sSetMVComp('${s}')">${s}</span>`).join('');
+
 
   // ── 5) Sélecteurs Année / Mois / Quinzaine / Profondeur ──
   const yearOpts=availYears.map(y=>`<option value="${y}"${y===year?' selected':''}>${y}</option>`).join('');
@@ -19871,10 +19968,8 @@ function sMeilleursVendeurs(c){
       <select class="stat-depth-sel" onchange="sSetMVPeriod('month',this.value)">${monthOpts}</select>
       <span style="font-size:9px;color:var(--txt4)">Quinzaine :</span>
       <select class="stat-depth-sel" onchange="sSetMVPeriod('q',this.value)">${qOpts}</select>`}
-      <span style="font-size:9px;color:var(--txt4)">Profondeur évolution :</span>
-      <select class="stat-depth-sel" onchange="sSetMVDepth(this.value)">${depthOpts}</select>
     </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${compBtns}</div>
+
     <!-- KPIs -->
     <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
       <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:1px solid #fda4af;border-radius:8px;padding:6px 10px">
@@ -19946,15 +20041,20 @@ function sRawFiltered(yearOverride){
   }
   const targetYear=yearOverride||(STAT.year||new Date().getFullYear());
   const useAllYears=!yearOverride&&STAT.allYears;
+  // Précalcul YTD hors du .filter() — évite O(n²) et récursion
+  const _curYforYTD=STAT.year||new Date().getFullYear();
+  const _ytdMCap=(yearOverride!=null&&STAT.periodMode==='folio'&&(!STAT.folios||STAT.folios.size===0))
+    ? _ytdMonth(_curYforYTD) : 12;
   return STAT.raw.filter(r=>{
     if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
     if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(!sCompMatch(sym)) return false;
     if(STAT.ndc!=='all'){
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(STAT.ndc==='ndc'&&!isNDC) return false;
-      if(STAT.ndc==='std'&&isNDC)  return false;
+      const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return false;
+      if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return false;
+      if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return false;
     }
     if(STAT.redMode!=='all'){
       const isRed=_isRedRow(r);
@@ -19963,7 +20063,13 @@ function sRawFiltered(yearOverride){
     }
     if(STAT.periodMode==='folio'){
       if(!useAllYears&&r.year&&r.year!==targetYear) return false;
-      if(yearOverride==null&&STAT.folios.size>0&&!STAT.folios.has(r.folio)) return false;
+      if(STAT.folios&&STAT.folios.size>0){
+        // Mois sélectionnés manuellement : appliquer sur toutes les années (N et N-x)
+        if(!STAT.folios.has(r.folio)) return false;
+      } else if(yearOverride!=null){
+        // YTD automatique — _ytdMCap précalculé avant le .filter() pour éviter O(n²)
+        if(_ytdMCap<12&&r.month&&r.month>_ytdMCap) return false;
+      }
     } else if((STAT.periodMode==='date'||STAT.periodMode==='range')&&filterDateFrom&&filterDateTo){
       if(!r.date||r.date<filterDateFrom||r.date>filterDateTo) return false;
     }
@@ -20023,7 +20129,7 @@ function comRawFiltered(yearOverride){
 function sCAByCompany(){
   const m=new Map();
   sRawFiltered().forEach(r=>{
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     m.set(sym,(m.get(sym)||0)+r.debit);
   });
   return m;
@@ -20084,12 +20190,13 @@ function sClientPeriodCA(compte,aux,yearOverride){
     if(r.compte!==compte||(r.aux||r.compte)!==(aux||compte)) return;
     if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
     if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     if(!sCompMatch(sym)) return;
     if(STAT.ndc!=='all'){
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(STAT.ndc==='ndc'&&!isNDC) return;
-      if(STAT.ndc==='std'&&isNDC)  return;
+      const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return;
+      if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return;
+      if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return;
     }
     if(STAT.redMode!=='all'){
       const isRed=_isRedRow(r);
@@ -20129,12 +20236,13 @@ function _dateQ(d){ return d&&d.getDate()<=15?1:2; }
 function _sBaseFilter(r){
   if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
   if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
-  const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+  const sym=sNDCSym(r)||(r.journal?'AUT':null);
   if(!sCompMatch(sym)) return false;
   if(STAT.ndc!=='all'){
-    const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-    if(STAT.ndc==='ndc'&&!isNDC) return false;
-    if(STAT.ndc==='std'&&isNDC)  return false;
+    const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+    if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return false;
+    if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return false;
+    if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return false;
   }
   if(STAT.redMode!=='all'){
     const isRed=_isRedRow(r);
@@ -20177,7 +20285,7 @@ function _sClientCAForPeriod(compte,aux,year,month,quinzaine){
 /* CA d'une compagnie spécifique pour une période explicite */
 function _sCompCAForPeriod(sym,year,month,quinzaine){
   return _sRawForPeriod(year,month,quinzaine)
-    .filter(r=>(SJMAP[r.journal]||(r.journal?'AUT':null))===sym)
+    .filter(r=>(sNDCSym(r)||(r.journal?'AUT':null))===sym)
     .reduce((s,r)=>s+r.debit,0);
 }
 
@@ -20260,7 +20368,7 @@ function sQuinzaine(c){
     if(!qmap.has(k)) qmap.set(k,{year:r.year,month:r.month,q,ca:0,ops:0,byComp:new Map(),byClient:new Map()});
     const o=qmap.get(k);
     o.ca+=r.debit; o.ops++;
-    const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null);
     o.byComp.set(sym,(o.byComp.get(sym)||0)+r.debit);
     const ckey=r.compte+'|'+(r.aux||r.compte);
     if(!o.byClient.has(ckey)) o.byClient.set(ckey,{compte:r.compte,aux:r.aux||r.compte,ca:0,name:'',libFichier:r.libelle});
@@ -20505,7 +20613,7 @@ function sAggFiltered(rows){
     if(!map.has(key)) map.set(key,{compte:r.compte,aux,total:0,ops:0,journals:new Set(),folios:new Set(),name:'',libFichier:r.libelle});
     const o=map.get(key);
     o.total+=r.debit; o.ops++;
-    o.journals.add(SJMAP[r.journal]||(r.journal||'AUT'));
+    o.journals.add(sNDCSym(r)||(r.journal||'AUT'));
     if(r.folio>=1&&r.folio<=12) o.folios.add(r.folio);
     if(r.libelle&&r.libelle.length>(o.libFichier||'').length) o.libFichier=r.libelle;
   });
@@ -20527,241 +20635,189 @@ let _cliEvolMulti=false;   // 🆕 mode Multi-Années N-n (évolution CA client 
 let _cliEvolDepth=4;       // 🆕 profondeur historique par défaut : N-4 → N
 function sCliEvol(c){
   if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">👤</div><div class="msg">Aucune donnée</div></div>`;return;}
-  const top10=[...STAT.agg].sort((a,b)=>b.total-a.total).slice(0,10);
-  if(!_cliEvolSelected.size) top10.slice(0,3).forEach(r=>_cliEvolSelected.add(r.compte+'|'+(r.aux||r.compte)));
 
-  const CPALS=['#22c55e','#f59e0b','#10b981','#8b5cf6','#ef4444','#f97316','#06b6d4','#84cc16','#ec4899','#22c55e'];
   const curYear=STAT.year||new Date().getFullYear();
-  const prevYear=curYear-1;
+  const depth=Math.max(1,Math.min(8,_cliEvolDepth||3));
+  const maxDepth=Math.max(1,Math.min(8,(STAT.availableYears?STAT.availableYears.length-1:7)));
+  const pageSize=STAT.cliEvolPageSize||25;
+  const page=STAT.cliEvolPage||0;
+  const searchQ=(STAT.cliEvolSearch||''). toLowerCase();
 
-  // Données N et N-1
-  const rawN  =sRawFiltered();
-  const rawN1 =sRawFiltered(prevYear);
+  // ── Période courante (respecte TOUS les filtres sidebar: année, folio,
+  //    date, plage, quinzaine, compagnie, type, NDC, redressements) ─────────
+  const rawCur=sRawFiltered();
+  const periodLabel=sPeriodLabel();
 
-  // Construire données mensuelles par client pour une liste de rows
-  function buildClientMonthly(rows, key){
-    const mmap=new Map();
+  // ── Agrégation par client ─────────────────────────────────────────────────
+  function aggFromRaw(rows){
+    const m=new Map();
     rows.forEach(r=>{
-      if((r.compte+'|'+(r.aux||r.compte))!==key) return;
-      const k=r.folio||0; if(!k||k>12) return;
-      mmap.set(k,(mmap.get(k)||0)+r.debit);
+      const k=r.compte+'|'+(r.aux||r.compte);
+      if(!m.has(k)) m.set(k,{compte:r.compte,aux:r.aux||r.compte,name:'',total:0,ops:0,months:new Set()});
+      const o=m.get(k);
+      o.total+=r.debit; o.ops++;
+      if(r.month) o.months.add(r.month);
+      if(!o.name||(r.libelle||'').length>o.name.length)
+        o.name=sResolveName(r.aux,r.compte,r.libelle);
     });
-    return [...Array(12)].map((_,i)=>mmap.get(i+1)||0);
+    return [...m.values()].sort((a,b)=>b.total-a.total);
   }
 
-  const clientData=top10.map((r,idx)=>{
-    const key=r.compte+'|'+(r.aux||r.compte);
-    return {r,key,idx,
-      valsN : buildClientMonthly(rawN, key),
-      valsN1: buildClientMonthly(rawN1,key)
-    };
+  const curClients=aggFromRaw(rawCur);
+  const totCA=curClients.reduce((s,r)=>s+r.total,0);
+  const curRankMap=new Map(curClients.map((r,i)=>[r.compte+'|'+(r.aux||r.compte), i+1]));
+
+  // ── Même période N-x (sRawFiltered décale l'année automatiquement) ────────
+  const nxData=Array.from({length:depth},(_,ni)=>{
+    const y=curYear-(ni+1);
+    const agg=aggFromRaw(sRawFiltered(y));
+    const totMap=new Map(agg.map(r=>[r.compte+'|'+(r.aux||r.compte), r.total]));
+    const rankMap=new Map(agg.map((r,i)=>[r.compte+'|'+(r.aux||r.compte), i+1]));
+    return {y, totMap, rankMap, totCANx:agg.reduce((s,r)=>s+r.total,0)};
   });
-  const selected=clientData.filter(d=>_cliEvolSelected.has(d.key));
 
-  // Sélecteur clients
-  const selHTML=top10.map((r,i)=>{
-    const key=r.compte+'|'+(r.aux||r.compte);
-    const on=_cliEvolSelected.has(key);
-    const color=CPALS[i%CPALS.length];
-    const journals=[...r.journals].slice(0,2).map(j=>`<span style="background:${SCOL[j]||'#6b7280'};color:#fff;border-radius:2px;padding:0 3px;font-size:9px">${j}</span>`).join('');
-    return `<button onclick="
-      const k='${key.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}';
-      if(_cliEvolSelected.has(k))_cliEvolSelected.delete(k);
-      else _cliEvolSelected.add(k);
-      sCliEvol(document.getElementById('stat-content'));"
-      style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;border:1.5px solid ${on?color:'var(--bo)'};
-      background:${on?color+'18':'#fff'};color:${on?color:'var(--txt3)'};
-      font-size:8.5px;font-weight:700;cursor:pointer;white-space:nowrap"
-      title="${r.name}">${journals}<span style="max-width:110px;overflow:hidden;text-overflow:ellipsis">${r.name.substring(0,16)}${r.name.length>16?'…':''}</span></button>`;
-  }).join('');
+  // ── Moyenne mensuelle globale (sur les mois actifs de la période) ─────────
+  const activeMonths=new Set(rawCur.filter(r=>r.month).map(r=>r.month));
+  const nMonthsGlobal=activeMonths.size||1;
+  const avgMoisGlobal=totCA/nMonthsGlobal;
 
-  // Contrôles
-  const maxDepth=Math.max(1,Math.min(8,(STAT.availableYears?STAT.availableYears.length-1:7)));
-  const ctrlHTML=`
-  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-    <span style="font-size:10px;font-weight:700;color:var(--txt3)">GRANULARITÉ</span>
-    ${['mois','trim','ann'].map(g=>`<button onclick="_cliEvolMode='${g}';sCliEvol(document.getElementById('stat-content'))"
-      style="padding:2px 8px;border-radius:5px;border:1px solid var(--bo);font-size:10px;font-weight:700;cursor:pointer;
-      background:${_cliEvolMode===g?'var(--sky)':'#fff'};color:${_cliEvolMode===g?'#fff':'var(--txt3)'}">${g==='mois'?'Mensuel':g==='trim'?'Trim.':'Annuel'}</button>`).join('')}
-    <span style="margin-left:8px;font-size:10px;font-weight:700;color:var(--txt3)">COMPARAISON</span>
-    <button onclick="_cliEvolCompare=!_cliEvolCompare;_cliEvolMulti=false;sCliEvol(document.getElementById('stat-content'))"
-      style="padding:2px 8px;border-radius:5px;border:1px solid ${(_cliEvolCompare&&!_cliEvolMulti)?'#8b5cf6':'var(--bo)'};font-size:10px;font-weight:700;cursor:pointer;
-      background:${(_cliEvolCompare&&!_cliEvolMulti)?'#8b5cf6':'#fff'};color:${(_cliEvolCompare&&!_cliEvolMulti)?'#fff':'var(--txt3)'}">${curYear} vs ${prevYear}</button>
-    <button onclick="_cliEvolMulti=!_cliEvolMulti;sCliEvol(document.getElementById('stat-content'))"
-      style="padding:2px 8px;border-radius:5px;border:1px solid ${_cliEvolMulti?'#0d9488':'var(--bo)'};font-size:10px;font-weight:700;cursor:pointer;
-      background:${_cliEvolMulti?'#0d9488':'#fff'};color:${_cliEvolMulti?'#fff':'var(--txt3)'}">📅 Multi-Années (N-n)</button>
-    ${_cliEvolMulti?`
-      <span style="font-size:10px;color:var(--txt3);margin-left:2px">Profondeur</span>
-      <button onclick="_cliEvolDepth=Math.max(1,_cliEvolDepth-1);sCliEvol(document.getElementById('stat-content'))"
-        style="width:20px;height:20px;border-radius:5px;border:1px solid var(--bo);background:#fff;color:var(--txt3);font-weight:800;cursor:pointer;font-size:11px;line-height:1">−</button>
-      <span style="font-size:10px;font-weight:800;color:#0d9488;min-width:34px;text-align:center">N-${_cliEvolDepth}</span>
-      <button onclick="_cliEvolDepth=Math.min(${maxDepth},_cliEvolDepth+1);sCliEvol(document.getElementById('stat-content'))"
-        style="width:20px;height:20px;border-radius:5px;border:1px solid var(--bo);background:#fff;color:var(--txt3);font-weight:800;cursor:pointer;font-size:11px;line-height:1">+</button>
-    `:''}
+  const totN1=nxData[0]?.totCANx||0;
+  const globEvo=totN1>0?((totCA-totN1)/totN1*100):null;
+
+  // ── Filtre / pagination ───────────────────────────────────────────────────
+  const filtered=searchQ
+    ?curClients.filter(r=>r.name.toLowerCase().includes(searchQ)||(r.aux||r.compte).toLowerCase().includes(searchQ))
+    :curClients;
+  const totalPages=Math.ceil(filtered.length/pageSize)||1;
+  const safePage=Math.min(page,totalPages-1);
+  if(safePage!==page) STAT.cliEvolPage=safePage;
+  const pageClients=filtered.slice(safePage*pageSize,(safePage+1)*pageSize);
+
+  // ── Contrôles ─────────────────────────────────────────────────────────────
+  const ctrlHTML=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+    <span style="font-size:9px;font-weight:700;color:var(--txt3)">PROFONDEUR N-x :</span>
+    <button onclick="_cliEvolDepth=Math.max(1,_cliEvolDepth-1);STAT.cliEvolPage=0;sCliEvol(document.getElementById('stat-content'))"
+      style="width:22px;height:22px;border-radius:5px;border:1px solid var(--bo);background:#fff;color:var(--txt3);font-weight:800;cursor:pointer;font-size:13px">−</button>
+    <span style="font-size:10px;font-weight:800;color:#0d9488;min-width:32px;text-align:center">N-${depth}</span>
+    <button onclick="_cliEvolDepth=Math.min(${maxDepth},_cliEvolDepth+1);STAT.cliEvolPage=0;sCliEvol(document.getElementById('stat-content'))"
+      style="width:22px;height:22px;border-radius:5px;border:1px solid var(--bo);background:#fff;color:var(--txt3);font-weight:800;cursor:pointer;font-size:13px">+</button>
+    <span style="font-size:9px;font-weight:700;color:var(--txt3);margin-left:6px">🔍</span>
+    <input type="text" placeholder="Nom ou code…" value="${STAT.cliEvolSearch||''}"
+      oninput="STAT.cliEvolSearch=this.value;STAT.cliEvolPage=0;sCliEvol(document.getElementById('stat-content'))"
+      style="font-size:9px;padding:3px 7px;border:1px solid var(--bo);border-radius:5px;width:130px;background:var(--bg2)">
+    <span style="font-size:9px;color:var(--txt4)">${filtered.length} client(s)</span>
+    ${safePage>0?`<button onclick="STAT.cliEvolPage=${safePage-1};sCliEvol(document.getElementById('stat-content'))"
+      style="padding:2px 8px;border-radius:5px;border:1px solid var(--bo);font-size:9px;cursor:pointer;background:#fff">◀</button>`:''}
+    <span style="font-size:9px;color:var(--txt4)">${safePage+1}/${totalPages}</span>
+    ${safePage<totalPages-1?`<button onclick="STAT.cliEvolPage=${safePage+1};sCliEvol(document.getElementById('stat-content'))"
+      style="padding:2px 8px;border-radius:5px;border:1px solid var(--bo);font-size:9px;cursor:pointer;background:#fff">▶</button>`:''}
+    <select onchange="STAT.cliEvolPageSize=+this.value;STAT.cliEvolPage=0;sCliEvol(document.getElementById('stat-content'))"
+      style="font-size:9px;padding:2px 4px;border:1px solid var(--bo);border-radius:5px;background:var(--bg2)">
+      ${[10,25,50,100].map(n=>`<option value="${n}"${n===pageSize?' selected':''} >${n}/p</option>`).join('')}
+    </select>
   </div>`;
 
-  if(!selected.length){
-    c.innerHTML=`<div style="padding:12px 16px">
-      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);margin-bottom:8px">👤 ÉVOLUTION PAR CLIENT — ${curYear}</div>
-      ${ctrlHTML}
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin:10px 0;padding:8px;background:var(--bg2);border-radius:8px">${selHTML}</div>
-      <div class="stat-empty"><div class="big">👆</div><div class="msg">Sélectionnez au moins un client</div></div></div>`;
-    return;
-  }
+  // ── En-têtes N-x ─────────────────────────────────────────────────────────
+  const nxTh=nxData.map(d=>
+    `<th class="r" style="font-size:7.5px;color:#0891b2">CA ${d.y}</th>
+     <th class="r" style="font-size:7.5px;color:#0891b2">ÉVO.</th>
+     <th class="r" style="font-size:7.5px;color:#0891b2">RANG ${d.y}</th>`
+  ).join('');
 
-  /* ══════════════════════════════════════════════════════════════════
-     🆕 MODE MULTI-ANNÉES (N-n) — évolution du CA client sur plusieurs
-     années consécutives (N, N-1, N-2 … N-depth), pas seulement N vs N-1
-  ══════════════════════════════════════════════════════════════════ */
-  if(_cliEvolMulti){
-    const yearsList=[...Array(_cliEvolDepth+1)].map((_,i)=>curYear-_cliEvolDepth+i); // ordre chronologique ascendant
-    const rowsByYear=yearsList.map(y=>sRawFiltered(y));
-    function buildClientYearly(key){
-      return rowsByYear.map(rows=>{
-        let sum=0;
-        for(const r of rows){ if((r.compte+'|'+(r.aux||r.compte))===key) sum+=r.debit; }
-        return sum;
-      });
-    }
-    const yearData=selected.map(d=>({...d, valsY:buildClientYearly(d.key)}));
+  // ── Lignes ────────────────────────────────────────────────────────────────
+  let rows='';
+  pageClients.forEach((r,pi)=>{
+    const ck=r.compte+'|'+(r.aux||r.compte);
+    const curRank=curRankMap.get(ck)||'—';
+    const nMonthsCli=r.months.size||nMonthsGlobal;
+    const avgMoisCli=r.total/nMonthsCli;
+    // Taux = ratio de la moy. mensuelle client vs moy. mensuelle globale
+    const taux=avgMoisGlobal>0?(avgMoisCli/avgMoisGlobal*100):null;
+    const tauxHTML=taux===null?'—':
+      `<span style="font-weight:700;font-size:8px;color:${taux>=100?'#059669':'#dc2626'}">${taux>=100?'▲':'▼'}${taux.toFixed(0)}%</span>`;
 
-    const nY=yearsList.length;
+    const nxCells=nxData.map(d=>{
+      const ncaTot=d.totMap.get(ck)||0;
+      // Évolution = CA même période N-x (apples-to-apples via sRawFiltered)
+      const evo=ncaTot>0?((r.total-ncaTot)/ncaTot*100):null;
+      const nRank=d.rankMap.get(ck)||null;
+      const rankDiff=nRank!==null&&typeof curRank==='number'?(nRank-curRank):null;
+      const evoHTML=evo===null?'<span style="color:var(--txt4);font-size:7px">—</span>':
+        `<span style="font-size:7.5px;font-weight:700;color:${evo>=0?'#059669':'#dc2626'}">${evo>=0?'▲':'▼'}${Math.abs(evo).toFixed(0)}%</span>`;
+      const rankHTML=nRank===null?'<span style="color:#9ca3af;font-size:7px">nv.</span>':
+        rankDiff===0?`<span style="font-size:7.5px;color:var(--txt3)">#${nRank}=</span>`:
+        rankDiff>0?`<span style="font-size:7.5px;color:#059669">#${nRank}▲${rankDiff}</span>`:
+        `<span style="font-size:7.5px;color:#dc2626">#${nRank}▼${Math.abs(rankDiff)}</span>`;
+      return `<td class="r" style="font-size:8px;color:var(--txt3)">${ncaTot>0?SFM(ncaTot):'—'}</td>
+              <td class="r">${evoHTML}</td>
+              <td class="r">${rankHTML}</td>`;
+    }).join('');
 
-    // Tableau récap : une colonne par année + évolution d'une année sur l'autre + CAGR global
-    // + statistiques descriptives (MIN / MAX / MOYENNE / ÉCART-TYPE) demandées à la place du graphique
-    let tblH2=`<table class="stat-tbl" style="font-size:8.5px"><thead><tr>
-      <th>CLIENT</th>
-      ${yearsList.map(y=>`<th class="r">${y}</th>`).join('')}
-      <th class="r" style="color:#0d9488">CAGR (${yearsList[0]}→${yearsList[nY-1]})</th>
-      <th class="r" style="font-size:7.5px">MIN</th>
-      <th class="r" style="font-size:7.5px">MAX</th>
-      <th class="r" style="font-size:7.5px">MOYENNE</th>
-      <th class="r" style="font-size:7.5px">ÉCART-TYPE</th>
-    </tr></thead><tbody>`;
-    yearData.forEach((d,ci)=>{
-      const color=CPALS[d.idx%CPALS.length];
-      const first=d.valsY[0], last=d.valsY[nY-1];
-      const cagr=(first>0&&nY>1)?(Math.pow(last/first,1/(nY-1))-1)*100:null;
-      const cagrBadge=cagr===null?`<span style="color:var(--txt4)">—</span>`:
-        `<span style="font-weight:800;color:${cagr>=0?'#059669':'#dc2626'}">${cagr>=0?'▲':'▼'} ${Math.abs(cagr).toFixed(1)}%/an</span>`;
-      const vMin=Math.min(...d.valsY), vMax=Math.max(...d.valsY);
-      const vMoy=d.valsY.reduce((s,v)=>s+v,0)/nY;
-      const variance=d.valsY.reduce((s,v)=>s+Math.pow(v-vMoy,2),0)/nY;
-      const ecartType=Math.sqrt(variance);
-      tblH2+=`<tr>
-        <td style="font-weight:700;white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;background:${color};border-radius:50%;margin-right:4px"></span>${d.r.name.substring(0,22)}</td>
-        ${d.valsY.map((v,i)=>{
-          const prev=i>0?d.valsY[i-1]:null;
-          const evo=(prev!==null&&prev>0)?((v-prev)/prev*100):null;
-          const arrow=evo===null?'':(evo>=0?` <span style="color:#059669;font-size:7px">▲${evo.toFixed(0)}%</span>`:` <span style="color:#dc2626;font-size:7px">▼${Math.abs(evo).toFixed(0)}%</span>`);
-          return `<td class="r" style="font-weight:700;color:var(--sky-deep)">${v>0?SFM(v):'—'}${arrow}</td>`;
-        }).join('')}
-        <td class="r">${cagrBadge}</td>
-        <td class="r" style="color:var(--txt3);font-size:7.5px">${SFM(vMin)}</td>
-        <td class="r" style="color:var(--txt3);font-size:7.5px">${SFM(vMax)}</td>
-        <td class="r" style="color:#7c3aed;font-size:7.5px;font-weight:700">${SFM(vMoy)}</td>
-        <td class="r" style="color:var(--txt4);font-size:7.5px">${SFM(ecartType)}</td>
-      </tr>`;
-    });
-    tblH2+=`</tbody></table>`;
-
-    // KPI global : CA cumulé toutes années sélectionnées + évolution première → dernière année
-    const totFirst=yearData.reduce((s,d)=>s+d.valsY[0],0);
-    const totLast=yearData.reduce((s,d)=>s+d.valsY[nY-1],0);
-    const totEvo=totFirst>0?((totLast-totFirst)/totFirst*100):null;
-
-    c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:10px 16px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <span style="font-size:10px;font-weight:800;color:#0d9488;letter-spacing:1px">📅 ÉVOLUTION CA CLIENT — MULTI-ANNÉES ${yearsList[0]} → ${yearsList[nY-1]}</span>
-        <span style="font-size:10px;color:var(--txt3)">${selected.length} client(s) · ${nY} années</span>
-      </div>
-      ${ctrlHTML}
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin:8px 0;padding:8px;background:var(--bg2);border-radius:8px">${selHTML}</div>
-      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <div style="flex:1;min-width:160px;background:var(--bg2);border-radius:9px;padding:10px 12px;border-left:3px solid #0d9488">
-          <div class="dk-lbl">CA CUMULÉ ${yearsList[0]}</div>
-          <div class="dk-val" style="color:#0d9488">${SFM(totFirst)}</div>
-        </div>
-        <div style="flex:1;min-width:160px;background:var(--bg2);border-radius:9px;padding:10px 12px;border-left:3px solid #0d9488">
-          <div class="dk-lbl">CA CUMULÉ ${yearsList[nY-1]}</div>
-          <div class="dk-val" style="color:#0d9488">${SFM(totLast)}</div>
-        </div>
-        <div style="flex:1;min-width:160px;background:var(--bg2);border-radius:9px;padding:10px 12px;border-left:3px solid ${totEvo!==null&&totEvo>=0?'#059669':'#dc2626'}">
-          <div class="dk-lbl">ÉVOLUTION GLOBALE</div>
-          <div class="dk-val" style="color:${totEvo!==null&&totEvo>=0?'#059669':'#dc2626'}">${totEvo===null?'—':(totEvo>=0?'▲ +':'▼ ')+totEvo.toFixed(1)+'%'}</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;overflow-x:auto">${tblH2}</div>
-    </div>`;
-    return;
-  }
-
-  const months=[1,2,3,4,5,6,7,8,9,10,11,12];
-
-  // Tableau récap par client : N vs N-1 + évolution + statistiques descriptives
-  // (MIN/MAX/MOYENNE/ÉCART-TYPE calculés sur les mois ACTIFS uniquement,
-  // demandées à la place du graphique qui n'apportait pas grand-chose)
-  let tblH=`<table class="stat-tbl" style="font-size:8.5px"><thead><tr>
-    <th>CLIENT</th><th class="r">CA ${curYear}</th>
-    ${_cliEvolCompare?`<th class="r">CA ${prevYear}</th><th class="r">ÉVOL.</th>`:''}
-    <th class="r">OPS</th><th class="r">PANIER MOY.</th>
-    <th class="r" style="font-size:7.5px">MIN (mois actif)</th>
-    <th class="r" style="font-size:7.5px">MAX (mois actif)</th>
-    <th class="r" style="font-size:7.5px">MOY./MOIS ACTIF</th>
-    <th class="r" style="font-size:7.5px">ÉCART-TYPE</th>
-    ${months.map(m=>`<th class="r" style="font-size:7.5px">${SMOIS[m-1]}</th>`).join('')}
-  </tr></thead><tbody>`;
-  selected.forEach((d,ci)=>{
-    const color=CPALS[d.idx%CPALS.length];
-    const totN=d.valsN.reduce((s,v)=>s+v,0);
-    const totN1=d.valsN1.reduce((s,v)=>s+v,0);
-    const evo=totN1>0?((totN-totN1)/totN1*100):null;
-    const evoBadge=evo!==null?`<span style="font-weight:800;color:${evo>=0?'#059669':'#dc2626'}">${evo>=0?'↑':'↓'}${Math.abs(evo).toFixed(1)}%</span>`:'—';
-    const ops=d.r.ops||0;
-    const activeVals=d.valsN.filter(v=>v>0);
-    const vMin=activeVals.length?Math.min(...activeVals):0;
-    const vMax=activeVals.length?Math.max(...activeVals):0;
-    const vMoy=activeVals.length?activeVals.reduce((s,v)=>s+v,0)/activeVals.length:0;
-    const variance=activeVals.length?activeVals.reduce((s,v)=>s+Math.pow(v-vMoy,2),0)/activeVals.length:0;
-    const ecartType=Math.sqrt(variance);
-    tblH+=`<tr>
-      <td style="font-weight:700;white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;background:${color};border-radius:50%;margin-right:4px;flex-shrink:0"></span>${d.r.name.substring(0,22)}</td>
-      <td class="r" style="font-weight:800;color:var(--sky-deep)">${SFM(totN)}</td>
-      ${_cliEvolCompare?`<td class="r" style="color:var(--txt3)">${totN1>0?SFM(totN1):'—'}</td><td class="r">${evoBadge}</td>`:''}
-      <td class="r">${SFN(ops)}</td>
-      <td class="r" style="color:var(--txt3)">${ops>0?SFM(totN/ops):'—'}</td>
-      <td class="r" style="color:var(--txt3);font-size:7.5px">${activeVals.length?SFM(vMin):'—'}</td>
-      <td class="r" style="color:var(--txt3);font-size:7.5px">${activeVals.length?SFM(vMax):'—'}</td>
-      <td class="r" style="color:#7c3aed;font-size:7.5px;font-weight:700">${activeVals.length?SFM(vMoy):'—'}</td>
-      <td class="r" style="color:var(--txt4);font-size:7.5px">${activeVals.length?SFM(ecartType):'—'}</td>
-      ${d.valsN.map((v,i)=>{
-        const vN1=_cliEvolCompare?d.valsN1[i]:null;
-        const isUp=vN1!=null&&v>vN1,isDown=vN1!=null&&v<vN1&&vN1>0;
-        return `<td class="r" style="color:${v>0?(isUp?'#059669':isDown?'#dc2626':'var(--sky-deep)'):'var(--txt4)'}">
-          ${v>0?(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e3?Math.round(v/1e3)+'K':Math.round(v)):'—'}${isUp?' ↑':isDown?' ↓':''}
-        </td>`;
-      }).join('')}
+    const bgEven=pi%2===1?'background:var(--bg2);':''
+    rows+=`<tr style="${bgEven}">
+      <td style="font-weight:900;font-size:9px;color:${typeof curRank==='number'&&curRank<=3?'#d97706':'var(--txt3)'};min-width:28px;text-align:center">${typeof curRank==='number'?'#'+curRank:'—'}</td>
+      <td style="font-weight:700;font-size:9px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.name}">${r.name}</td>
+      <td style="font-size:8px;color:var(--txt4)">${r.aux||r.compte}</td>
+      <td class="r" style="font-weight:800;color:var(--sky-deep);font-size:9.5px">${SFM(r.total)}</td>
+      <td class="r" style="font-size:8.5px;color:#7c3aed">${SFM(avgMoisCli)}</td>
+      <td class="r">${tauxHTML}</td>
+      ${nxCells}
     </tr>`;
   });
-  tblH+=`</tbody></table>`;
+
+  // ── Bannière YTD si année partielle et aucun folio sélectionné manuellement ─
+  const _cliEvolYtdM = _ytdMonth(curYear);
+  const _SMCE=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const _ytdLblCE=_SMCE[_cliEvolYtdM-1]||'';
+  const _cliEvolYtdBanner = (_cliEvolYtdM < 12 && STAT.folios.size === 0)
+    ? '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:linear-gradient(135deg,rgba(234,88,12,.08),rgba(194,65,12,.04));border:1.5px solid rgba(234,88,12,.4);border-radius:8px;margin-bottom:8px;">'
+      +'<span style="font-size:13px">&#x26A0;&#xFE0F;</span> '
+      +'<span style="font-size:9px;font-weight:800;color:#c2410c">COMPARAISON YTD &Eacute;QUITABLE</span> '
+      +'<span style="font-size:9px;color:var(--txt3)">&mdash; Donn&eacute;es '+curYear+' disponibles jusqu&rsquo;&agrave; '
+      +'<b>'+_ytdLblCE+'</b>. '
+      +'Les colonnes N-1 &agrave; N-'+depth+' sont automatiquement limit&eacute;es &agrave; '
+      +'<b>Jan&ndash;'+_ytdLblCE+'</b> sur toutes les ann&eacute;es ant&eacute;rieures.</span>'
+      +'</div>'
+    : '';
 
   c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:10px 16px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px">👤 ÉVOLUTION PAR CLIENT — ${curYear}${_cliEvolCompare?' vs '+prevYear:''}</span>
-      <span style="font-size:10px;color:var(--txt3)">${selected.length} client(s) · ${sCompLabel()}${STAT.folios.size>0?' · F'+[...STAT.folios].sort().join(','):''}</span>
+      <span style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px">👤 ÉVOLUTION CLIENT — ${periodLabel}</span>
+      <span style="font-size:9px;color:var(--txt4)">${filtered.length} clients · ${sCompLabel()}</span>
+    </div>
+    ${_cliEvolYtdBanner}
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+      <div style="flex:1;min-width:130px;background:var(--bg2);border-radius:8px;padding:8px 10px;border-left:3px solid var(--sky-deep)">
+        <div class="dk-lbl">CA · ${periodLabel}</div><div class="dk-val">${SFM(totCA)}</div></div>
+      <div style="flex:1;min-width:130px;background:var(--bg2);border-radius:8px;padding:8px 10px;border-left:3px solid #7c3aed">
+        <div class="dk-lbl">MOY. MENSUELLE GLOBALE</div><div class="dk-val" style="color:#7c3aed">${SFM(avgMoisGlobal)}<span style="font-size:8px;font-weight:400"> /${nMonthsGlobal} mois</span></div></div>
+      <div style="flex:1;min-width:130px;background:var(--bg2);border-radius:8px;padding:8px 10px;border-left:3px solid ${globEvo===null||globEvo>=0?'#059669':'#dc2626'}">
+        <div class="dk-lbl">ÉVO. vs même période N-1</div>
+        <div class="dk-val" style="color:${globEvo===null||globEvo>=0?'#059669':'#dc2626'}">${globEvo===null?'—':(globEvo>=0?'▲ +':'▼ ')+globEvo.toFixed(1)+'%'}</div></div>
+      <div style="flex:1;min-width:130px;background:var(--bg2);border-radius:8px;padding:8px 10px;border-left:3px solid #374151">
+        <div class="dk-lbl">CLIENTS ACTIFS</div><div class="dk-val">${SFN(curClients.length)}</div></div>
     </div>
     ${ctrlHTML}
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin:8px 0;padding:8px;background:var(--bg2);border-radius:8px">${selHTML}</div>
-    <div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;overflow:hidden;overflow-x:auto">${tblH}</div>
+    <div style="overflow-x:auto;background:var(--surface);border:1.5px solid var(--bo);border-radius:10px">
+      <table class="stat-tbl" style="font-size:8.5px;min-width:800px">
+        <thead><tr>
+          <th style="min-width:30px;text-align:center">RANG</th>
+          <th style="min-width:150px">CLIENT</th>
+          <th>CODE</th>
+          <th class="r">CA · ${periodLabel}</th>
+          <th class="r" style="color:#7c3aed">MOY./MOIS</th>
+          <th class="r" style="color:#7c3aed">TAUX vs MOY.GLOB</th>
+          ${nxTh}
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:6px;font-size:8px;color:var(--txt4)">
+      ℹ️ Comparaisons N-x sur la même période exacte · MOY./MOIS = CA période ÷ nb mois actifs · TAUX = moy.client ÷ moy.globale · ÉVO = CA même période N-x
+    </div>
   </div>`;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   VUE HEATMAP — Client × Mois · Bug fix année · Filtres · Comparaison
-   3 modes : intensité CA | intensité OPS | delta N vs N-1
-══════════════════════════════════════════════════════════════════════ */
-let _heatMode='ca';    // ca|ops|delta
-let _heatTopN=20;
 function sHeatmap(c){
   if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">🔥</div><div class="msg">Aucune donnée</div></div>`;return;}
 
@@ -21171,12 +21227,13 @@ function sCompanyAggForPeriod(period){
   STAT.raw.forEach(r => {
     if(STAT.type === '411' && !r.compte.startsWith('411')) return;
     if(STAT.type === '18' && !r.compte.startsWith('18')) return;
-    const sym = SJMAP[r.journal] || (r.journal ? 'AUT' : null);
+    const sym = sNDCSym(r) || (r.journal ? 'AUT' : null);
     if(!sCompMatch(sym)) return;
     if(STAT.ndc!=='all'){
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(STAT.ndc==='ndc'&&!isNDC) return;
-      if(STAT.ndc==='std'&&isNDC)  return;
+      const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return;
+      if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return;
+      if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return;
     }
     if(STAT.redMode!=='all'){
       const isRed=_isRedRow(r);
@@ -21246,12 +21303,13 @@ function sFilterForPeriod(period){
     // Filtres de base
     if(STAT.type === '411' && !r.compte.startsWith('411')) return;
     if(STAT.type === '18' && !r.compte.startsWith('18')) return;
-    const sym = SJMAP[r.journal] || (r.journal ? 'AUT' : null);
+    const sym = sNDCSym(r) || (r.journal ? 'AUT' : null);
     if(!sCompMatch(sym)) return;
     if(STAT.ndc!=='all'){
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(STAT.ndc==='ndc'&&!isNDC) return;
-      if(STAT.ndc==='std'&&isNDC)  return;
+      const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);
+      if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC') return;
+      if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV') return;
+      if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV')) return;
     }
     if(STAT.redMode!=='all'){
       const isRed=_isRedRow(r);
@@ -22409,7 +22467,7 @@ async function exportRapportWord(){
     // Filtres actifs
     const typeStr=STAT.type==='411'?'Agences (411 uniquement)':STAT.type==='18'?'Inter-Unité (18xxx uniquement)':'Tous types (411 + 18xxx)';
     const compStr=STAT.comp==='ALL'?'Toutes compagnies':`Compagnie : ${STAT.comp}`;
-    const ndcStr=STAT.ndc==='ndc'?'FACTURE (NDC uniquement)':STAT.ndc==='std'?'EBV (Standard uniquement)':'Tout (NDC + EBV)';
+    const ndcStr=STAT.ndc==='ndc'?'NDC Facture (706012) uniquement':STAT.ndc==='ebv'?'NDC EBV (7081111) uniquement':STAT.ndc==='std'?'Hors NDC':'Tout (NDC Fac + EBV + Std)';
     const redStr=STAT.redMode==='excl'?'Hors Redressements (mot-clé RED exclu)':STAT.redMode==='only'?'Redressements uniquement (mot-clé RED)':'Tout (avec Redressements)';
 
     // Pareto (calculé sur CA positifs uniquement pour éviter distorsions liées aux négatifs)
@@ -22440,7 +22498,7 @@ async function exportRapportWord(){
 
     // Compagnies
     const cm=new Map();
-    sRawFiltered().forEach(r=>{const sym=SJMAP[r.journal]||(r.journal?r.journal:'AUT');cm.set(sym,(cm.get(sym)||0)+r.debit);});
+    sRawFiltered().forEach(r=>{const sym=sNDCSym(r)||(r.journal?r.journal:'AUT');cm.set(sym,(cm.get(sym)||0)+r.debit);});
     const compArr=[...cm.entries()].sort((a,b)=>b[1]-a[1]);
     const leadComp=compArr[0];
 
@@ -23049,7 +23107,7 @@ async function exportRapportWord(){
       if(!STAT.comAgg||!STAT.comAgg.length) return null;
       const caMapL=sCAByCompany();
       const ndcCAL=sRawFiltered().filter(r=>(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'')).reduce((s,r)=>s+r.debit,0);
-      const caRefL=sym=>sym==='NDC FACTURE'?ndcCAL:(caMapL.get(sym)||0);
+      const caRefL=sym=>sym==='NDC_FAC'?ndcCAL:(caMapL.get(sym)||0);
       const agg=[...STAT.comAgg].sort((a,b)=>b.total-a.total);
       const W=880,H=Math.max(360,agg.length*44+120);
       const PL=130,PR=30,PT=65,PB=55,cW=W-PL-PR,cH=H-PT-PB;
@@ -23402,7 +23460,78 @@ ${rows.join('')}</w:tbl>`;
     bodyParts.push(pageBreak());
 
     // ════════════════════════════════════════════
-    // SECTION 2 : CLASSEMENT & GRAPHIQUE BARRES
+    // SECTION NDC — RÉFÉRENTIEL & PARAMÉTRAGE
+    // Explique les deux types NDC, leur logique
+    // comptable, leur distinction, et comment
+    // interpréter les chiffres dans tout le rapport
+    // ════════════════════════════════════════════
+    (()=>{
+      // Calcul des chiffres NDC sur les données filtrées
+      const ndcFacRaw=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_FAC');
+      const ndcEbvRaw=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_EBV');
+      const ndcFacCA=ndcFacRaw.reduce((s,r)=>s+r.debit,0);
+      const ndcEbvCA=ndcEbvRaw.reduce((s,r)=>s+r.debit,0);
+      const ndcFacOps=ndcFacRaw.length;
+      const ndcEbvOps=ndcEbvRaw.length;
+      const ndcFacCom=STAT.comAgg?.find(o=>o.sym==='NDC_FAC');
+      const ndcEbvCom=STAT.comAgg?.find(o=>o.sym==='NDC_EBV');
+      const ndcFacClients=new Set(ndcFacRaw.map(r=>r.compte+'|'+(r.aux||r.compte))).size;
+      const ndcEbvClients=new Set(ndcEbvRaw.map(r=>r.compte+'|'+(r.aux||r.compte))).size;
+      const ndcFacPct=totCA>0?(ndcFacCA/totCA*100):0;
+      const ndcEbvPct=totCA>0?(ndcEbvCA/totCA*100):0;
+      const ndcFacTaux=ndcFacCA>0&&ndcFacCom?(ndcFacCom.total/ndcFacCA*100):null;
+      const ndcEbvTaux=ndcEbvCA>0&&ndcEbvCom?(ndcEbvCom.total/ndcEbvCA*100):null;
+      const filtreModeLabel=STAT.ndc==='ndc'?'NDC Facture uniquement':STAT.ndc==='ebv'?'NDC EBV uniquement':STAT.ndc==='std'?'Hors NDC (données standard uniquement)':'Tous flux confondus (NDC Facture + NDC EBV + Standard)';
+
+      bodyParts.push(heading('1.2 RÉFÉRENTIEL NDC — PARAMÉTRAGE ET LOGIQUE COMPTABLE',2));
+      bodyParts.push(separator());
+
+      bodyParts.push(para(
+        `Ce rapport a été généré avec le filtre NDC réglé sur : « ${filtreModeLabel} ». Cette section documente la logique de distinction entre les deux catégories NDC appliquées dans l'ensemble du rapport, de manière à ce que tout lecteur — y compris sans accès à l'application — puisse interpréter correctement les chiffres présentés.`,
+        0,'1e40af',true,19
+      ));
+
+      bodyParts.push(para(
+        `CONTEXTE GÉNÉRAL. Le canal NDC (New Distribution Capability) de Turkish Airlines emprunte le même journal comptable que les émissions TK standard (journal 26-1) mais génère deux flux économiques distincts, traités différemment en comptabilité et en reporting : la Facturation NDC d'une part, et le flux EBV (Émission par Bon de Valeur) d'autre part. Ces deux flux ont des patterns de libellé, des comptes de commission, et des niveaux de marge structurellement différents. Les confondre dans les statistiques conduit à des taux de commission incorrects et à une mauvaise lecture de la performance TK NDC.`,
+        0,'374151',false,18
+      ));
+
+      // ── Tableau récapitulatif des 2 types NDC ──
+      bodyParts.push(para('Tableau récapitulatif — Distinction NDC Facture vs NDC EBV',0,'374151',true,17));
+      const ndcHdr=tableRow(
+        tc('PARAMÈTRE','1e3a5f',true,'ffffff',2800,16,'left'),
+        tc('NDC FACTURE (706012)','7c3aed',true,'ffffff',3200,16,'center'),
+        tc('NDC EBV (7081111)','0891b2',true,'ffffff',3200,16,'center')
+      );
+      const ndcRows=[
+        tableRow(tc('Journal comptable','f8fafc',true,'374151',2800,15),tc('26-1 (TK NDC)','f5f3ff',false,'7c3aed',3200,15,'center'),tc('26-1 (TK NDC)','ecfeff',false,'0891b2',3200,15,'center')),
+        tableRow(tc('Compte de commission','f8fafc',true,'374151',2800,15),tc('706012','f5f3ff',true,'7c3aed',3200,16,'center'),tc('7081111','ecfeff',true,'0891b2',3200,16,'center')),
+        tableRow(tc('Identification (CA)','f8fafc',true,'374151',2800,15),tc('Libellé ou référence contient /NDC/ (pattern ANNEE/NDC/TK/NNN)','f5f3ff',false,'374151',3200,14),tc('Journal 26-1 sans /NDC/ dans libellé ni référence','ecfeff',false,'374151',3200,14)),
+        tableRow(tc('Nature économique','f8fafc',true,'374151',2800,15),tc('Facturation directe des ventes NDC — CA reconnu en produit','f5f3ff',false,'374151',3200,14),tc('Flux EBV (Émission par Bon de Valeur) — CA porté par le bon','ecfeff',false,'374151',3200,14)),
+        tableRow(tc('CA sur la période (DA)','f8fafc',true,'374151',2800,15),tc(ndcFacCA>0?fmtDAFull(ndcFacCA):'Aucun flux sur ce filtre','f5f3ff',true,'7c3aed',3200,16,'right'),tc(ndcEbvCA>0?fmtDAFull(ndcEbvCA):'Aucun flux sur ce filtre','ecfeff',true,'0891b2',3200,16,'right')),
+        tableRow(tc('Part du CA total','f8fafc',true,'374151',2800,15),tc(ndcFacCA>0?fmtPct(ndcFacPct):'—','f5f3ff',true,'7c3aed',3200,16,'center'),tc(ndcEbvCA>0?fmtPct(ndcEbvPct):'—','ecfeff',true,'0891b2',3200,16,'center')),
+        tableRow(tc('Nombre de clients','f8fafc',true,'374151',2800,15),tc(ndcFacClients>0?String(ndcFacClients)+' clients actifs':'—','f5f3ff',false,'374151',3200,15,'center'),tc(ndcEbvClients>0?String(ndcEbvClients)+' clients actifs':'—','ecfeff',false,'374151',3200,15,'center')),
+        tableRow(tc('Opérations','f8fafc',true,'374151',2800,15),tc(ndcFacOps>0?String(ndcFacOps.toLocaleString('fr-FR'))+' ops':'—','f5f3ff',false,'374151',3200,15,'center'),tc(ndcEbvOps>0?String(ndcEbvOps.toLocaleString('fr-FR'))+' ops':'—','ecfeff',false,'374151',3200,15,'center')),
+        tableRow(tc('Commission (SUP COM)','f8fafc',true,'374151',2800,15),tc(ndcFacCom?fmtDAFull(ndcFacCom.total):'Non disponible (SUP COM absent)','f5f3ff',ndcFacCom?true:false,'7c3aed',3200,15,'right'),tc(ndcEbvCom?fmtDAFull(ndcEbvCom.total):'Non disponible (SUP COM absent)','ecfeff',ndcEbvCom?true:false,'0891b2',3200,15,'right')),
+        tableRow(tc('Taux commission réel','f8fafc',true,'374151',2800,15),tc(ndcFacTaux!==null?fmtPct(ndcFacTaux)+' (commission/CA NDC Fac)':'—','f5f3ff',ndcFacTaux!==null,ndcFacTaux!==null?'7c3aed':'6b7280',3200,15,'center'),tc(ndcEbvTaux!==null?fmtPct(ndcEbvTaux)+' (commission/CA NDC EBV)':'—','ecfeff',ndcEbvTaux!==null,ndcEbvTaux!==null?'0891b2':'6b7280',3200,15,'center')),
+      ];
+      bodyParts.push(tableWrap([ndcHdr,...ndcRows],9200));
+
+      bodyParts.push(para(
+        `IMPACT SUR LES AUTRES SECTIONS DU RAPPORT. Cette distinction est appliquée de manière cohérente dans l'ensemble du document. Dans le classement clients (section 2), les clients NDC Facture et NDC EBV apparaissent séparément selon leur compte auxiliaire. Dans la vue Compagnies (section 6), les deux types sont affichés comme deux lignes distinctes : NDC_FAC (violet) et NDC_EBV (bleu), chacune avec son propre CA, sa propre commission et son propre taux. Dans l'export Excel accompagnant ce rapport, deux onglets distincts ont été générés : « Clients_NDC_FAC » et « Clients_NDC_EBV ».`,
+        0,'374151',false,18
+      ));
+
+      bodyParts.push(para(
+        `COMMENT FILTRER PAR TYPE NDC. Dans l'application FWT Analytics, le panneau latéral « TYPE NDC » propose quatre boutons : TOUT (tous flux confondus), NDC FAC (filtre sur NDC_FAC uniquement), NDC EBV (filtre sur NDC_EBV uniquement), et HORS NDC (toutes compagnies sauf les deux types NDC). Ces filtres interagissent avec tous les autres filtres (Type de compte, Compagnie, Redressements, Période) de manière cumulative.`,
+        0,'374151',false,18
+      ));
+
+      if(ndcFacCA===0&&ndcEbvCA===0){
+        bodyParts.push(para(`Note : Aucun flux NDC n'a été détecté dans les données analysées sur cette période avec les filtres actifs. Si des opérations NDC existent dans la période, vérifiez que le libellé ou la référence de l'écriture contient bien le pattern « /NDC/ » pour les factures, ou que le journal 26-1 est bien utilisé pour les deux types.`,0,'dc2626',true,17));
+      }
+    })();
+    bodyParts.push(pageBreak());
     // ════════════════════════════════════════════
     if(SECT.rank){
     bodyParts.push(heading('2. CLASSEMENT DES CLIENTS PAR CHIFFRE D\'AFFAIRES',1));
@@ -23655,13 +23784,14 @@ ${rows.join('')}</w:tbl>`;
     // ════════════════════════════════════════════
     if(SECT.commission && STAT.comAgg&&STAT.comAgg.length){
       const caMapW=sCAByCompany();
-      const ndcFactureCAW=sRawFiltered().filter(r=>(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'')).reduce((s,r)=>s+r.debit,0);
-      const caRefForW=sym=>sym==='NDC FACTURE'?ndcFactureCAW:(caMapW.get(sym)||0);
+      const ndcFacCAW=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_FAC').reduce((s,r)=>s+r.debit,0);
+      const ndcEbvCAW=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_EBV').reduce((s,r)=>s+r.debit,0);
+      const caRefForW=sym=>sym==='NDC_FAC'?ndcFacCAW:sym==='NDC_EBV'?ndcEbvCAW:(caMapW.get(sym)||0);
       const totComW=STAT.comAgg.reduce((s,o)=>s+o.total,0);
       const totCAW=[...caMapW.values()].reduce((s,v)=>s+v,0);
       const tauxGlobalW=totCAW>0?totComW/totCAW*100:0;
       const sortedComW=[...STAT.comAgg].sort((a,b)=>b.total-a.total);
-      const topComW=sortedComW.find(o=>o.sym!=='NDC FACTURE');
+      const topComW=sortedComW.find(o=>o.sym!=='NDC_FAC'&&o.sym!=='NDC_EBV');
       const totOpsComW=STAT.comAgg.reduce((s,o)=>s+o.ops,0);
 
       // ── 6.1 : Synthèse des commissions ──────────────────────────────────────
@@ -23780,7 +23910,7 @@ ${rows.join('')}</w:tbl>`;
 
       // ── 6.6 : Analyse statistique — Corrélation CA ↔ Commission ────────────
       bodyParts.push(para('6.6  ANALYSE STATISTIQUE — CORRÉLATION CA ↔ COMMISSION',0,'065f46',true));
-      const compRowsW=sortedComW.filter(o=>o.sym!=='NDC FACTURE').map(o=>({ca:caRefForW(o.sym),com:o.total}));
+      const compRowsW=sortedComW.filter(o=>o.sym!=='NDC_FAC'&&o.sym!=='NDC_EBV').map(o=>({ca:caRefForW(o.sym),com:o.total}));
       const xsW=compRowsW.filter(r=>r.ca>0).map(r=>r.ca), ysW=compRowsW.filter(r=>r.ca>0).map(r=>r.com);
       let pearsonW=null;
       if(xsW.length>=2){
@@ -24017,7 +24147,7 @@ ${rows.join('')}</w:tbl>`;
     // SECTION 12 : MEILLEURS VENDEURS — SÉLECTION PÉRIODE (vue dédiée)
     // Reprend EXACTEMENT l'Année / Mois / Quinzaine / Compagnie choisis
     // dans la vue « Meilleurs Vendeurs » du module STAT (STAT.mvYear,
-    // STAT.mvMonth, STAT.mvQ, STAT.mvComp) — indépendante des filtres
+    // STAT.mvMonth, STAT.mvQ) — compagnie gérée par le filtre global sidebar
     // globaux utilisés par le reste du rapport (STAT.agg).
     // ════════════════════════════════════════════
     if(SECT.mv){
@@ -24025,7 +24155,8 @@ ${rows.join('')}</w:tbl>`;
     const mvYear=STAT.mvYear||availYearsMV[0];
     const mvMonth=STAT.mvMonth||(new Date().getMonth()+1);
     const mvQ=STAT.mvQ||1;
-    const mvComp=STAT.mvComp||'ALL';
+    // mvComp supprimé — on utilise directement le filtre global STAT.comp
+  const mvComp=STAT.comp||'ALL'; // string | Set | 'ALL'
     const mvIsAnnee=(STAT.mvPeriodType||'quinzaine')==='annee';
     const mvYtdMonth=mvIsAnnee?_mvLastMonthOfYear(mvYear):12;
     const mvIsPartialYear=mvIsAnnee&&mvYtdMonth<12;
@@ -24038,7 +24169,7 @@ ${rows.join('')}</w:tbl>`;
     const mvMoisLblYtd=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][mvYtdMonth-1];
     bodyParts.push(para(mvIsAnnee
       ? `Cette section reprend la sélection exacte réalisée dans la vue « Meilleurs Vendeurs » du module STAT : ANNÉE ${mvYear}, filtre compagnie : ${mvCompLbl}${mvIsPartialYear?` — données disponibles jusqu'à ${mvMoisLblYtd} : la comparaison est donc limitée à Jan-${mvMoisLblYtd} sur TOUTES les années, pour ne pas comparer une année partielle à des années complètes`:' (année complète, 12 mois)'}. Le classement ci-dessous trie les clients par montant décroissant sur cette période, avec la moyenne du CA du client sur la même période des années antérieures disponibles et le taux de réalisation associé.`
-      : `Cette section reprend la sélection exacte réalisée dans la vue « Meilleurs Vendeurs » du module STAT : ${mvMoisLbl} ${mvYear}, Quinzaine ${mvQ} (${mvQ===1?'1-15':'16-fin'}), filtre compagnie : ${mvCompLbl}. Le classement ci-dessous trie les clients par montant décroissant sur cette période précise, avec la moyenne de CA par quinzaine active de l'année ${mvYear} et le taux de réalisation associé.`
+      : `Cette section reprend la sélection exacte réalisée dans la vue « Meilleurs Vendeurs » du module STAT : ${mvMoisLbl} ${mvYear}, Quinzaine ${mvQ} (${mvQ===1?'1-15':'16-fin'}), filtre compagnie (sidebar) : ${mvCompLbl}. Le classement ci-dessous trie les clients par montant décroissant sur cette période précise, avec la moyenne de CA par quinzaine active de l'année ${mvYear} et le taux de réalisation associé.`
     ,0,'374151'));
 
     if(!mvAll.length){
@@ -24057,7 +24188,7 @@ ${rows.join('')}</w:tbl>`;
           if(!_sBaseFilter(r)) return;
           if(r.year>=mvYear) return;
           if(!r.month||r.month>mvYtdMonth) return;
-          if(mvComp!=='ALL'){ const sym=SJMAP[r.journal]||(r.journal?'AUT':null); if(sym!==mvComp) return; }
+          if(mvComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==mvComp) return; }
           const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
           if(!mvShownKeys.has(ck)) return;
           if(!yearMapR.has(ck)) yearMapR.set(ck,new Map());
@@ -24070,7 +24201,7 @@ ${rows.join('')}</w:tbl>`;
           if(!_sBaseFilter(r)) return;
           if(r.year!==mvYear) return;
           if(mvComp!=='ALL'){
-            const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+            const sym=sNDCSym(r)||(r.journal?'AUT':null);
             if(sym!==mvComp) return;
           }
           if(!r.date) return;
@@ -24102,7 +24233,7 @@ ${rows.join('')}</w:tbl>`;
           if(!_sBaseFilter(r)) return;
           if(r.year!==mvYear) return;
           if(mvComp!=='ALL'){
-            const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+            const sym=sNDCSym(r)||(r.journal?'AUT':null);
             if(sym!==mvComp) return;
           }
           if(!r.date) return;
@@ -24634,7 +24765,7 @@ async function statExport(){
   (()=>{
     const ws={};
     const today=new Date().toLocaleDateString('fr-FR');
-    const filtre = `Type: ${STAT.type==='all'?'411+18xx':STAT.type==='411'?'Agences 411':'Unités 18xx'} | CIE: ${sCompLabel()} | NDC: ${STAT.ndc==='ndc'?'Avec /NDC/':STAT.ndc==='std'?'Sans /NDC/':'Tous'} | Redressements: ${STAT.redMode==='excl'?'Exclus':STAT.redMode==='only'?'Seuls':'Tous'}`;
+    const filtre = `Type: ${STAT.type==='all'?'411+18xx':STAT.type==='411'?'Agences 411':'Unités 18xx'} | CIE: ${sCompLabel()} | NDC: ${STAT.ndc==='ndc'?'NDC Fac':STAT.ndc==='ebv'?'NDC EBV':STAT.ndc==='std'?'Hors NDC':'Tous'} | Redressements: ${STAT.redMode==='excl'?'Exclus':STAT.redMode==='only'?'Seuls':'Tous'}`;
     
     let row=1;
     const title=[
@@ -24997,9 +25128,9 @@ async function statExport(){
     STAT.raw.forEach(r=>{
       if(STAT.type==='411'&&!r.compte.startsWith('411')) return;
       if(STAT.type==='18' &&!r.compte.startsWith('18'))  return;
-      const sym=SJMAP[r.journal]||(r.journal?'AUT':null);
+      const sym=sNDCSym(r)||(r.journal?'AUT':null);
       if(!sCompMatch(sym)) return;
-      if(STAT.ndc!=='all'){const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');if(STAT.ndc==='ndc'&&!isNDC)return;if(STAT.ndc==='std'&&isNDC)return;}
+      if(STAT.ndc!=='all'){const rSymNDC=sNDCSym(r)||(r.journal?'AUT':null);if(STAT.ndc==='ndc'&&rSymNDC!=='NDC_FAC')return;if(STAT.ndc==='ebv'&&rSymNDC!=='NDC_EBV')return;if(STAT.ndc==='std'&&(rSymNDC==='NDC_FAC'||rSymNDC==='NDC_EBV'))return;}
       if(STAT.redMode!=='all'){const isRed=_isRedRow(r);if(STAT.redMode==='excl'&&isRed)return;if(STAT.redMode==='only'&&!isRed)return;}
       if(r.year&&r.month){const k=r.year+'-'+String(r.month).padStart(2,'0');evolMap.set(k,(evolMap.get(k)||0)+r.debit);}
     });
@@ -25012,7 +25143,7 @@ async function statExport(){
       const prev=i>0?evolMap.get(sortedKeys[i-1]):null;
       const diff=prev!=null?v-prev:null;
       const evo=prev!=null&&prev>0?Math.round((v-prev)/prev*1000)/10:null;
-      return[SMEVOL[+m-1]+' '+yr,+yr,SMEVOL[+m-1],fmtN(v),diff!=null?fmtN(diff):null,evo!=null?evo:null,STAT.ndc==='ndc'?'TK NDC seulement':STAT.ndc==='std'?'Hors NDC':'Tous'];
+      return[SMEVOL[+m-1]+' '+yr,+yr,SMEVOL[+m-1],fmtN(v),diff!=null?fmtN(diff):null,evo!=null?evo:null,STAT.ndc==='ndc'?'NDC Facture':STAT.ndc==='ebv'?'NDC EBV':STAT.ndc==='std'?'Hors NDC':'Tous (NDC Fac + EBV + Std)'];
     });
     const ws=XLSX.utils.aoa_to_sheet([hdrs,...rows]);
     _applyColWidths(ws,[14,7,8,18,20,15,20]);
@@ -25035,44 +25166,52 @@ async function statExport(){
   (()=>{
     const jMap=new Map();
     STAT.raw.forEach(r=>{
-      const sym=SJMAP[r.journal]||(r.journal||'AUT');
+      const sym=sNDCSym(r)||(r.journal||'AUT');
       const jkey=sym+'|'+r.journal;
-      if(!jMap.has(jkey))jMap.set(jkey,{CIE:sym,JOURNAL:r.journal,CA_TOTAL:0,NB_OPS:0,CA_NDC:0,OPS_NDC:0,CA_STD:0,OPS_STD:0});
+      if(!jMap.has(jkey))jMap.set(jkey,{CIE:sym,JOURNAL:r.journal,CA_TOTAL:0,NB_OPS:0,CA_NDC_FAC:0,OPS_NDC_FAC:0,CA_NDC_EBV:0,OPS_NDC_EBV:0,CA_STD:0,OPS_STD:0});
       const o=jMap.get(jkey);
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
+      const rSymNDC2=sNDCSym(r)||(r.journal?'AUT':null);
       o.CA_TOTAL+=r.debit;o.NB_OPS++;
-      if(isNDC){o.CA_NDC+=r.debit;o.OPS_NDC++;}else{o.CA_STD+=r.debit;o.OPS_STD++;}
+      if(rSymNDC2==='NDC_FAC'){o.CA_NDC_FAC+=r.debit;o.OPS_NDC_FAC++;}
+      else if(rSymNDC2==='NDC_EBV'){o.CA_NDC_EBV+=r.debit;o.OPS_NDC_EBV++;}
+      else{o.CA_STD+=r.debit;o.OPS_STD++;}
     });
-    const hdrs=['CIE','JOURNAL','CA_TOTAL_DA','NB_OPS_TOTAL','CA_AVEC_NDC_DA','OPS_AVEC_NDC','CA_SANS_NDC_DA','OPS_SANS_NDC','PCT_NDC'];
+    const hdrs=['CIE','JOURNAL','CA_TOTAL_DA','NB_OPS_TOTAL','CA_NDC_FAC_DA','OPS_NDC_FAC','CA_NDC_EBV_DA','OPS_NDC_EBV','CA_STD_DA','OPS_STD','PCT_NDC_FAC','PCT_NDC_EBV'];
     const rows=[...jMap.values()].sort((a,b)=>b.CA_TOTAL-a.CA_TOTAL).map(o=>[
-      o.CIE,o.JOURNAL,fmtN(o.CA_TOTAL),o.NB_OPS,fmtN(o.CA_NDC),o.OPS_NDC,fmtN(o.CA_STD),o.OPS_STD,
-      o.CA_TOTAL>0?Math.round(o.CA_NDC/o.CA_TOTAL*1000)/10:0
+      o.CIE,o.JOURNAL,fmtN(o.CA_TOTAL),o.NB_OPS,fmtN(o.CA_NDC_FAC),o.OPS_NDC_FAC,fmtN(o.CA_NDC_EBV),o.OPS_NDC_EBV,fmtN(o.CA_STD),o.OPS_STD,
+      o.CA_TOTAL>0?Math.round(o.CA_NDC_FAC/o.CA_TOTAL*1000)/10:0,
+      o.CA_TOTAL>0?Math.round(o.CA_NDC_EBV/o.CA_TOTAL*1000)/10:0
     ]);
     const ws=XLSX.utils.aoa_to_sheet([hdrs,...rows]);
-    _applyColWidths(ws,[8,9,18,13,18,13,18,13,10]);
+    _applyColWidths(ws,[8,9,18,13,18,13,18,13,18,10,12,12]);
     hdrs.forEach((_,ci)=>{const a=XLSX.utils.encode_cell({r:0,c:ci});if(ws[a])ws[a].s=_hdrStyle('2C3E50');});
     XLSX.utils.book_append_sheet(wb,ws,'Par_Journal_NDC');
   })();
 
   // ════════════════════════════════════════════════════════════════════
-  // 9. CLIENTS NDC ═════════════════════════════════════════════════════
+  // 9. CLIENTS NDC — divisé en NDC FACTURE (706012) et NDC EBV (7081111)
   // ════════════════════════════════════════════════════════════════════
   (()=>{
-    const ndcMap=new Map();
+    const ndcFacMap=new Map(), ndcEbvMap=new Map();
     STAT.raw.forEach(r=>{
-      const isNDC=(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'');
-      if(!isNDC) return;
+      const rSym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(rSym!=='NDC_FAC'&&rSym!=='NDC_EBV') return;
+      const targetMap=rSym==='NDC_FAC'?ndcFacMap:ndcEbvMap;
       const key=r.compte+'|'+(r.aux||r.compte);
-      if(!ndcMap.has(key))ndcMap.set(key,{COMPTE:r.compte,AUXILIAIRE:r.aux||'',NOM_CLIENT:sResolveName(r.aux,r.compte,r.libelle),CA_NDC_DA:0,NB_OPS:0});
-      const o=ndcMap.get(key);o.CA_NDC_DA+=r.debit;o.NB_OPS++;
+      if(!targetMap.has(key)) targetMap.set(key,{COMPTE:r.compte,AUXILIAIRE:r.aux||'',NOM_CLIENT:sResolveName(r.aux,r.compte,r.libelle),CA_NDC_DA:0,NB_OPS:0,TYPE:rSym});
+      const o=targetMap.get(key);o.CA_NDC_DA+=r.debit;o.NB_OPS++;
     });
-    if(!ndcMap.size) return;
-    const hdrs=['RANG','COMPTE','AUXILIAIRE','NOM_CLIENT','CA_NDC_DA','NB_OPS'];
-    const rows=[...ndcMap.values()].sort((a,b)=>b.CA_NDC_DA-a.CA_NDC_DA).map((o,i)=>[i+1,o.COMPTE,o.AUXILIAIRE,o.NOM_CLIENT,fmtN(o.CA_NDC_DA),o.NB_OPS]);
-    const ws=XLSX.utils.aoa_to_sheet([hdrs,...rows]);
-    _applyColWidths(ws,[6,10,12,36,18,9]);
-    hdrs.forEach((_,ci)=>{const a=XLSX.utils.encode_cell({r:0,c:ci});if(ws[a])ws[a].s=_hdrStyle('6E2FA1');});
-    XLSX.utils.book_append_sheet(wb,ws,'Clients_NDC');
+    const writeNDCSheet=(map,label,sheetName)=>{
+      if(!map.size) return;
+      const hdrs=['RANG','COMPTE','AUXILIAIRE','NOM_CLIENT','CA_NDC_DA','NB_OPS','TYPE'];
+      const rows=[...map.values()].sort((a,b)=>b.CA_NDC_DA-a.CA_NDC_DA).map((o,i)=>[i+1,o.COMPTE,o.AUXILIAIRE,o.NOM_CLIENT,fmtN(o.CA_NDC_DA),o.NB_OPS,o.TYPE]);
+      const ws=XLSX.utils.aoa_to_sheet([hdrs,...rows]);
+      _applyColWidths(ws,[6,10,12,36,18,9,10]);
+      hdrs.forEach((_,ci)=>{const a=XLSX.utils.encode_cell({r:0,c:ci});if(ws[a])ws[a].s=_hdrStyle('6E2FA1');});
+      XLSX.utils.book_append_sheet(wb,ws,sheetName);
+    };
+    writeNDCSheet(ndcFacMap,'TK NDC FACTURE (706012)','Clients_NDC_FAC');
+    writeNDCSheet(ndcEbvMap,'TK NDC EBV (7081111)','Clients_NDC_EBV');
   })();
 
   // ════════════════════════════════════════════════════════════════════
@@ -25081,8 +25220,9 @@ async function statExport(){
   (()=>{
     if(!STAT.comAgg||!STAT.comAgg.length) return;
     const caMapX=sCAByCompany();
-    const ndcFactureCAX=sRawFiltered().filter(r=>(/\/NDC\//i).test(r.libelle||'')||(/\/NDC\//i).test(r.ref||'')).reduce((s,r)=>s+r.debit,0);
-    const caRefForX=sym=>sym==='NDC FACTURE'?ndcFactureCAX:(caMapX.get(sym)||0);
+    const ndcFacCAX=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_FAC').reduce((s,r)=>s+r.debit,0);
+    const ndcEbvCAX=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_EBV').reduce((s,r)=>s+r.debit,0);
+    const caRefForX=sym=>sym==='NDC_FAC'?ndcFacCAX:sym==='NDC_EBV'?ndcEbvCAX:(caMapX.get(sym)||0);
     const totComX=STAT.comAgg.reduce((s,o)=>s+o.total,0);
     const hdrs=['COMPAGNIE','COMMISSION_DA','CA_DA','TAUX_REEL_PCT','NB_OPS'];
     const rows=[...STAT.comAgg].sort((a,b)=>b.total-a.total).map(o=>{
@@ -25299,7 +25439,7 @@ function printMeilleursVendeurs(){
   const month = STAT.mvMonth || (new Date().getMonth()+1);
   const q     = STAT.mvQ     || 1;
   const depth = Math.min(STAT.evolDepth||3, 5);
-  const mvComp= STAT.mvComp  || 'ALL';
+  const mvComp=STAT.comp||'ALL'; // string | Set | 'ALL'
   const limit = STAT.mvLimit || 10;
   const isAnnee = (STAT.mvPeriodType||'quinzaine')==='annee';
   const ytdMonth = isAnnee ? _mvLastMonthOfYear(year) : 12;
@@ -25326,7 +25466,7 @@ function printMeilleursVendeurs(){
       if(!_sBaseFilter(r)) return;
       if(r.year>=year) return;
       if(!r.month||r.month>ytdMonth) return;
-      if(mvComp!=='ALL'){const sym=SJMAP[r.journal]||(r.journal?'AUT':null);if(sym!==mvComp)return;}
+      if(mvComp!=='ALL'){const sym=sNDCSym(r)||(r.journal?'AUT':null);if(sym!==mvComp)return;}
       const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
       if(!shownKeys.has(ck)) return;
       if(!yearMap.has(ck)) yearMap.set(ck,new Map());
@@ -25338,7 +25478,7 @@ function printMeilleursVendeurs(){
     STAT.raw.forEach(r=>{
       if(!_sBaseFilter(r)) return;
       if(r.year!==year) return;
-      if(mvComp!=='ALL'){const sym=SJMAP[r.journal]||(r.journal?'AUT':null);if(sym!==mvComp)return;}
+      if(mvComp!=='ALL'){const sym=sNDCSym(r)||(r.journal?'AUT':null);if(sym!==mvComp)return;}
       if(!r.date) return;
       const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
       if(!shownKeys.has(ck)) return;
@@ -25356,7 +25496,7 @@ function printMeilleursVendeurs(){
     STAT.raw.forEach(r=>{
       if(!_sBaseFilter(r)) return;
       if(r.year!==year) return;
-      if(mvComp!=='ALL'){const sym=SJMAP[r.journal]||(r.journal?'AUT':null);if(sym!==mvComp)return;}
+      if(mvComp!=='ALL'){const sym=sNDCSym(r)||(r.journal?'AUT':null);if(sym!==mvComp)return;}
       if(!r.date) return;
       const qq=_dateQ(r.date), mk=r.month||0;
       gb[qq].set(mk,(gb[qq].get(mk)||0)+r.debit);
@@ -25647,7 +25787,7 @@ function printTopVendeurs(){
     STAT.raw.forEach(r=>{
       if(!_sBaseFilter(r)) return;
       if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=SJMAP[r.journal]||(r.journal?'AUT':null); if(sym!==tComp) return; }
+      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
       if(!r.date) return;
       const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
       if(!shownKeys.has(ck)) return;
@@ -25665,7 +25805,7 @@ function printTopVendeurs(){
     STAT.raw.forEach(r=>{
       if(!_sBaseFilter(r)) return;
       if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=SJMAP[r.journal]||(r.journal?'AUT':null); if(sym!==tComp) return; }
+      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
       if(!r.date) return;
       const qq=_dateQ(r.date), mkey=r.month||0;
       const gm=globalQ[qq]; gm.set(mkey,(gm.get(mkey)||0)+r.debit);
@@ -26692,8 +26832,9 @@ function fluxCreateEcriture() {
           <div class="stat-sect-title">TK-->NDC</div>
           <div class="stat-ndc-grp">
             <button class="stat-ndc-btn on" onclick="sSetNDC('all',this)">TOUT</button>
-            <button class="stat-ndc-btn" onclick="sSetNDC('ndc',this)" title="Libellé ou Référence contient /NDC/">FACTURE</button>
-            <button class="stat-ndc-btn" onclick="sSetNDC('std',this)" title="Libellé et Référence ne contiennent pas /NDC/">EBV</button>
+            <button class="stat-ndc-btn" onclick="sSetNDC('ndc',this)" title="TK NDC Facture — ref ANNEE/NDC/TK/NNN, commission 706012">NDC FAC</button>
+            <button class="stat-ndc-btn" onclick="sSetNDC('ebv',this)" title="TK NDC EBV — libellé EBV distinct, commission 7081111">NDC EBV</button>
+            <button class="stat-ndc-btn" onclick="sSetNDC('std',this)" title="Écritures hors NDC (TK standard, VY, IB, etc.)">HORS NDC</button>
           </div>
           <div style="font-size:10px;color:var(--txt4);margin-top:5px;line-height:1.4;padding:4px 6px;background:var(--bg2);border-radius:5px;">
             🔍 Critère : LIBELLE ou RÉFÉRENCE<br>contient <strong>/NDC/</strong> (insensible casse)
