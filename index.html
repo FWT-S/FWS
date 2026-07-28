@@ -18661,6 +18661,7 @@ function sCommission(c){
     c.innerHTML=`<div class="stat-empty"><div class="big">💼</div><div class="msg">Aucune commission sur cette période</div><div class="sub">Modifiez les filtres (année / mois / compagnie)</div></div>`;
     return;
   }
+  const curYear=STAT.year||new Date().getFullYear();
   const caMap=sCAByCompany();
   // ── CA de référence pour 706012 "NDC FACTURE" : c'est une catégorie
   // GLOBALE (toutes compagnies) liée aux ventes NDC/FACTURE — pas une
@@ -18817,17 +18818,9 @@ function sCommission(c){
   // ── Helpers pour l'analyse N-x ──────────────────────────────────────────
   const periodLblCom=sPeriodLabel();
 
-  // Commission totale par compagnie sur une année, limitée à ytdMonth (YTD équitable)
-  function _sComCAYTD(sym,year,ytdM){
-    return comRawFiltered(year).filter(r=>r.sym===sym&&(!r.month||r.month<=ytdM)).reduce((s,r)=>s+r.credit,0);
-  }
-  function _sComTotYTD(year,ytdM){
-    return comRawFiltered(year).filter(r=>!r.month||r.month<=ytdM).reduce((s,r)=>s+r.credit,0);
-  }
-  // CA de référence par compagnie YTD (pour le taux)
-  function _sCARefYTD(sym,year,ytdM){
-    return sRawFiltered(year).filter(r=>(sNDCSym(r)||(r.journal?'AUT':null))===sym&&(!r.month||r.month<=ytdM)).reduce((s,r)=>s+r.debit,0);
-  }
+  // Commission par compagnie sur la période courante (comRawFiltered() sans arg = période active)
+  function _sComForSym(rows,sym){ return rows.filter(r=>r.sym===sym).reduce((s,r)=>s+r.credit,0); }
+  function _sComTotal(rows){ return rows.reduce((s,r)=>s+r.credit,0); }
 
   // ── ÉVOLUTION COMMISSION — même logique que sComp ────────────────────────
   const ytdM=_ytdMonth(curYear);
@@ -18835,45 +18828,48 @@ function sCommission(c){
   const ytdLabel=isYtdPartial?` (Jan-${SMOIS[ytdM-1]})`:' (complet)';
   const depthCom=STAT.evolDepth||3;
 
-  const nxThCom=Array.from({length:Math.min(depthCom,3)},(_,i)=>
-    `<th class="r" style="font-size:7px">${curYear-(i+1)}${ytdLabel}</th>
-     <th class="r" style="font-size:7px">Évol</th>`
+  // Données commission PÉRIODE COURANTE (respecte tous les filtres actifs)
+  const comRowsCur=comRawFiltered();
+  const comSymsMap=new Map();
+  comRowsCur.forEach(r=>{ if(r.sym) comSymsMap.set(r.sym,(comSymsMap.get(r.sym)||0)+r.credit); });
+  const comTotCur=_sComTotal(comRowsCur);
+
+  // Données N-x : comRawFiltered(ny) décale l'année automatiquement
+  // On filtre aussi sur ytdM pour équité si l'année est partielle
+  const nxComRows=Array.from({length:depthCom},(_,i)=>{
+    const ny=curYear-(i+1);
+    const rows=comRawFiltered(ny).filter(r=>!isYtdPartial||!r.month||r.month<=ytdM);
+    const symMap=new Map();
+    rows.forEach(r=>{ if(r.sym) symMap.set(r.sym,(symMap.get(r.sym)||0)+r.credit); });
+    return {ny, rows, symMap, tot:_sComTotal(rows)};
+  });
+
+  const nxThCom=nxComRows.map(d=>
+    `<th class="r" style="font-size:7px;color:#0891b2">${d.ny}${ytdLabel}</th>
+     <th class="r" style="font-size:7px;color:#0891b2">ÉVO.</th>`
   ).join('');
 
-  // Toutes compagnies présentes en commission (courant)
-  const comSymsMap=new Map();
-  comRawFiltered(curYear).filter(r=>!r.month||r.month<=ytdM).forEach(r=>{
-    if(!r.sym) return;
-    comSymsMap.set(r.sym,(comSymsMap.get(r.sym)||0)+r.credit);
-  });
-  const comTotCur=[...comSymsMap.values()].reduce((s,v)=>s+v,0);
-
   let comEvRows='';
-  [...comSymsMap.entries()].sort((a,b)=>b[1]-a[1]).forEach(([sym,comCur],rank)=>{
-    const caRef=_sCARefYTD(sym,curYear,ytdM);
+  [...comSymsMap.entries()].sort((a,b)=>b[1]-a[1]).forEach(([sym,comCur])=>{
+    const caRef=caRefFor(sym);
     const taux=caRef>0?(comCur/caRef*100):null;
 
-    const nxCells=Array.from({length:Math.min(depthCom,3)},(_,i)=>{
-      const ny=curYear-(i+1);
-      const nCom=_sComCAYTD(sym,ny,ytdM);
-      return `<td class="r m" style="font-size:9px;color:var(--txt3)">${nCom>0?SFM(nCom):'—'}</td>
+    const nxCells=nxComRows.map(d=>{
+      const nCom=d.symMap.get(sym)||0;
+      return `<td class="r" style="font-size:9px;color:var(--txt3)">${nCom>0?SFM(nCom):'—'}</td>
               <td class="r">${_evoBadge(nCom,comCur,true)}</td>`;
     }).join('');
 
-    // Meilleur mois commission
-    const bestMonthCom=(()=>{
-      const bmap=new Map();
-      comRawFiltered(curYear).filter(r=>r.sym===sym&&r.month)
-        .forEach(r=>bmap.set(r.month,(bmap.get(r.month)||0)+r.credit));
-      if(!bmap.size) return '—';
-      const best=[...bmap.entries()].sort((a,b)=>b[1]-a[1])[0];
-      return SMOIS[best[0]-1]||'—';
-    })();
+    // Meilleur mois commission sur la période courante
+    const bmap=new Map();
+    comRowsCur.filter(r=>r.sym===sym&&r.month)
+      .forEach(r=>bmap.set(r.month,(bmap.get(r.month)||0)+r.credit));
+    const bestMonthCom=bmap.size?SMOIS[[...bmap.entries()].sort((a,b)=>b[1]-a[1])[0][0]-1]:'—';
 
     const col=SCOL2[sym]||SCOL[sym]||'#6b7280';
     comEvRows+=`<tr>
       <td><span class="sbdg" style="background:${col};color:#fff">${sym}</span></td>
-      <td class="r m" style="color:#047857;font-weight:800;font-size:10px">${SFM(comCur)}</td>
+      <td class="r" style="color:#047857;font-weight:800;font-size:10px">${SFM(comCur)}</td>
       <td class="r" style="color:var(--txt3);font-size:9.5px">${comTotCur>0?(comCur/comTotCur*100).toFixed(1)+'%':'—'}</td>
       <td class="r" style="font-weight:700;color:${taux!==null?(taux>tauxMean?'#047857':'#dc2626'):'var(--txt4)'}">${taux!==null?taux.toFixed(2)+'%':'—'}</td>
       <td class="r" style="font-size:9px;color:var(--txt4)">${bestMonthCom}</td>
@@ -18881,17 +18877,17 @@ function sCommission(c){
     </tr>`;
   });
 
-  const nxTotComCells=Array.from({length:Math.min(depthCom,3)},(_,i)=>{
-    const ny=curYear-(i+1);
-    const nTot=_sComTotYTD(ny,ytdM);
-    return `<td class="r m">${nTot>0?SFM(nTot):'—'}</td>
-            <td class="r">${_evoBadge(nTot,comTotCur,true)}</td>`;
-  }).join('');
+  const nxTotComCells=nxComRows.map(d=>
+    `<td class="r">${d.tot>0?SFM(d.tot):'—'}</td>
+     <td class="r">${_evoBadge(d.tot,comTotCur,true)}</td>`
+  ).join('');
 
   const ytdNoticeCom=isYtdPartial?`<div style="background:#fff7ed;border:1px solid #f97316;border-radius:7px;padding:5px 10px;margin-bottom:10px;font-size:8.5px;color:#7c2d12;font-weight:700">
     ⚠️ Données ${curYear} disponibles jusqu'à <strong>${SMOIS[ytdM-1]}</strong> seulement.
     Les colonnes N-x sont automatiquement <strong>limitées à Jan–${SMOIS[ytdM-1]}</strong> sur toutes les années pour une comparaison équitable.
   </div>`:'';
+
+  const card=(title,inner,extra='')=>`<div style="background:var(--surface);border:1.5px solid var(--bo);border-radius:10px;padding:12px;${extra}"><div style="font-size:9px;font-weight:800;color:var(--txt3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.6px">${title}</div>${inner}</div>`;
 
   const nxSection=`<div style="margin-top:14px">
     ${ytdNoticeCom}
@@ -18908,10 +18904,10 @@ function sCommission(c){
           <th class="r">BEST MOIS</th>
           ${nxThCom}
         </tr></thead>
-        <tbody>${comEvRows}</tbody>
-        <tfoot><tr>
+        <tbody>${comEvRows||'<tr><td colspan="99" style="text-align:center;color:var(--txt4);padding:12px">Aucune commission sur cette période</td></tr>'}</tbody>
+        <tfoot><tr style="font-weight:800">
           <td>TOTAL</td>
-          <td class="r m">${SFM(comTotCur)}</td>
+          <td class="r">${SFM(comTotCur)}</td>
           <td class="r">100%</td>
           <td class="r">—</td>
           <td class="r">—</td>
@@ -18921,7 +18917,90 @@ function sCommission(c){
     </div>
   </div>`;
 
+  // ── STATISTIQUES DÉTAILLÉES PAR COMPAGNIE ────────────────────────────────
+  const statsSection=(()=>{ // ── STATISTIQUES DÉTAILLÉES PAR COMPAGNIE ────
+    // Commissions mois par mois sur la période courante
+    const bySymMonth=new Map();
+    comRowsCur.filter(r=>r.sym&&r.month).forEach(r=>{
+      if(!bySymMonth.has(r.sym)) bySymMonth.set(r.sym,new Map());
+      const mm=bySymMonth.get(r.sym);
+      mm.set(r.month,(mm.get(r.month)||0)+r.credit);
+    });
+    if(!bySymMonth.size) return '';
+
+    function _med(arr){ const s=[...arr].sort((a,b)=>a-b),m=Math.floor(s.length/2); return s.length%2===0?(s[m-1]+s[m])/2:s[m]; }
+    function _slope(vals){ const n=vals.length; if(n<2) return 0; const xm=(n-1)/2,ym=vals.reduce((s,v)=>s+v,0)/n; let num=0,den=0; vals.forEach((v,i)=>{num+=(i-xm)*(v-ym);den+=(i-xm)**2;}); return den?num/den:0; }
+
+    const statsRows=[...bySymMonth.entries()].sort((a,b)=>{
+      const totA=[...a[1].values()].reduce((s,v)=>s+v,0);
+      const totB=[...b[1].values()].reduce((s,v)=>s+v,0);
+      return totB-totA;
+    }).map(([sym,mm])=>{
+      const vals=[...mm.values()];
+      const tot=vals.reduce((s,v)=>s+v,0);
+      const nAct=vals.length;
+      const avg=tot/nAct;
+      const med=_med(vals);
+      const minV=Math.min(...vals), maxV=Math.max(...vals);
+      const ecart=nAct>1?Math.sqrt(vals.reduce((s,v)=>s+(v-avg)**2,0)/nAct):0;
+      const nMoisRef=ytdM||12;
+      const reg=Math.round(nAct/nMoisRef*100);
+      const trend=_slope([...Array(nMoisRef)].map((_,i)=>mm.get(i+1)||0));
+      const avgNonZero=avg;
+      const trendHTML=trend>avgNonZero*0.02?'<span style="color:#047857;font-weight:700">▲ Hausse</span>':
+        trend<-avgNonZero*0.02?'<span style="color:#dc2626;font-weight:700">▼ Baisse</span>':
+        '<span style="color:var(--txt4)">→ Stable</span>';
+      const bestM=[...mm.entries()].sort((a,b)=>b[1]-a[1])[0];
+      const worstM=[...mm.entries()].sort((a,b)=>a[1]-b[1])[0];
+      const caRef=caRefFor(sym);
+      const taux=caRef>0?(tot/caRef*100):null;
+      const col=SCOL2[sym]||SCOL[sym]||'#6b7280';
+      return `<tr>
+        <td><span class="sbdg" style="background:${col};color:#fff">${sym}</span></td>
+        <td class="r" style="font-weight:800;color:#047857">${SFM(tot)}</td>
+        <td class="r" style="font-weight:700;color:${taux!==null&&taux>tauxMean?'#047857':'#dc2626'}">${taux!==null?taux.toFixed(2)+'%':'—'}</td>
+        <td class="r" style="color:var(--txt3)">${SFM(avg)}</td>
+        <td class="r" style="color:var(--txt3)">${SFM(med)}</td>
+        <td class="r" style="color:#059669;font-weight:700">${SFM(maxV)}</td>
+        <td class="r" style="color:#dc2626">${SFM(minV)}</td>
+        <td class="r" style="color:var(--txt4)">${SFM(ecart)}</td>
+        <td class="r" style="font-weight:700;color:${reg>=80?'#047857':reg>=50?'#f59e0b':'#dc2626'}">${reg}%</td>
+        <td class="r" style="color:#059669">${bestM?SMOIS[bestM[0]-1]:'—'}</td>
+        <td class="r" style="color:#dc2626">${worstM?SMOIS[worstM[0]-1]:'—'}</td>
+        <td class="r">${trendHTML}</td>
+      </tr>`;
+    }).join('');
+
+    return `<div style="margin-top:14px">
+      <div style="font-size:10px;font-weight:800;color:#047857;letter-spacing:.5px;margin-bottom:6px">
+        📊 STATISTIQUES DÉTAILLÉES COMMISSION — ${curYear}${ytdLabel}
+        <span style="font-size:8px;font-weight:400;color:var(--txt4)">· par compagnie · mois actifs</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="evol-ny-tbl" style="font-size:8.5px">
+          <thead><tr>
+            <th>CIE</th>
+            <th class="r">TOTAL</th><th class="r">TAUX</th>
+            <th class="r">MOY/MOIS</th><th class="r">MÉDIANE</th>
+            <th class="r" style="color:#059669">MAX</th><th class="r" style="color:#dc2626">MIN</th>
+            <th class="r">ÉCART-TYPE</th><th class="r">RÉGULARITÉ</th>
+            <th class="r">BEST MOIS</th><th class="r">WORST MOIS</th>
+            <th class="r">TENDANCE</th>
+          </tr></thead>
+          <tbody>${statsRows}</tbody>
+        </table>
+      </div>
+      <div style="font-size:7.5px;color:var(--txt4);margin-top:4px">
+        RÉGULARITÉ = % mois avec commission · TENDANCE = pente de la série mensuelle
+      </div>
+    </div>`;
+  })();
+
   c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <span style="font-size:11px;font-weight:900;color:#047857;letter-spacing:.5px">💼 COMMISSIONS</span>
+      <button class="stat-topmode-btn" onclick="printCommission()">🖨️ Imprimer</button>
+    </div>
     <div class="stat-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
       <div class="stat-kpi kg"><div class="kl">💼 Commission Totale</div><div class="kv">${SFM(totCom)}</div></div>
       <div class="stat-kpi kb"><div class="kl">📊 Taux réel moyen</div><div class="kv">${tauxGlobal.toFixed(2)}%</div><div class="ks">commission / CA total</div></div>
@@ -18982,6 +19061,7 @@ function sCommission(c){
     </div>
 
     ${nxSection}
+
 
     <div style="font-size:7.5px;color:var(--txt4);padding:0 2px">
       ℹ️ Analyse de paliers (seuils de déclenchement) non disponible : aucun barème de commission par palier n'est fourni dans les données importées. Si vous disposez des seuils contractuels par compagnie, ils peuvent être intégrés pour détecter les ventes "bloquées" juste sous un seuil.
@@ -26047,6 +26127,207 @@ ${alertYTD}
 }
 
 // ══ Top Vendeurs ══
+function printCommission(){
+ try{
+  if(!STAT.comRaw||!STAT.comRaw.length){alert('❌ Aucune donnée commission');return;}
+  const agg=STAT.comAgg||[];
+  if(!agg.length){alert('❌ Aucune commission sur cette période');return;}
+  const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
+  const FP=v=>v===null?'—':v.toFixed(2)+'%';
+  const curYear=STAT.year||new Date().getFullYear();
+  const depthCom=STAT.evolDepth||3;
+  const ytdM=_ytdMonth(curYear);
+  const isPartial=ytdM<12;
+  const ytdLbl=isPartial?` Jan-${SMOIS[ytdM-1]}`:' (complet)';
+  const periodLbl=sPeriodLabel();
+
+  // Données commission période courante
+  const comRowsCur=comRawFiltered();
+  const comSymsMap=new Map();
+  comRowsCur.forEach(r=>{ if(r.sym) comSymsMap.set(r.sym,(comSymsMap.get(r.sym)||0)+r.credit); });
+  const comTotCur=comRowsCur.reduce((s,r)=>s+r.credit,0);
+
+  // CA de référence
+  const caMap=sCAByCompany();
+  const ndcFacCA=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_FAC').reduce((s,r)=>s+r.debit,0);
+  const ndcEbvCA=sRawFiltered().filter(r=>sNDCSym(r)==='NDC_EBV').reduce((s,r)=>s+r.debit,0);
+  const caRef=sym=>sym==='NDC_FAC'?ndcFacCA:sym==='NDC_EBV'?ndcEbvCA:(caMap.get(sym)||0);
+
+  // Données N-x
+  const nxData=Array.from({length:depthCom},(_,i)=>{
+    const ny=curYear-(i+1);
+    const rows=comRawFiltered(ny).filter(r=>!isPartial||!r.month||r.month<=ytdM);
+    const symMap=new Map();
+    rows.forEach(r=>{ if(r.sym) symMap.set(r.sym,(symMap.get(r.sym)||0)+r.credit); });
+    return {ny,symMap,tot:rows.reduce((s,r)=>s+r.credit,0)};
+  });
+
+  // Statistiques mois par mois
+  function _med(arr){const s=[...arr].sort((a,b)=>a-b),m=Math.floor(s.length/2);return s.length%2===0?(s[m-1]+s[m])/2:s[m];}
+  function _slp(vals){const n=vals.length;if(n<2)return 0;const xm=(n-1)/2,ym=vals.reduce((s,v)=>s+v,0)/n;let num=0,den=0;vals.forEach((v,i)=>{num+=(i-xm)*(v-ym);den+=(i-xm)**2;});return den?num/den:0;}
+  const bySymMonth=new Map();
+  comRowsCur.filter(r=>r.sym&&r.month).forEach(r=>{
+    if(!bySymMonth.has(r.sym)) bySymMonth.set(r.sym,new Map());
+    const mm=bySymMonth.get(r.sym);
+    mm.set(r.month,(mm.get(r.month)||0)+r.credit);
+  });
+
+  // ── Tableau 1 : Évolution N-x ──
+  const nxCols=nxData.map(d=>`<th style="background:#e0f2fe;color:#0369a1">${d.ny}${ytdLbl}</th><th style="background:#e0f2fe;color:#0369a1">ÉVO.</th>`).join('');
+  const nxRows=[...comSymsMap.entries()].sort((a,b)=>b[1]-a[1]).map(([sym,comCur])=>{
+    const ca=caRef(sym);
+    const taux=ca>0?(comCur/ca*100):null;
+    const bmap=new Map();
+    comRowsCur.filter(r=>r.sym===sym&&r.month).forEach(r=>bmap.set(r.month,(bmap.get(r.month)||0)+r.credit));
+    const bestM=bmap.size?SMOIS[[...bmap.entries()].sort((a,b)=>b[1]-a[1])[0][0]-1]:'—';
+    const nxCells=nxData.map(d=>{
+      const nc=d.symMap.get(sym)||0;
+      const evo=nc>0?((comCur-nc)/nc*100):null;
+      return `<td style="text-align:right">${nc>0?FM(nc):'—'}</td>
+              <td style="text-align:center;font-weight:700;color:${evo===null?'#999':evo>=0?'#059669':'#dc2626'}">${evo===null?'—':(evo>=0?'▲':'▼')+Math.abs(evo).toFixed(0)+'%'}</td>`;
+    }).join('');
+    return `<tr>
+      <td><strong>${sym}</strong></td>
+      <td style="text-align:right;font-weight:800;color:#047857">${FM(comCur)}</td>
+      <td style="text-align:center">${comTotCur>0?(comCur/comTotCur*100).toFixed(1)+'%':'—'}</td>
+      <td style="text-align:center;font-weight:700;color:${taux!==null?'#047857':'#999'}">${FP(taux)}</td>
+      <td style="text-align:center">${bestM}</td>
+      ${nxCells}
+    </tr>`;
+  }).join('');
+  const nxTotCells=nxData.map(d=>{
+    const evo=d.tot>0?((comTotCur-d.tot)/d.tot*100):null;
+    return `<td style="text-align:right;font-weight:800">${FM(d.tot)}</td>
+            <td style="text-align:center;font-weight:800;color:${evo===null?'#999':evo>=0?'#059669':'#dc2626'}">${evo===null?'—':(evo>=0?'▲':'▼')+Math.abs(evo).toFixed(0)+'%'}</td>`;
+  }).join('');
+
+  // ── Tableau 2 : Statistiques détaillées ──
+  const statsRows=[...bySymMonth.entries()].sort((a,b)=>{
+    const tA=[...a[1].values()].reduce((s,v)=>s+v,0),tB=[...b[1].values()].reduce((s,v)=>s+v,0);
+    return tB-tA;
+  }).map(([sym,mm])=>{
+    const vals=[...mm.values()];
+    const tot=vals.reduce((s,v)=>s+v,0);
+    const avg=tot/vals.length;
+    const med=_med(vals);
+    const minV=Math.min(...vals),maxV=Math.max(...vals);
+    const ecart=Math.sqrt(vals.reduce((s,v)=>s+(v-avg)**2,0)/vals.length);
+    const reg=Math.round(vals.length/(ytdM||12)*100);
+    const trend=_slp([...Array(ytdM||12)].map((_,i)=>mm.get(i+1)||0));
+    const trendTxt=trend>avg*0.02?'▲ Hausse':trend<-avg*0.02?'▼ Baisse':'→ Stable';
+    const trendCol=trend>avg*0.02?'#047857':trend<-avg*0.02?'#dc2626':'#999';
+    const bestM=SMOIS[[...mm.entries()].sort((a,b)=>b[1]-a[1])[0][0]-1];
+    const worstM=SMOIS[[...mm.entries()].sort((a,b)=>a[1]-b[1])[0][0]-1];
+    const ca=caRef(sym);const taux=ca>0?(tot/ca*100):null;
+    return `<tr>
+      <td><strong>${sym}</strong></td>
+      <td style="text-align:right;font-weight:800;color:#047857">${FM(tot)}</td>
+      <td style="text-align:center;font-weight:700;color:${taux!==null?'#047857':'#999'}">${FP(taux)}</td>
+      <td style="text-align:right">${FM(avg)}</td>
+      <td style="text-align:right">${FM(med)}</td>
+      <td style="text-align:right;color:#059669;font-weight:700">${FM(maxV)}</td>
+      <td style="text-align:right;color:#dc2626">${FM(minV)}</td>
+      <td style="text-align:right">${FM(ecart)}</td>
+      <td style="text-align:center;font-weight:700;color:${reg>=80?'#047857':reg>=50?'#d97706':'#dc2626'}">${reg}%</td>
+      <td style="text-align:center;color:#059669">${bestM}</td>
+      <td style="text-align:center;color:#dc2626">${worstM}</td>
+      <td style="text-align:center;font-weight:700;color:${trendCol}">${trendTxt}</td>
+    </tr>`;
+  }).join('');
+
+  const css=`body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a1a;margin:0;padding:0}
+.page{max-width:1200px;margin:0 auto;padding:30px}
+h1{font-size:18px;font-weight:800;color:#047857;border-bottom:3px solid #047857;padding-bottom:10px;margin-bottom:6px}
+h2{font-size:13px;font-weight:700;color:#0369a1;margin:20px 0 8px;border-left:4px solid #0369a1;padding-left:8px}
+.meta{font-size:10px;color:#6b7280;margin-bottom:16px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.kpi{background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:10px;text-align:center}
+.kpi-val{font-size:15px;font-weight:800;color:#047857}
+.kpi-lbl{font-size:9px;color:#6b7280;text-transform:uppercase;margin-top:3px}
+.notice{background:#fff7ed;border:1px solid #f97316;border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:10px;color:#7c2d12;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:6px}
+th{background:#047857;color:#fff;padding:6px 8px;text-align:left;font-weight:700;font-size:9px;white-space:nowrap}
+td{padding:5px 8px;border-bottom:1px solid #e5e7eb}
+tr:nth-child(even){background:#f9f9f9}
+tfoot tr{background:#f0fdf4;font-weight:800}
+.note{font-size:8.5px;color:#9ca3af;margin-top:4px}
+@media print{.page{padding:10px}@page{size:landscape;margin:1cm}}`;
+
+  const totCA=[...caMap.values()].reduce((s,v)=>s+v,0);
+  const tauxGlob=totCA>0?(comTotCur/totCA*100):0;
+
+  const evoN1=(()=>{const t=nxData[0]?.tot||0;const e=t>0?((comTotCur-t)/t*100):null;return e===null?'—':(e>=0?'▲ +':'▼ ')+e.toFixed(1)+'%';})();
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rapport Commission — ${periodLbl}</title>
+<style>${css}</style></head><body><div class="page">
+<h1>💼 RAPPORT COMMISSION — ${periodLbl}</h1>
+<div class="meta">Généré le ${new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} · ${sCompLabel()} · Profondeur N-${depthCom}</div>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-val">${FM(comTotCur)}</div><div class="kpi-lbl">Commission totale</div></div>
+  <div class="kpi"><div class="kpi-val">${tauxGlob.toFixed(2)}%</div><div class="kpi-lbl">Taux réel moyen</div></div>
+  <div class="kpi"><div class="kpi-val">${[...comSymsMap.keys()].length}</div><div class="kpi-lbl">Compagnies actives</div></div>
+  <div class="kpi"><div class="kpi-val">${evoN1}</div><div class="kpi-lbl">Évolution vs N-1</div></div>
+</div>
+
+${isPartial?`<div class="notice">⚠️ Données ${curYear} disponibles jusqu'à ${SMOIS[ytdM-1]} — colonnes N-x limitées à la même période pour comparaison équitable.</div>`:''}
+
+<h2>📊 Évolution Commission par Compagnie — N-x</h2>
+<table>
+  <thead><tr>
+    <th>COMPAGNIE</th>
+    <th style="text-align:right">${curYear}${ytdLbl}</th>
+    <th style="text-align:center">PART</th>
+    <th style="text-align:center">TAUX</th>
+    <th style="text-align:center">BEST MOIS</th>
+    ${nxCols}
+  </tr></thead>
+  <tbody>${nxRows}</tbody>
+  <tfoot><tr>
+    <td>TOTAL</td>
+    <td style="text-align:right">${FM(comTotCur)}</td>
+    <td style="text-align:center">100%</td>
+    <td style="text-align:center">${tauxGlob.toFixed(2)}%</td>
+    <td></td>
+    ${nxTotCells}
+  </tr></tfoot>
+</table>
+
+<h2>📈 Statistiques Détaillées par Compagnie</h2>
+<table>
+  <thead><tr>
+    <th>COMPAGNIE</th>
+    <th style="text-align:right">TOTAL</th>
+    <th style="text-align:center">TAUX</th>
+    <th style="text-align:right">MOY/MOIS</th>
+    <th style="text-align:right">MÉDIANE</th>
+    <th style="text-align:right;color:#bbf7d0">MAX</th>
+    <th style="text-align:right;color:#fecaca">MIN</th>
+    <th style="text-align:right">ÉCART-TYPE</th>
+    <th style="text-align:center">RÉGULARITÉ</th>
+    <th style="text-align:center">BEST MOIS</th>
+    <th style="text-align:center">WORST MOIS</th>
+    <th style="text-align:center">TENDANCE</th>
+  </tr></thead>
+  <tbody>${statsRows||'<tr><td colspan="12" style="text-align:center;color:#999;padding:12px">Données insuffisantes pour l\'analyse mensuelle</td></tr>'}</tbody>
+</table>
+<div class="note">RÉGULARITÉ = % mois avec commission sur la période · ÉCART-TYPE = dispersion mensuelle · TENDANCE = pente linéaire de la série</div>
+
+</div></body></html>`;
+
+  const htmlP=html.replace('</body></html>','<script>window.onload=function(){setTimeout(function(){window.print();},400);};<'+'/script></body></html>');
+  const blob=new Blob([htmlP],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`Commission_${curYear}_N${depthCom}.html`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+  alert('📄 Fichier téléchargé. Ouvre-le : l\'impression se lance automatiquement. Tu peux aussi l\'enregistrer en PDF.');
+ }catch(e){
+  alert('⚠️ Erreur : '+(e&&e.message?e.message:e));
+ }
+}
+
 function printTopVendeurs(){
  try{
   if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
