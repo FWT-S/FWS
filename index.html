@@ -2678,7 +2678,7 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
     <path id="wmap-iq" d="M502.793,433.637l-1.348,6.664l-5.585,4.65l0.354,2.195l5.455,0.371l8.688,7.07l4.857-0.138l0.13-1.634l1.78-1.91l2.49,1.409l0.329-0.312l-4.815-6.405l-2.282-0.139l-3.033-3.898l0.604-2.868l0.926-0.121l0.319-1.271l-4.132-4.348L502.793,433.637L502.793,433.637z"/>
     <path id="wmap-ir" d="M507.409,427.516l-1.057,1.098l0.104,1.738l1.314,1.842l4.658,5.101l-0.709,2.04h-0.812l-0.406,2.04l2.637,3.371l2.43,0.207l4.865,6.732l2.732,0.208l2.126,1.529l0.104,3.062l8.411,4.9h3.139l1.927-1.634l2.43-0.104l1.418,3.268l9.085,1.262l0.27-3.337l3.007-1.089l0.139-1.193l-2.395-3.268l-5.334-4.287l2.801-2.55l-0.198-1.124l-3.511-0.544l-1.486-11.843l-0.173-2.723l-9.518-3.641l-4.218,0.951l-2.36,2.896l-2.092-0.139l-0.604,0.511l-4.66-0.303l-5.878-4.288l-2.188-2.394l-1.003,0.24l-1.808,2.066L507.409,427.516L507.409,427.516z"/>
     <path id="wmap-is" d="M366.261,340.521l-1.693-0.959l-2.283,1.443l-1.962,1.814l0.052,1.013l2.541,0.319l-0.156,1.815l-0.898,0.908l0.217,0.588l2.541,0.164v2.938l3.656,0.641l2.17,1.229l2.437,0.104l4.186-2.083l3.231-4.271l0.053-2.887l-1.963-1.66l-1.642-1.392l-0.743,0.536l-1.115,1.443l-1.271-0.164l-1.271-1.393l-1.642,0.156l-2.386,1.979l-1.437,1.547l-0.795-0.69l-0.053-1.712l0.795-0.536L366.261,340.521L366.261,340.521z"/>
-    <g id="wmap-it">
+    <g id="wmap-it" style="cursor:pointer;" title="">
         <path class="mainland" d="M423.233,409.391l-0.535,1.356l0.146,1.478l2.065,2.412l3.25-0.113l7.175,8.334l4.479,1.297l2.646,2.498l0.631,5.695l1.417-0.828l1.229-3.104l-0.303-2.229l2.101-0.19l0.304-1.263l-5.922-2.834l-5.619-5.523l-2.238-3.303l-0.545-3.137l2.861-0.684l-0.734-2.066l-1.755-1.478l-1.513-0.069l-2.108,0.58l-1.99,2.781l-1.201,0.795l-1.858-1.141L423.233,409.391L423.233,409.391z"/>
         <path d="M440.668,431.898l-1.253-0.674l-4.278,0.674l0.146,1.158l3.847,1.937l0.579,0.631l1.012,0.147L440.668,431.898L440.668,431.898z"/>
         <path d="M427.806,423.566l-2.289,1.158l0.303,4.469l1.833,0.311l1.374-1.312v-4.235L427.806,423.566L427.806,423.566z"/>
@@ -3005,6 +3005,7 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
   display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
 .entry-rings{ display:flex; align-items:center; justify-content:center; pointer-events:none; }
+#wmap-it{ pointer-events:all; cursor:pointer; }
 .entry-tag-top{
   font-size:11px; letter-spacing:3px; color:rgba(255,255,255,.55); font-family:'Inter',sans-serif;
   text-transform:uppercase; text-align:center; margin-bottom:14px;
@@ -4154,6 +4155,33 @@ function checkPwd(){
     setTimeout(()=>err.textContent='',2000);
   }
 }
+
+// ── Accès secret : 3 clics rapides sur l'Italie (zone géographique SVG) ──────
+;(function(){
+  let _itClicks=0, _itTimer=null;
+  function _itUnlock(){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('module-screen').style.display='flex';
+    if(typeof window.__startModFlight==='function') window.__startModFlight();
+  }
+  function _itBind(){
+    const it = document.getElementById('wmap-it');
+    if(!it) return;
+    it.addEventListener('click', function(e){
+      e.stopPropagation();
+      _itClicks++;
+      if(_itTimer) clearTimeout(_itTimer);
+      if(_itClicks >= 3){ _itClicks=0; _itUnlock(); return; }
+      _itTimer = setTimeout(function(){ _itClicks=0; }, 1500);
+    });
+  }
+  // Attacher dès que possible — DOM inline ou onload
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', _itBind);
+  } else {
+    _itBind();
+  }
+})();
 
 function openModule(mod){
   document.getElementById('module-screen').style.display='none';
@@ -9274,30 +9302,37 @@ function _v2BuildIndexes(basData, acctData, clientsData) {
     _V2_BAS_DATA     = basData;
     _V2_ACCT_MAP     = acctData;
     _V2_CLIENTS_DATA = clientsData;
-    _V2_LIBELLE_MAP  = {};
+    _V2_LIBELLE_MAP  = {};   // clé → [{client, code_client}]  — peut avoir plusieurs entrées (collision)
     _V2_ALL_LIBS     = [];
     _V2_CLIENT_IDX   = [];
-    
+
     basData.forEach(r => {
         const k = String(r.libelle_releve).trim().toUpperCase();
         if (!_V2_LIBELLE_MAP[k]) {
-            _V2_LIBELLE_MAP[k] = { client: r.client, code_client: r.code_client };
+            _V2_LIBELLE_MAP[k] = [{ client: r.client, code_client: r.code_client }];
             _V2_ALL_LIBS.push(k);
+        } else {
+            // FIX COLLISION : un même libellé de relevé peut correspondre à plusieurs clients
+            // (ex: 'VERSEMENT SARL SILVI TOUR' → ANOUAR et SILVI TOUR)
+            // On stocke tous les candidats pour les départager au moment de la résolution
+            const already = _V2_LIBELLE_MAP[k];
+            if (!already.some(e => e.code_client === r.code_client)) {
+                already.push({ client: r.client, code_client: r.code_client });
+            }
         }
     });
-    
+
     clientsData.forEach(c => {
         const tokens = new Set(
             String(c.client).toUpperCase()
                 .replace(/[^A-Z0-9\s]/g,' ')
                 .split(/\s+/)
-                .filter(t => t.length >= 2)   // FIX: >= 2 au lieu de >= 3 — couvre BA TOURS, 5 S, etc.
+                .filter(t => t.length >= 2)
         );
         _V2_CLIENT_IDX.push({ client: c.client, code_client: c.code_client, tokens });
     });
-    
+
     // Peupler également BAS_RAP (format legacy) depuis les données V2
-    // pour maintenir la compatibilité avec le code existant
     BAS_RAP = [];
     const seenAux = new Set();
     clientsData.forEach(c => {
@@ -9306,32 +9341,87 @@ function _v2BuildIndexes(basData, acctData, clientsData) {
             BAS_RAP.push({ client: c.client, auxiliaire: c.code_client, mot_cle: c.client.substring(0, 20) });
         }
     });
-    // Ajouter les RIBs (numéros de compte) comme entrées RIB dans BAS_RAP
     Object.entries(acctData).forEach(([num, info]) => {
         const existing = BAS_RAP.find(e => e.auxiliaire === info.code_client);
         if (existing && !existing.rib) existing.rib = num;
     });
-    
+
     _V2_LOADED = true;
-    console.log(`[BAS_RAP v34-FIX] Index V2 initialisé: ${_V2_ALL_LIBS.length} libellés, ${Object.keys(_V2_ACCT_MAP).length} N°comptes, ${_V2_CLIENT_IDX.length} clients — Seuil FUZZY:0.72 TOKEN_MIN:2`);
+    console.log(`[BAS_RAP v37] Index V2 initialisé: ${_V2_ALL_LIBS.length} libellés, ${Object.keys(_V2_ACCT_MAP).length} N°comptes, ${_V2_CLIENT_IDX.length} clients`);
 }
+
+// ── Mots génériques banque algérienne — ignorés pour le score de rareté ───────
+const _V2_STOPWORDS = new Set([
+    'VERSEMENT','VRT','VIRT','VIRTS','VIRTU','VIRTSRECU',
+    'CHQ','CHEQUE','RECU','SARL','EURL','SPA','SRL','EARL','SNC','GMBH',
+    'CPA','BEA','BDL','BNA','SGA','AGB','BNP','ABC','BADR','ALB','ALBE','CNEP',
+    'REGL','REG','REGU','REGLE','REGLEMENT','COMM','ADM','REF','PAI','PAIM',
+    'EDI','FOUR','ORD','VY','TK','WIDS','WINDS',
+    'PAIEMENT','PAIMENT','PAIM','PAIMEN',
+    'SORT','REM','REMISE','DEPOT','DEP',
+    'FACT','FACTU','FACTURE','ANNUL','COMP','CHURNING',
+    'TRAVEL','TOUR','TOURS','AGENCE','VOYAGES','VOY',
+    'VIRT','ORDE','VIRTS','RECS',
+]);
 
 // ── Moteur V2 : 4 stratégies d'identification ────────────────────────────────
 
+// FIX : _v2Norm normalise aussi underscore/tiret → espace (VRT_CPA_RAFFAI → VRT CPA RAFFAI)
 function _v2Norm(s) {
     return String(s||'').toUpperCase()
         .replace(/[ÉÈÊË]/g,'E').replace(/[ÀÂÄÃ]/g,'A')
         .replace(/[ÙÛÜÚ]/g,'U').replace(/[ÎÏÍÌ]/g,'I')
         .replace(/[ÔÖÓ]/g,'O').replace(/Ç/g,'C')
+        .replace(/[_\-]/g,' ')                          // FIX: underscore/tiret → espace
         .replace(/[^A-Z0-9]/g,' ').replace(/\s+/g,' ').trim();
 }
 
-// S1 — Exact
+// Score de présence du nom du client dans le libellé du relevé
+// Utilisé pour résoudre les collisions dans S1 et comme tie-breaker dans S3
+function _v2ClientNameInLib(rvLib, clientName) {
+    const libNorm = _v2Norm(rvLib);
+    const clientTokens = _v2Norm(clientName).split(' ').filter(t=>t.length>=3 && !_V2_STOPWORDS.has(t));
+    if (!clientTokens.length) return 0;
+    const matches = clientTokens.filter(t => libNorm.includes(t));
+    return matches.length / clientTokens.length;
+}
+
+// Score de rareté : ratio des tokens NON-stopword communs entre deux libellés
+// Permet de détecter les vrais matchs même quand les tokens génériques diffèrent
+// Ex: 'VRT CPA RAFFAI RACHID' vs 'VRT BEA RAFFAI RACHID EZZOUAR'
+//     tokens rares RV={RAFFAI,RACHID}, BAS={RAFFAI,RACHID,EZZOUAR}
+//     → 2 communs / min(2,3) = 1.0 → MATCH FORT
+function _v2RareScore(a, b) {
+    const ta = _v2Norm(a).split(' ').filter(t=>t.length>=4 && !_V2_STOPWORDS.has(t));
+    const tb = _v2Norm(b).split(' ').filter(t=>t.length>=4 && !_V2_STOPWORDS.has(t));
+    if (!ta.length || !tb.length) return 0;
+    const setB = new Set(tb);
+    const common = ta.filter(t=>setB.has(t)).length;
+    return common / Math.min(ta.length, tb.length);
+}
+
+// S1 — Exact (avec résolution de collision par nom de client)
 function _v2MatchExact(lib) {
     if (!_V2_LIBELLE_MAP) return null;
     const k = lib.trim().toUpperCase();
-    const r = _V2_LIBELLE_MAP[k];
-    if (r) return { client: r.client, auxiliaire: r.code_client, score: 1.0, methode: 'EXACT', confiance: 'ÉLEVÉE', libelle_base: k };
+    const entries = _V2_LIBELLE_MAP[k];
+    if (!entries || !entries.length) return null;
+    if (entries.length === 1) {
+        // Cas simple : un seul client pour ce libellé
+        const r = entries[0];
+        return { client: r.client, auxiliaire: r.code_client, score: 1.0, methode: 'EXACT', confiance: 'ÉLEVÉE', libelle_base: k };
+    }
+    // FIX COLLISION : plusieurs clients pour le même libellé
+    // Départager par présence du nom du client dans le libellé du relevé
+    let best = null, bestScore = -1;
+    for (const e of entries) {
+        const nameScore = _v2ClientNameInLib(lib, e.client);
+        if (nameScore > bestScore) { bestScore = nameScore; best = e; }
+    }
+    if (best && bestScore > 0) {
+        return { client: best.client, auxiliaire: best.code_client, score: 1.0, methode: 'EXACT', confiance: 'ÉLEVÉE', libelle_base: k };
+    }
+    // Égalité totale : retourner null → laisser S3 décider avec le contexte complet
     return null;
 }
 
@@ -9356,7 +9446,7 @@ function _v2MatchAccount(lib) {
     return null;
 }
 
-// S3 — Fuzzy libellé (token-set ratio)
+// S3 — Fuzzy libellé (token-set ratio + rare-token boost)
 function _v2TokenSetSim(a, b) {
     const ta = new Set(_v2Norm(a).split(' ').filter(t=>t.length>=2));
     const tb = new Set(_v2Norm(b).split(' ').filter(t=>t.length>=2));
@@ -9367,16 +9457,35 @@ function _v2TokenSetSim(a, b) {
     const bonus = ([...ta].every(x=>tb.has(x)) || [...tb].every(x=>ta.has(x))) ? 0.15 : 0;
     return Math.min(1, base + bonus);
 }
-function _v2MatchFuzzy(lib, seuil=0.72) {   // FIX: seuil 0.65→0.72 — évite faux positifs (ex: GHARB TOURS au lieu de LOST IN THE WORLD)
+function _v2MatchFuzzy(lib, seuil=0.72) {
     if (!_V2_ALL_LIBS || !_V2_LIBELLE_MAP) return null;
-    let best = null, bestScore = 0;
+    let best = null, bestScore = 0, bestEntry = null;
     for (const k of _V2_ALL_LIBS) {
-        const s = _v2TokenSetSim(lib, k);
-        if (s > bestScore) { bestScore = s; best = k; }
+        const baseScore = _v2TokenSetSim(lib, k);
+        // FIX RARE-TOKEN BOOST : si ≥ 2 tokens rares (noms propres, identifiants) communs
+        // → score boosté même si les tokens génériques diffèrent (banque différente, etc.)
+        const rareScore = _v2RareScore(lib, k);
+        const finalScore = rareScore >= 0.8
+            ? Math.max(baseScore, 0.50 + rareScore * 0.40)  // ex: rareScore=1.0 → min score 0.90
+            : baseScore;
+        if (finalScore > bestScore) {
+            bestScore = finalScore;
+            best = k;
+            // En cas de collision, prendre le meilleur candidat par nom de client
+            const entries = _V2_LIBELLE_MAP[k];
+            if (entries.length === 1) {
+                bestEntry = entries[0];
+            } else {
+                bestEntry = entries.reduce((acc, e) => {
+                    const ns = _v2ClientNameInLib(lib, e.client);
+                    const as = _v2ClientNameInLib(lib, acc.client);
+                    return ns > as ? e : acc;
+                }, entries[0]);
+            }
+        }
     }
-    if (best && bestScore >= seuil) {
-        const r = _V2_LIBELLE_MAP[best];
-        return { client: r.client, auxiliaire: r.code_client, score: bestScore, methode: 'FUZZY', confiance: bestScore>=0.85?'ÉLEVÉE':'MOYENNE', libelle_base: best };
+    if (best && bestScore >= seuil && bestEntry) {
+        return { client: bestEntry.client, auxiliaire: bestEntry.code_client, score: bestScore, methode: 'FUZZY', confiance: bestScore>=0.85?'ÉLEVÉE':'MOYENNE', libelle_base: best };
     }
     return null;
 }
@@ -9384,7 +9493,7 @@ function _v2MatchFuzzy(lib, seuil=0.72) {   // FIX: seuil 0.65→0.72 — évite
 // S4 — Tokens nom client dans le libellé
 function _v2MatchToken(lib, seuil=0.4) {
     if (!_V2_CLIENT_IDX) return null;
-    const libTokens = new Set(_v2Norm(lib).split(' ').filter(t=>t.length>=2)); // FIX: >= 2 cohérent avec buildIndexes
+    const libTokens = new Set(_v2Norm(lib).split(' ').filter(t=>t.length>=2));
     let best = null, bestScore = 0, bestCount = 0;
     for (const c of _V2_CLIENT_IDX) {
         if (!c.tokens.size) continue;
@@ -9415,10 +9524,15 @@ function v2IdentifierClient(libelle) {
 function v2GetCandidates(libelle, topN=5) {
     if (!_V2_LOADED) return [];
     const q = libelle.trim().toUpperCase();
-    // Fuzzy candidates
-    const fuzzyCands = (_V2_ALL_LIBS || []).map(k => ({
-        type:'FUZZY', lib:k, score:_v2TokenSetSim(q,k), ..._V2_LIBELLE_MAP[k]
-    })).sort((a,b)=>b.score-a.score).slice(0,topN);
+    // Fuzzy candidates — _V2_LIBELLE_MAP[k] est maintenant une liste
+    const fuzzyCands = (_V2_ALL_LIBS || []).flatMap(k => {
+        const score = _v2TokenSetSim(q, k);
+        const rareScore = _v2RareScore(q, k);
+        const finalScore = rareScore >= 0.8 ? Math.max(score, 0.50 + rareScore * 0.40) : score;
+        return (_V2_LIBELLE_MAP[k] || []).map(e => ({
+            type:'FUZZY', lib:k, score:finalScore, client:e.client, code_client:e.code_client
+        }));
+    }).sort((a,b)=>b.score-a.score).slice(0,topN*2);
     // Token candidates
     const libTokens = new Set(_v2Norm(q).split(' ').filter(t=>t.length>=3));
     const tokenCands = (_V2_CLIENT_IDX||[]).map(c => {
@@ -17736,6 +17850,9 @@ function sOpenClientDrill(compte,aux){
     </div>`;
   } else {
     const periodLabel=sPeriodLabel();
+    const ytdM2=_ytdMonth(data.year);
+    const isPartialDrill=ytdM2<12;
+    const ytdLblDrill=isPartialDrill?` Jan-${SMOIS[ytdM2-1]}`:' (complet)';
     const curP=sClientPeriodCA(compte,aux,data.year);
     const prevP=sClientPeriodCA(compte,aux,data.year-1);
     const evoCA=prevP.ca>0?(curP.ca-prevP.ca)/prevP.ca*100:null;
@@ -17743,21 +17860,22 @@ function sOpenClientDrill(compte,aux){
     const evoBadge=v=>v===null?`<span style="color:var(--txt4);font-size:8.5px">N-1 indisponible</span>`:
       `<span style="font-weight:800;color:${v>=0?'#059669':'#dc2626'}">${v>=0?'▲':'▼'} ${Math.abs(v).toFixed(1)}%</span>`;
     evolHTML=`
-    <div class="stat-drill-section-title">📈 Évolution N / N-1 <span style="font-weight:600;color:var(--txt4);text-transform:none;letter-spacing:0">· ${periodLabel}</span></div>
+    <div class="stat-drill-section-title">📈 Évolution N / N-1 <span style="font-weight:600;color:var(--txt4);text-transform:none;letter-spacing:0">· ${periodLabel}${isPartialDrill?' — comparaison Jan-'+SMOIS[ytdM2-1]+' seulement':''}</span></div>
+    ${isPartialDrill?`<div style="background:#fff7ed;border:1px solid #f97316;border-radius:6px;padding:5px 10px;margin-bottom:6px;font-size:8px;color:#7c2d12;font-weight:700">⚠️ Données ${data.year} disponibles jusqu'à ${SMOIS[ytdM2-1]} — N-1 limité à Jan-${SMOIS[ytdM2-1]} pour comparaison équitable</div>`:''}
     <div style="display:flex;gap:8px;margin-bottom:4px">
       <div style="flex:1;background:var(--bg2);border-radius:9px;padding:9px 11px">
-        <div class="dk-lbl">CA ${curP.year} vs ${prevP.year}</div>
+        <div class="dk-lbl">CA ${curP.year}${ytdLblDrill} vs ${prevP.year}${ytdLblDrill}</div>
         <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px">
           <span style="font-size:11px;font-weight:900;color:var(--sky-deep)">${SFM(curP.ca)}</span>${evoBadge(evoCA)}
         </div>
-        <div style="font-size:7.5px;color:var(--txt4);margin-top:1px">N-1 (${periodLabel}) : ${SFM(prevP.ca)}</div>
+        <div style="font-size:7.5px;color:var(--txt4);margin-top:1px">N-1 : ${SFM(prevP.ca)}</div>
       </div>
       <div style="flex:1;background:var(--bg2);border-radius:9px;padding:9px 11px">
-        <div class="dk-lbl">OPS ${curP.year} vs ${prevP.year}</div>
+        <div class="dk-lbl">OPS ${curP.year}${ytdLblDrill} vs ${prevP.year}${ytdLblDrill}</div>
         <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px">
           <span style="font-size:11px;font-weight:900;color:var(--sky-deep)">${SFN(curP.ops)}</span>${evoBadge(evoOps)}
         </div>
-        <div style="font-size:7.5px;color:var(--txt4);margin-top:1px">N-1 (${periodLabel}) : ${SFN(prevP.ops)}</div>
+        <div style="font-size:7.5px;color:var(--txt4);margin-top:1px">N-1 : ${SFN(prevP.ops)}</div>
       </div>
     </div>`;
   }
@@ -20392,6 +20510,17 @@ function sClientPeriodCA(compte,aux,yearOverride){
       if(STAT.folios.size>0&&!STAT.folios.has(r.folio)) return; // période respectée même pour N-1
     } else if((STAT.periodMode==='date'||STAT.periodMode==='range')&&filterDateFrom&&filterDateTo){
       if(!r.date||r.date<filterDateFrom||r.date>filterDateTo) return;
+    } else {
+      // Mode normal (année) — appliquer le filtre YTD si l'année de référence
+      // est l'année courante ET que ses données sont incomplètes (ex: données
+      // jusqu'à Juin 2026 → comparer Jan-Juin N vs Jan-Juin N-1, pas vs toute l'année N-1)
+      if(r.year!==targetYear) return;
+      const curYear2=STAT.year||new Date().getFullYear();
+      if(targetYear!==curYear2){
+        // Pour N-1, N-2, etc. : limiter au même nb de mois que l'année courante
+        const ytdRef=_ytdMonth(curYear2);
+        if(ytdRef<12&&r.month&&r.month>ytdRef) return;
+      }
     }
     ca+=r.debit; ops++;
   });
