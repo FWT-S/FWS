@@ -6468,32 +6468,118 @@ let nextId = 1;
 // ─── INIT ──────────────────────────────────────────────────────────────────
 function init(){ renderCompanyGrid(); renderTable(); }
 
-const AIRLINE_LOGOS = {
+// ─── SYSTÈME LOGOS COMPAGNIES — GitHub + cache localStorage + fallback Clearbit ───
+
+const GH_LOGOS_REPO  = 'FWT-S/FWS';
+const GH_LOGOS_BRANCH= 'main';
+const GH_LOGOS_DIR   = 'logos';
+const GH_RAW_BASE    = `https://raw.githubusercontent.com/${GH_LOGOS_REPO}/${GH_LOGOS_BRANCH}/${GH_LOGOS_DIR}`;
+const LOGO_CACHE_KEY = 'fwt_logo_cache_v1';
+const LOGO_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h en ms
+
+// Domaines Clearbit de secours (si logo absent du repo GitHub)
+const AIRLINE_CLEARBIT = {
   'TK':'turkishairlines.com','NDC TK':'turkishairlines.com',
   'VY':'vueling.com','V7':'volotea.com','TO':'transavia.com',
   'BJ':'nouvelair.com','AC':'aircanada.com',
   'IB':'iberia.com','BA':'britishairways.com'
 };
 
+// Cache mémoire (map code → data-URL base64 ou '' si absent)
+let _logoCache = {};  // chargé depuis localStorage au démarrage
+
+/* Charge le cache depuis localStorage */
+function _initLogoCache(){
+  try {
+    const raw = localStorage.getItem(LOGO_CACHE_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    const age = Date.now() - (saved.ts || 0);
+    if(age < LOGO_CACHE_TTL) { _logoCache = saved.data || {}; }
+    else { localStorage.removeItem(LOGO_CACHE_KEY); }
+  } catch(e){ /* ignore */ }
+}
+
+/* Persiste le cache dans localStorage */
+function _saveLogoCache(){
+  try {
+    localStorage.setItem(LOGO_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: _logoCache }));
+  } catch(e){ /* quota dépassé → on ignore */ }
+}
+
+/* Télécharge un logo depuis GitHub et le convertit en data-URL (base64) */
+async function _fetchLogoFromGH(code){
+  const cleanCode = code.replace(/\s+/g,'_');  // ex: "NDC TK" → "NDC_TK"
+  const exts = ['png','jpg','svg','webp'];
+  for(const ext of exts){
+    const url = `${GH_RAW_BASE}/${cleanCode}.${ext}`;
+    try {
+      const r = await fetch(url);
+      if(!r.ok) continue;
+      const blob = await r.blob();
+      return await new Promise((res,rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> res(fr.result);
+        fr.onerror = rej;
+        fr.readAsDataURL(blob);
+      });
+    } catch(e){ continue; }
+  }
+  return null; // aucun format trouvé
+}
+
+/* Précharge tous les logos connus au démarrage (silencieux) */
+async function _loadLogosFromGitHub(){
+  _initLogoCache();
+  const codes = Object.keys(AIRLINE_CLEARBIT);
+  const missing = codes.filter(c => !(_logoCache[c] !== undefined));
+  if(!missing.length) return; // tout déjà en cache
+  for(const code of missing){
+    const dataUrl = await _fetchLogoFromGH(code);
+    _logoCache[code] = dataUrl || ''; // '' = absent du repo (fallback Clearbit)
+  }
+  _saveLogoCache();
+}
+
+/* Retourne l'URL du logo à utiliser pour un code compagnie :
+   1. data-URL depuis cache GitHub
+   2. Clearbit en fallback
+   3. null si inconnu */
+function _getLogoSrc(code){
+  const cached = _logoCache[code];
+  if(cached)   return cached;  // data-URL GitHub
+  if(cached === '') {          // absent du repo → Clearbit
+    const d = AIRLINE_CLEARBIT[code];
+    return d ? `https://logo.clearbit.com/${d}` : null;
+  }
+  // pas encore chargé (cache pas init) → Clearbit direct
+  const d = AIRLINE_CLEARBIT[code];
+  return d ? `https://logo.clearbit.com/${d}` : null;
+}
+
 /* Retourne <img> seul pour bouton compagnie (logo carré au-dessus du code) */
 function getLogoHTML(comp){
-  const domain=AIRLINE_LOGOS[comp];
-  if(!domain) return '';
-  return `<img class="comp-logo" src="https://logo.clearbit.com/${domain}"
+  const src = _getLogoSrc(comp);
+  if(!src) return '';
+  return `<img class="comp-logo" src="${src}"
     onerror="this.style.display='none'" alt="${comp}">`;
 }
 
 /* Retourne logo inline + code (pour tableaux, suggestions, badges) */
 function getAirLogo(code){
-  const domain=AIRLINE_LOGOS[code];
-  if(!domain) return `<span>${code}</span>`;
+  const src = _getLogoSrc(code);
+  if(!src) return `<span>${code}</span>`;
   return `<span style="display:inline-flex;align-items:center;gap:5px;">
-    <img src="https://logo.clearbit.com/${domain}"
+    <img src="${src}"
       style="width:18px;height:18px;border-radius:3px;vertical-align:middle;background:#fff;padding:1px;"
       onerror="this.style.display='none'" alt="${code}">
     <span style="font-weight:700;">${code}</span>
   </span>`;
 }
+
+// Lancer le préchargement GitHub dès que le JS est prêt (silencieux, non bloquant)
+_initLogoCache();
+_loadLogosFromGitHub().catch(()=>{});
 
 function renderCompanyGrid(){
   // Populate the select dropdown — TK always first
