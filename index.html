@@ -2417,6 +2417,52 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
 </style>
 </head>
 <body>
+<!-- ══ SPLASH PLEIN ÉCRAN ══════════════════════════════════════════ -->
+<div id="fwt-splash" onclick="fwtLaunch()" style="
+  position:fixed;inset:0;z-index:999999;cursor:pointer;
+  background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;font-family:'Segoe UI',Arial,sans-serif;
+  animation:fwtSplashIn .4s ease;">
+  <div style="font-size:64px;margin-bottom:8px;filter:drop-shadow(0 4px 24px rgba(56,189,248,.5))">✈</div>
+  <div style="font-size:28px;font-weight:900;color:#f1f5f9;letter-spacing:2px;text-shadow:0 2px 12px rgba(56,189,248,.4)">FOUR WINDS TRAVELS Spa</div>
+  <div style="font-size:12px;font-weight:600;color:#94a3b8;letter-spacing:4px;text-transform:uppercase;margin-top:6px">Comptabilité</div>
+  <div style="margin-top:48px;display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div style="
+      padding:14px 40px;border-radius:50px;font-size:15px;font-weight:800;
+      background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;
+      box-shadow:0 4px 24px rgba(14,165,233,.45);letter-spacing:1px;
+      animation:fwtPulse 1.6s ease-in-out infinite;">
+      ▶ CLIQUER POUR LANCER
+    </div>
+    <div style="font-size:10px;color:#475569;letter-spacing:2px">APPUYEZ N'IMPORTE OÙ</div>
+  </div>
+  <div style="position:absolute;bottom:20px;font-size:9px;color:#334155;letter-spacing:1px">
+    Four Winds Travels · SPA · Système de Gestion Comptable
+  </div>
+</div>
+<style>
+@keyframes fwtSplashIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+@keyframes fwtPulse{0%,100%{box-shadow:0 4px 24px rgba(14,165,233,.45)}50%{box-shadow:0 4px 40px rgba(14,165,233,.85),0 0 0 8px rgba(14,165,233,.12)}}
+</style>
+<script>
+function fwtLaunch(){
+  const el=document.documentElement;
+  const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
+  if(req) req.call(el).catch(()=>{});
+  document.getElementById('fwt-splash').style.display='none';
+}
+// Raccourci clavier F11 pour toggler après lancement
+document.addEventListener('keydown',function(e){
+  if(e.key==='F11'){
+    e.preventDefault();
+    const isFS=document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement;
+    if(isFS){(document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen).call(document).catch(()=>{});}
+    else{const el2=document.documentElement;const r2=el2.requestFullscreen||el2.webkitRequestFullscreen||el2.mozRequestFullScreen||el2.msRequestFullscreen;if(r2)r2.call(el2).catch(()=>{});}
+  }
+});
+</script>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
 <symbol id="ic-arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
@@ -4623,6 +4669,42 @@ window.onload=()=>{
   setTimeout(()=>document.getElementById('imt').focus(),200);
 };
 
+/* ── Gestion plein écran FWT ──────────────────────────────────────────
+   Lance le plein écran natif du navigateur au démarrage.
+   Un bouton flottant permet de basculer à tout moment (ou touche F11).
+─────────────────────────────────────────────────────────────────────── */
+function _fwtRequestFullscreen(){
+  const el=document.documentElement;
+  const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
+  if(req) req.call(el).catch(()=>{});  // catch: certains navigateurs bloquent sans geste utilisateur
+}
+function _fwtExitFullscreen(){
+  const ex=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen;
+  if(ex) ex.call(document).catch(()=>{});
+}
+function _fwtToggleFullscreen(){
+  const isFS=document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement;
+  isFS?_fwtExitFullscreen():_fwtRequestFullscreen();
+}
+// Mettre à jour l'icône du bouton au changement d'état
+(function(){
+  const update=()=>{
+    const btn=document.getElementById('fwt-fs-btn');
+    if(!btn) return;
+    const isFS=document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement;
+    btn.title=isFS?'Quitter plein écran (F11)':'Plein écran (F11)';
+    btn.innerHTML=isFS
+      ?'<svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15"><path d="M3 8V5h3V3H1v5h2zm14-3h-3V3h-2v5h5V5zM8 17H5v-3H3v5h5v-2zm9 0h-3v2h5v-5h-2v3z"/></svg>'
+      :'<svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15"><path d="M1 1h6v2H3v4H1V1zm12 0h6v6h-2V3h-4V1zM1 13h2v4h4v2H1v-6zm16 4h-4v2h6v-6h-2v4z"/></svg>';
+  };
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('MSFullscreenChange',update);
+  // Raccourci clavier F11
+  document.addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();_fwtToggleFullscreen();}});
+})();
+
 // ══ TABS ═════════════════════════════════════════════════════
 function ST(n,b){
   // Cacher/montrer les panels
@@ -6468,118 +6550,32 @@ let nextId = 1;
 // ─── INIT ──────────────────────────────────────────────────────────────────
 function init(){ renderCompanyGrid(); renderTable(); }
 
-// ─── SYSTÈME LOGOS COMPAGNIES — GitHub + cache localStorage + fallback Clearbit ───
-
-const GH_LOGOS_REPO  = 'FWT-S/FWS';
-const GH_LOGOS_BRANCH= 'main';
-const GH_LOGOS_DIR   = 'logos';
-const GH_RAW_BASE    = `https://raw.githubusercontent.com/${GH_LOGOS_REPO}/${GH_LOGOS_BRANCH}/${GH_LOGOS_DIR}`;
-const LOGO_CACHE_KEY = 'fwt_logo_cache_v1';
-const LOGO_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h en ms
-
-// Domaines Clearbit de secours (si logo absent du repo GitHub)
-const AIRLINE_CLEARBIT = {
+const AIRLINE_LOGOS = {
   'TK':'turkishairlines.com','NDC TK':'turkishairlines.com',
   'VY':'vueling.com','V7':'volotea.com','TO':'transavia.com',
   'BJ':'nouvelair.com','AC':'aircanada.com',
   'IB':'iberia.com','BA':'britishairways.com'
 };
 
-// Cache mémoire (map code → data-URL base64 ou '' si absent)
-let _logoCache = {};  // chargé depuis localStorage au démarrage
-
-/* Charge le cache depuis localStorage */
-function _initLogoCache(){
-  try {
-    const raw = localStorage.getItem(LOGO_CACHE_KEY);
-    if(!raw) return;
-    const saved = JSON.parse(raw);
-    const age = Date.now() - (saved.ts || 0);
-    if(age < LOGO_CACHE_TTL) { _logoCache = saved.data || {}; }
-    else { localStorage.removeItem(LOGO_CACHE_KEY); }
-  } catch(e){ /* ignore */ }
-}
-
-/* Persiste le cache dans localStorage */
-function _saveLogoCache(){
-  try {
-    localStorage.setItem(LOGO_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: _logoCache }));
-  } catch(e){ /* quota dépassé → on ignore */ }
-}
-
-/* Télécharge un logo depuis GitHub et le convertit en data-URL (base64) */
-async function _fetchLogoFromGH(code){
-  const cleanCode = code.replace(/\s+/g,'_');  // ex: "NDC TK" → "NDC_TK"
-  const exts = ['png','jpg','svg','webp'];
-  for(const ext of exts){
-    const url = `${GH_RAW_BASE}/${cleanCode}.${ext}`;
-    try {
-      const r = await fetch(url);
-      if(!r.ok) continue;
-      const blob = await r.blob();
-      return await new Promise((res,rej)=>{
-        const fr = new FileReader();
-        fr.onload = ()=> res(fr.result);
-        fr.onerror = rej;
-        fr.readAsDataURL(blob);
-      });
-    } catch(e){ continue; }
-  }
-  return null; // aucun format trouvé
-}
-
-/* Précharge tous les logos connus au démarrage (silencieux) */
-async function _loadLogosFromGitHub(){
-  _initLogoCache();
-  const codes = Object.keys(AIRLINE_CLEARBIT);
-  const missing = codes.filter(c => !(_logoCache[c] !== undefined));
-  if(!missing.length) return; // tout déjà en cache
-  for(const code of missing){
-    const dataUrl = await _fetchLogoFromGH(code);
-    _logoCache[code] = dataUrl || ''; // '' = absent du repo (fallback Clearbit)
-  }
-  _saveLogoCache();
-}
-
-/* Retourne l'URL du logo à utiliser pour un code compagnie :
-   1. data-URL depuis cache GitHub
-   2. Clearbit en fallback
-   3. null si inconnu */
-function _getLogoSrc(code){
-  const cached = _logoCache[code];
-  if(cached)   return cached;  // data-URL GitHub
-  if(cached === '') {          // absent du repo → Clearbit
-    const d = AIRLINE_CLEARBIT[code];
-    return d ? `https://logo.clearbit.com/${d}` : null;
-  }
-  // pas encore chargé (cache pas init) → Clearbit direct
-  const d = AIRLINE_CLEARBIT[code];
-  return d ? `https://logo.clearbit.com/${d}` : null;
-}
-
 /* Retourne <img> seul pour bouton compagnie (logo carré au-dessus du code) */
 function getLogoHTML(comp){
-  const src = _getLogoSrc(comp);
-  if(!src) return '';
-  return `<img class="comp-logo" src="${src}"
+  const domain=AIRLINE_LOGOS[comp];
+  if(!domain) return '';
+  return `<img class="comp-logo" src="https://logo.clearbit.com/${domain}"
     onerror="this.style.display='none'" alt="${comp}">`;
 }
 
 /* Retourne logo inline + code (pour tableaux, suggestions, badges) */
 function getAirLogo(code){
-  const src = _getLogoSrc(code);
-  if(!src) return `<span>${code}</span>`;
+  const domain=AIRLINE_LOGOS[code];
+  if(!domain) return `<span>${code}</span>`;
   return `<span style="display:inline-flex;align-items:center;gap:5px;">
-    <img src="${src}"
+    <img src="https://logo.clearbit.com/${domain}"
       style="width:18px;height:18px;border-radius:3px;vertical-align:middle;background:#fff;padding:1px;"
       onerror="this.style.display='none'" alt="${code}">
     <span style="font-weight:700;">${code}</span>
   </span>`;
 }
-
-// Lancer le préchargement GitHub dès que le JS est prêt (silencieux, non bloquant)
-_initLogoCache();
-_loadLogosFromGitHub().catch(()=>{});
 
 function renderCompanyGrid(){
   // Populate the select dropdown — TK always first
@@ -16606,6 +16602,7 @@ const STAT={
   // ══ NOUVEAU : Vue MEILLEURS VENDEURS (basée sur filtres quinzaine/mois courants) ══
   mvComp: 'ALL',          // filtre compagnie local à la vue (indépendant du chip global)
   mvLimit: 10,            // nombre de lignes affichées (TOP 10 par défaut, extensible)
+  mvSearchQuery: '',      // filtre texte client dans Meilleurs Vendeurs
   mvYear: null,           // année sélectionnée dans la vue (null = année la plus récente)
   mvMonth: null,          // mois sélectionné dans la vue (null = mois calendaire courant)
   mvQ: 1,                 // quinzaine sélectionnée dans la vue (1 ou 2)
@@ -18184,6 +18181,8 @@ function statSetView(v){
     if(v==='quinz')   {sQuinzaineCommission(c);return;}
     if(v==='rank')    {sCommission(c);return;}// fallback: classement → commission
   }
+  // Reset scroll + contenu avant chaque vue pour éviter le bug de défilement
+  if(c){c.scrollTop=0;c.innerHTML='';}
   if(v==='rank')    sRank(c);
   else if(v==='chart')   sChart(c);
   else if(v==='top')     sTopVendeurs(c);
@@ -19621,306 +19620,186 @@ function sEvol(c){
 ══════════════════════════════════════════════════════════════════════ */
 function sTopVendeurs(c){
   if(!STAT.agg.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏆</div><div class="msg">Aucune donnée</div></div>`;return;}
-  // ── Déterminer la source de données selon le mode ──
-  const mode=STAT.topMode||'global';
-  const tYear=STAT.topYear||(STAT.year||new Date().getFullYear());
-  const tMonth=STAT.topMonth||null;
-  const tQ=STAT.topQ||1;
-  const tComp=STAT.topComp||'ALL';
-  const tLimit=STAT.topLimit||20;
-  const depth=STAT.evolDepth||3;
-  const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
 
-  let periodData, periodLabel, prevData=[];
-  if(mode==='global'){
-    periodData=[...STAT.agg];
-    periodLabel='Toutes périodes';
-  } else if(mode==='annuel'){
-    periodData=_mvAgg(tYear,undefined,undefined,tComp);
-    periodLabel=`Année ${tYear}`;
-    prevData=_mvAgg(tYear-1,undefined,undefined,tComp);
-  } else if(mode==='mensuel'){
-    periodData=_mvAgg(tYear,tMonth||1,undefined,tComp);
-    periodLabel=`${SMOIS2[(tMonth||1)-1]} ${tYear}`;
-    const pm=tMonth===1?{y:tYear-1,m:12}:{y:tYear,m:(tMonth||1)-1};
-    prevData=_mvAgg(pm.y,pm.m,undefined,tComp);
-  } else if(mode==='quinzaine'){
-    periodData=_mvAgg(tYear,tMonth||1,tQ,tComp);
-    periodLabel=`Q${tQ} ${SMOIS2[(tMonth||1)-1]} ${tYear}`;
-    const pq=_prevQ(tYear,tMonth||1,tQ);
-    prevData=_mvAgg(pq.year,pq.month,pq.q,tComp);
-  }
-  periodData=periodData.sort((a,b)=>b.total-a.total);
+  const curYear=STAT.year||new Date().getFullYear();
+  const periodLabel=sPeriodLabel();
+  const ytdM=_ytdMonth(curYear);
+  const isPartial=ytdM<12;
 
-  const all=periodData;
-  const top3=all.slice(0,3);
-  const restLimit=tLimit==='tout'?all.length:tLimit;
-  const rest=all.slice(3,Math.max(3,restLimit));
-  const totCA=all.reduce((s,r)=>s+r.total,0);
-  const totOps=all.reduce((s,r)=>s+r.ops,0);
+  // ── Agrégation par client par compagnie (respecte tous les filtres sidebar) ──
+  const rawCur=sRawFiltered();
+  const rawN1=sRawFiltered(curYear-1).filter(r=>!isPartial||!r.month||r.month<=ytdM);
 
-  // ── Extras spécifiques au mode QUINZAINE (repris de l'ex-vue Meilleurs
-  //    Vendeurs, fusionnée ici) : moyenne de CA/quinzaine par client, rang
-  //    antérieur, moyennes GLOBALES Q1 vs Q2 tous clients confondus ──
-  let qAvgMap=new Map(), qPqRankMap=new Map(), qGlobalAvgQ1=0, qGlobalAvgQ2=0;
-  if(mode==='quinzaine'){
-    const shownKeys=new Set(all.slice(0,Math.max(3,restLimit)).map(r=>r.compte+'|'+r.aux));
-    const bucketMap=new Map();
-    STAT.raw.forEach(r=>{
-      if(!_sBaseFilter(r)) return;
-      if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
-      if(!r.date) return;
-      const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
-      if(!shownKeys.has(ck)) return;
-      const qq=_dateQ(r.date), bKey=String(r.month||0).padStart(2,'0')+'-Q'+qq;
-      if(!bucketMap.has(ck)) bucketMap.set(ck,new Map());
-      const bm=bucketMap.get(ck); bm.set(bKey,(bm.get(bKey)||0)+r.debit);
+  function aggBySym(rows){
+    // Retourne Map<sym, Array<{compte,aux,name,total,ops}>> trié par total desc
+    const symMap=new Map();
+    rows.forEach(r=>{
+      const sym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(!sym) return;
+      const ck=r.compte+'|'+(r.aux||r.compte);
+      if(!symMap.has(sym)) symMap.set(sym,new Map());
+      const m=symMap.get(sym);
+      if(!m.has(ck)) m.set(ck,{compte:r.compte,aux:r.aux||r.compte,name:'',total:0,ops:0});
+      const o=m.get(ck);
+      o.total+=r.debit; o.ops++;
+      if(!o.name||(r.libelle||''). length>o.name.length) o.name=sResolveName(r.aux,r.compte,r.libelle);
     });
-    bucketMap.forEach((bm,ck)=>{ const vals=[...bm.values()]; qAvgMap.set(ck, vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:0); });
-
-    const pq2=_prevQ(tYear,tMonth||1,tQ);
-    const pqAggAll=_mvAgg(pq2.year,pq2.month,pq2.q,tComp);
-    pqAggAll.forEach((r,idx)=>qPqRankMap.set(r.compte+'|'+r.aux, idx+1));
-
-    const globalQBuckets={1:new Map(),2:new Map()};
-    STAT.raw.forEach(r=>{
-      if(!_sBaseFilter(r)) return;
-      if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
-      if(!r.date) return;
-      const qq=_dateQ(r.date), mkey=r.month||0;
-      const gm=globalQBuckets[qq]; gm.set(mkey,(gm.get(mkey)||0)+r.debit);
+    const result=new Map();
+    symMap.forEach((m,sym)=>{
+      result.set(sym,[...m.values()].sort((a,b)=>b.total-a.total));
     });
-    const gq1=[...globalQBuckets[1].values()], gq2=[...globalQBuckets[2].values()];
-    qGlobalAvgQ1=gq1.length?gq1.reduce((s,v)=>s+v,0)/gq1.length:0;
-    qGlobalAvgQ2=gq2.length?gq2.reduce((s,v)=>s+v,0)/gq2.length:0;
+    return result;
   }
 
-  // Carte évolution pour la période précédente
-  const prevMap=new Map(prevData.map(r=>[r.compte+'|'+(r.aux||r.compte),r.total]));
+  const curBySym=aggBySym(rawCur);
+  const n1BySym=aggBySym(rawN1);
 
-  // ── Sparkline simple ──
-  function sparkline(r,w=70,h=24){
-    const mmap=new Map();
-    STAT.raw.forEach(row=>{
-      if((row.compte+'|'+(row.aux||row.compte))!==(r.compte+'|'+(r.aux||r.compte))) return;
-      const k=row.folio||0; if(!k) return;
-      mmap.set(k,(mmap.get(k)||0)+row.debit);
-    });
-    const vals=[...Array(12)].map((_,i)=>mmap.get(i+1)||0);
-    const mx=Math.max(...vals,1);
-    if(mx===0) return '';
-    const pts=vals.map((v,i)=>{
-      return `${Math.round(i*(w/(vals.length-1)))},${Math.round(h-(v/mx)*(h-4)-2)}`;
-    }).join(' ');
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="overflow:visible">
-      <polyline points="${pts}" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linejoin="round" opacity=".8"/>
-    </svg>`;
+  // Rang N-1 par client par compagnie
+  function getRankMapN1(sym){
+    const arr=n1BySym.get(sym)||[];
+    const m=new Map();
+    arr.forEach((r,i)=>m.set(r.compte+'|'+(r.aux||r.compte),{rank:i+1,total:r.total}));
+    return m;
   }
 
-  // ── Boutons de sélection mode ──
-  const availYears=STAT.availableYears||[tYear];
-  const yearOpts=availYears.map(y=>`<option value="${y}"${y===tYear?' selected':''}>${y}</option>`).join('');
-  const monthOpts=[...Array(12)].map((_,i)=>`<option value="${i+1}"${(i+1)===(tMonth||1)?' selected':''}>${SMOIS2[i]}</option>`).join('');
-  const qOpts=[1,2].map(q=>`<option value="${q}"${q===tQ?' selected':''}>Q${q} (${q===1?'1-15':'16-31'})</option>`).join('');
+  // ── Toutes les compagnies triées par CA total décroissant ──
+  const allSyms=[...curBySym.entries()]
+    .map(([sym,arr])=>({sym,total:arr.reduce((s,r)=>s+r.total,0)}))
+    .sort((a,b)=>b.total-a.total)
+    .map(d=>d.sym);
 
-  const modeButtons=['global','annuel','mensuel','quinzaine'].map(m=>`
-    <button class="stat-topmode-btn${mode===m?' on':''}"
-      onclick="STAT.topMode='${m}';sTopVendeurs(document.getElementById('stat-content'))">${
-        m==='global'?'🌐 Global':m==='annuel'?'📅 Annuel':m==='mensuel'?'📆 Mensuel':'🔢 Quinzaine'
-      }</button>`).join('');
+  if(!allSyms.length){c.innerHTML=`<div class="stat-empty"><div class="big">🏆</div><div class="msg">Aucune donnée</div></div>`;return;}
 
-  let periodPicker='';
-  if(mode==='annuel'){
-    periodPicker=`<select class="stat-depth-sel" onchange="STAT.topYear=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${yearOpts}</select>`;
-  } else if(mode==='mensuel'){
-    periodPicker=`<select class="stat-depth-sel" onchange="STAT.topYear=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${yearOpts}</select>
-      <select class="stat-depth-sel" onchange="STAT.topMonth=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${monthOpts}</select>`;
-  } else if(mode==='quinzaine'){
-    periodPicker=`<select class="stat-depth-sel" onchange="STAT.topYear=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${yearOpts}</select>
-      <select class="stat-depth-sel" onchange="STAT.topMonth=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${monthOpts}</select>
-      <select class="stat-depth-sel" onchange="STAT.topQ=+this.value;sTopVendeurs(document.getElementById('stat-content'))">${qOpts}</select>`;
-  }
+  const totCAGlobal=rawCur.reduce((s,r)=>s+r.debit,0);
 
-  // ── Podium ──
-  const podiumOrder=[1,0,2],podiumH=['130px','160px','110px'];
-  const podiumColors=['#c0c0c0','#f59e0b','#cd7f32'],podiumEmoji=['🥈','🥇','🥉'];
-  let podiumHTML='';
-  podiumOrder.forEach((idx,pi)=>{
-    const r=top3[idx]; if(!r) return;
-    const pct=(r.total/totCA*100).toFixed(1);
-    const pkey=r.compte+'|'+(r.aux||r.compte);
-    const prevCA=prevMap.get(pkey)||0;
-    const evoH=_evoBadge(prevCA,r.total,false);
-    // N-1 from explicit period
-    let nxExtra='';
-    if(mode!=='global'){
-      for(let ni=1;ni<=Math.min(depth,2);ni++){
-        let nca=0;
-        if(mode==='annuel')   nca=_mvClientCA(r.compte,r.aux||r.compte,tYear-ni,undefined,undefined,tComp);
-        else if(mode==='mensuel') nca=_mvClientCA(r.compte,r.aux||r.compte,tYear-ni,tMonth||1,undefined,tComp);
-        else if(mode==='quinzaine') nca=_mvClientCA(r.compte,r.aux||r.compte,tYear-ni,tMonth||1,tQ,tComp);
-        if(nca>0||ni===1) nxExtra+=`<div style="font-size:8.5px;color:var(--txt4)">N-${ni}: ${nca>0?SFM(nca):'—'} ${_evoBadge(nca,r.total,true)}</div>`;
-      }
-    }
-    podiumHTML+=`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0">
-      <div style="font-size:${idx===0?'26px':'20px'}">${podiumEmoji[pi]}</div>
-      <div style="background:var(--surface);border:2px solid ${podiumColors[pi]};border-radius:12px;padding:9px 10px;width:100%;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.08)">
-        <div style="font-size:9px;font-weight:800;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</div>
-        <div style="font-size:9px;color:var(--txt3);margin:2px 0">${r.aux||r.compte}</div>
-        <div style="font-size:11px;font-weight:900;color:var(--sky-deep);margin:3px 0">${SFM(r.total)}</div>
-        <div style="font-size:9px;color:var(--txt4);margin-bottom:3px">${SFN(r.ops)} ops · ${pct}%</div>
-        <div style="margin-bottom:3px">${evoH}</div>
-        ${nxExtra}
-        <div style="display:flex;justify-content:center;margin-top:3px">${sparkline(r)}</div>
+  // ── Générer une colonne top-10 pour une compagnie ──
+  function buildCompanyCol(sym,showAll){
+    const col=SCOL2[sym]||SCOL[sym]||'#6b7280';
+    const arr=curBySym.get(sym)||[];
+    const n1RankMap=getRankMapN1(sym);
+    const totCom=arr.reduce((s,r)=>s+r.total,0);
+    const displayArr=showAll?arr:arr.slice(0,10);
+    const hasMore=!showAll&&arr.length>10;
+
+    const rows=displayArr.map((r,i)=>{
+      const ck=r.compte+'|'+(r.aux||r.compte);
+      const curRank=i+1;
+      const n1Data=n1RankMap.get(ck);
+      const n1Rank=n1Data?.rank||null;
+      const rankDiff=n1Rank!==null?(n1Rank-curRank):null;
+      const rankBadge=n1Rank===null
+        ?'<span style="font-size:7px;color:#9ca3af">nv.</span>'
+        :rankDiff===0?'<span style="font-size:7.5px;color:var(--txt4)">=</span>'
+        :rankDiff>0?`<span style="font-size:7.5px;font-weight:800;color:#059669">▲${rankDiff}</span>`
+        :`<span style="font-size:7.5px;font-weight:800;color:#dc2626">▼${Math.abs(rankDiff)}</span>`;
+      const n1CA=n1Data?.total||0;
+      const evo=n1CA>0?((r.total-n1CA)/n1CA*100):null;
+      const evoBadge=evo===null?''
+        :evo>=0?`<span style="font-size:7px;color:#059669">▲${evo.toFixed(0)}%</span>`
+        :`<span style="font-size:7px;color:#dc2626">▼${Math.abs(evo).toFixed(0)}%</span>`;
+      const podCls=curRank===1?'background:rgba(234,179,8,.18);border-left:3px solid #d97706;'
+        :curRank===2?'background:rgba(148,163,184,.18);border-left:3px solid #94a3b8;'
+        :curRank===3?'background:rgba(249,115,22,.15);border-left:3px solid #f97316;':'border-left:2px solid var(--bo)';
+      return `<div style="${podCls};border-radius:6px;padding:5px 8px;margin-bottom:3px;display:flex;align-items:center;gap:6px;color:var(--txt)">
+        <span style="font-weight:900;font-size:10px;color:${curRank<=3?col:'var(--txt4)'};min-width:16px">${curRank<=3?['🥇','🥈','🥉'][curRank-1]:'#'+curRank}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:8.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${r.name||r.aux}</div>
+          <div style="font-size:7.5px;color:var(--txt4)">${r.aux||r.compte}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800;font-size:9px;color:var(--sky-deep)">${SFM(r.total)}</div>
+          <div style="display:flex;gap:3px;justify-content:flex-end;align-items:center">${rankBadge}${evoBadge}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const moreBtn=hasMore?`<button onclick="STAT._tvExpand=STAT._tvExpand||new Set();STAT._tvExpand.add('${sym}');sTopVendeurs(document.getElementById('stat-content'))"
+      style="width:100%;margin-top:4px;padding:4px;border:1px dashed var(--bo);border-radius:6px;background:transparent;color:var(--txt4);font-size:8px;cursor:pointer">
+      + Voir les ${arr.length-10} autres →
+    </button>`:'';
+
+    const collapseBtn=showAll&&arr.length>10?`<button onclick="STAT._tvExpand&&STAT._tvExpand.delete('${sym}');sTopVendeurs(document.getElementById('stat-content'))"
+      style="width:100%;margin-top:4px;padding:4px;border:1px dashed var(--bo);border-radius:6px;background:transparent;color:var(--txt4);font-size:8px;cursor:pointer">
+      ↑ Réduire
+    </button>`:'';
+
+    const n1Tot=(n1BySym.get(sym)||[]).reduce((s,r)=>s+r.total,0);
+    const evoTot=n1Tot>0?((totCom-n1Tot)/n1Tot*100):null;
+    const evoTotBadge=evoTot===null?''
+      :evoTot>=0?`<span style="font-size:9px;font-weight:800;color:#059669">▲${evoTot.toFixed(0)}%</span>`
+      :`<span style="font-size:9px;font-weight:800;color:#dc2626">▼${Math.abs(evoTot).toFixed(0)}%</span>`;
+
+    return `<div style="background:var(--surface);border:2px solid ${col}22;border-top:3px solid ${col};border-radius:10px;padding:10px;min-width:220px;flex:1;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <span style="background:${col};color:#fff;font-weight:900;font-size:11px;padding:2px 10px;border-radius:20px">${sym}</span>
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:11px;color:var(--sky-deep)">${SFM(totCom)}</div>
+          <div style="font-size:8px;color:var(--txt4)">${arr.length} clients · ${evoTotBadge}</div>
+        </div>
+        <span style="font-size:8.5px;color:var(--txt4)">${totCAGlobal>0?(totCom/totCAGlobal*100).toFixed(1)+'%':'—'}</span>
       </div>
-      <div style="background:${podiumColors[pi]};border-radius:8px 8px 0 0;width:80%;height:${podiumH[pi]};display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px">
-        <span style="font-size:11px;font-weight:900;color:#fff">#${idx+1}</span>
-      </div>
+      <div style="flex:1">${rows}</div>
+      ${moreBtn}${collapseBtn}
     </div>`;
-  });
+  }
 
-  // ── Tableau rang 4-20 avec évolution ──
-  const nxTh=mode!=='global'?Array.from({length:Math.min(depth,3)},(_,i)=>
-    `<th class="r" style="font-size:7px">N-${i+1}</th><th class="r" style="font-size:7px">Évol</th>`
-  ).join(''):'';
-  const qExtraTh=mode==='quinzaine'?`<th class="r" style="font-size:7px">MOY./QZ CLIENT</th><th class="r" style="font-size:7px">TAUX RÉAL.</th>`:'';
+  // ── Construire toutes les colonnes ──
+  const expanded=STAT._tvExpand||new Set();
+  const cols=allSyms.map(sym=>buildCompanyCol(sym,expanded.has(sym))).join('');
 
-  const maxRest=rest.length?rest[0].total:1;
-  let restRows='';
-  rest.forEach((r,i)=>{
-    const rk=i+4;
-    const barW=Math.round(r.total/maxRest*100);
-    const pctTot=(r.total/totCA*100).toFixed(1);
-    const pkey=r.compte+'|'+(r.aux||r.compte);
-    const prevCA=prevMap.get(pkey)||0;
-    const evoPrev=_evoBadge(prevCA,r.total,true);
-    const rankPrecHTML=mode==='quinzaine'?`<div>${_rankBadge(rk,qPqRankMap.get(pkey)||null)}</div>`:'';
-    const journals=[...r.journals].slice(0,2).map(j=>`<span style="background:${SCOL[j]||'#6b7280'};color:#fff;border-radius:3px;padding:0 3px;font-size:9px;font-weight:700">${j}</span>`).join('');
-    const nxCells=mode!=='global'?Array.from({length:Math.min(depth,3)},(_,ni)=>{
-      let nca=0;
-      if(mode==='annuel')   nca=_mvClientCA(r.compte,r.aux||r.compte,tYear-(ni+1),undefined,undefined,tComp);
-      else if(mode==='mensuel') nca=_mvClientCA(r.compte,r.aux||r.compte,tYear-(ni+1),tMonth||1,undefined,tComp);
-      else if(mode==='quinzaine') nca=_mvClientCA(r.compte,r.aux||r.compte,tYear-(ni+1),tMonth||1,tQ,tComp);
-      return `<td class="r m" style="font-size:9px;color:var(--txt3)">${nca>0?SFM(nca):'—'}</td><td class="r">${_evoBadge(nca,r.total,true)}</td>`;
-    }).join(''):'';
-    const qExtraCells=mode==='quinzaine'?(()=>{
-      const avgQ=qAvgMap.get(pkey)||0;
-      const taux=avgQ>0?(r.total/avgQ*100):null;
-      const tauxHTML=taux===null?'<span class="mv-taux na">—</span>':`<span class="mv-taux ${taux>=100?'up':'dn'}">${taux>=100?'▲':'▼'} ${taux.toFixed(0)}%</span>`;
-      return `<td class="r m" style="font-size:9px;color:var(--txt3)">${avgQ>0?SFM(avgQ):'—'}</td><td class="r">${tauxHTML}</td>`;
-    })():'';
-    restRows+=`<tr>
-      <td><span class="srk rn">${rk}</span></td>
-      <td style="font-size:9.5px;font-weight:700;color:var(--txt);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name||r.aux}</td>
-      <td class="r m" style="color:var(--sky-deep);font-weight:800;font-size:10px">${SFM(r.total)}</td>
-      <td><div style="width:60px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${barW}%;background:linear-gradient(90deg,#16a34a,#38bdf8);border-radius:3px"></div></div></td>
-      <td class="r" style="font-size:9px;color:var(--txt4)">${pctTot}%</td>
-      <td class="r">${evoPrev}${rankPrecHTML}</td>
-      ${nxCells}
-      ${qExtraCells}
-      <td>${journals}</td>
-    </tr>`;
-  });
-
-
-  const topShare=top3.reduce((s,r)=>s+(r?r.total:0),0);
-
-  // ── Filtre compagnie + limite (repris de l'ex-vue Meilleurs Vendeurs) ──
-  const compSet=new Set();
-  STAT.raw.forEach(r=>{const s=sNDCSym(r)||(r.journal?'AUT':null);if(s) compSet.add(s);});
-  const compBtns=mode!=='global'?(`<span class="stat-mv-comp-btn${tComp==='ALL'?' on':''}" onclick="STAT.topComp='ALL';sTopVendeurs(document.getElementById('stat-content'))">Toutes compagnies</span>`+
-    [...compSet].sort().map(s=>`<span class="stat-mv-comp-btn${tComp===s?' on':''}" onclick="STAT.topComp='${s}';sTopVendeurs(document.getElementById('stat-content'))">${s}</span>`).join('')):'';
-  const limitBtns=mode!=='global'?[10,25,50].map(n=>
-    `<button class="stat-topmode-btn${tLimit===n?' on':''}" onclick="STAT.topLimit=${n};sTopVendeurs(document.getElementById('stat-content'))">TOP ${n}</button>`
-  ).join('')+`<button class="stat-topmode-btn${tLimit==='tout'?' on':''}" onclick="STAT.topLimit='tout';sTopVendeurs(document.getElementById('stat-content'))">Tout (${SFN(all.length)})</button>`:'';
-
-  const q1q2Cards=mode==='quinzaine'?`
-      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border:1px solid #fdba74;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#9a3412;font-weight:700">MOY. Q1 (1-15) · ${tYear}</div>
-        <div style="font-size:12px;font-weight:900;color:#c2410c">${qGlobalAvgQ1>0?SFM(qGlobalAvgQ1):'—'}</div>
-      </div>
-      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #c4b5fd;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#5b21b6;font-weight:700">MOY. Q2 (16-fin) · ${tYear}</div>
-        <div style="font-size:12px;font-weight:900;color:#6d28d9">${qGlobalAvgQ2>0?SFM(qGlobalAvgQ2):'—'}${(qGlobalAvgQ1>0&&qGlobalAvgQ2>0)?` <span style="font-size:8.5px;font-weight:700">${qGlobalAvgQ2>=qGlobalAvgQ1?'▲':'▼'} vs Q1</span>`:''}</div>
-      </div>`:'';
+  // ── KPIs globaux ──
+  const n1TotGlobal=rawN1.reduce((s,r)=>s+r.debit,0);
+  const evoGlob=n1TotGlobal>0?((totCAGlobal-n1TotGlobal)/n1TotGlobal*100):null;
 
   c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
-    <!-- Mode buttons + period picker -->
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-      ${mode==='quinzaine'&&STAT.topAutoSelected?`<span style="font-size:8.5px;color:#9a3412;background:#fff7ed;border:1px solid #fdba74;border-radius:5px;padding:2px 6px;font-weight:700">ℹ️ période auto-sélectionnée = dernière avec données (changez les sélecteurs pour une autre période)</span>`:''}
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:11px;font-weight:900;color:#d97706;letter-spacing:.5px">🏆 TOP VENDEURS PAR COMPAGNIE</span>
+      <span style="font-size:9px;color:var(--txt4)">${periodLabel}${isPartial?' — Jan-'+SMOIS[ytdM-1]+' vs même période N-1':''}</span>
       <button class="stat-topmode-btn" style="margin-left:auto" onclick="printTopVendeurs()">🖨️ Imprimer</button>
     </div>
-    <div style="margin-bottom:10px">
-      <div class="stat-topmode-grp">${modeButtons}</div>
-      ${compBtns?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">${compBtns}</div>`:''}
-      ${limitBtns?`<div style="display:flex;gap:5px;flex-wrap:wrap">${limitBtns}</div>`:''}
+    ${isPartial?`<div style="background:#fff7ed;border:1px solid #f97316;border-radius:7px;padding:5px 10px;margin-bottom:10px;font-size:8.5px;color:#7c2d12;font-weight:700">⚠️ Données ${curYear} disponibles jusqu'à ${SMOIS[ytdM-1]} — N-1 limité à Jan-${SMOIS[ytdM-1]} pour comparaison équitable</div>`:''}
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px;background:var(--bg2);border-radius:8px;padding:8px 12px;border-left:3px solid #d97706">
+        <div class="dk-lbl">CA TOTAL · ${periodLabel}</div><div class="dk-val" style="color:#d97706">${SFM(totCAGlobal)}</div></div>
+      <div style="flex:1;min-width:120px;background:var(--bg2);border-radius:8px;padding:8px 12px;border-left:3px solid ${evoGlob===null||evoGlob>=0?'#059669':'#dc2626'}">
+        <div class="dk-lbl">ÉVO. vs même période N-1</div>
+        <div class="dk-val" style="color:${evoGlob===null||evoGlob>=0?'#059669':'#dc2626'}">${evoGlob===null?'—':(evoGlob>=0?'▲ +':'▼ ')+evoGlob.toFixed(1)+'%'}</div></div>
+      <div style="flex:1;min-width:120px;background:var(--bg2);border-radius:8px;padding:8px 12px;border-left:3px solid #374151">
+        <div class="dk-lbl">COMPAGNIES ACTIVES</div><div class="dk-val">${allSyms.length}</div></div>
+      <div style="flex:1;min-width:120px;background:var(--bg2);border-radius:8px;padding:8px 12px;border-left:3px solid #374151">
+        <div class="dk-lbl">CLIENTS ACTIFS</div><div class="dk-val">${new Set(rawCur.filter(r=>r.compte.startsWith('411')).map(r=>r.compte+'|'+(r.aux||r.compte))).size}</div></div>
     </div>
-    <!-- KPIs -->
-    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
-      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#166534;font-weight:700">CA · <span style="font-weight:900">${periodLabel}</span></div>
-        <div style="font-size:12px;font-weight:900;color:#15803d">${SFM(totCA)}</div>
-      </div>
-      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#1e40af;font-weight:700">CLIENTS</div>
-        <div style="font-size:12px;font-weight:900;color:#1d4ed8">${SFN(all.length)}</div>
-      </div>
-      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fef9c3,#fef08a);border:1px solid #fde047;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#854d0e;font-weight:700">OPS</div>
-        <div style="font-size:12px;font-weight:900;color:#92400e">${SFN(totOps)}</div>
-      </div>
-      <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border:1px solid #fdba74;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#9a3412;font-weight:700">TOP 3 / TOTAL</div>
-        <div style="font-size:12px;font-weight:900;color:#c2410c">${(topShare/totCA*100).toFixed(1)}%</div>
-      </div>
-      ${q1q2Cards}
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+      ${cols}
     </div>
-    <!-- Podium -->
-    <div style="background:linear-gradient(180deg,#f0f9ff,#e0f2fe);border-radius:12px;padding:14px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:1px;margin-bottom:10px;text-align:center">🏆 PODIUM — TOP 3 · ${periodLabel}</div>
-      <div style="display:flex;align-items:flex-end;gap:10px;justify-content:center">${podiumHTML}</div>
+    <div style="margin-top:8px;font-size:7.5px;color:var(--txt4)">
+      🥇🥈🥉 = podium · ▲▼ = évolution classement vs N-1 · % = évolution CA vs même période N-1 · Cliquez «Voir les X autres» pour le classement complet
     </div>
-    <!-- Table rang 4-fin -->
-    ${rest.length?`<div style="overflow-x:auto">
-      <table class="evol-ny-tbl">
-        <thead><tr>
-          <th style="text-align:left">#</th>
-          <th style="text-align:left;min-width:140px">CLIENT</th>
-          <th class="r">CA (DA)</th>
-          <th style="min-width:65px"></th>
-          <th class="r">PART</th>
-          <th class="r">vs PRÉC.</th>
-          ${nxTh}
-          ${qExtraTh}
-          <th>CIE</th>
-        </tr></thead>
-        <tbody>${restRows}</tbody>
-      </table>
-    </div>`:''}</div>`;
+  </div>`;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   VUE MEILLEURS VENDEURS — Classement sur une période EXPLICITE choisie
-   dans la vue (Année / Mois / Quinzaine), indépendante des filtres du
-   panneau latéral. Affiche en plus :
-     • l'évolution vs la quinzaine précédente
-     • l'évolution vs N-1, N-2… N-x (même mois + même quinzaine, années
-       antérieures), profondeur réglable
-     • la moyenne de CA par quinzaine active de l'année sélectionnée
-     • le taux de réalisation de la période courante vs cette moyenne
-══════════════════════════════════════════════════════════════════════ */
-// sSetMVComp supprimé — filtre compagnie géré par la sidebar globale
 function sSetMVLimit(n){
   STAT.mvLimit=n;
   sMeilleursVendeurs(document.getElementById('stat-content'));
+}
+function sSetMVSearch(q){
+  STAT.mvSearchQuery=(q||'').trim().toUpperCase();
+  sMeilleursVendeurs(document.getElementById('stat-content'));
+  // Restaurer focus et valeur sur l'input après le re-render
+  setTimeout(()=>{
+    const inp=document.getElementById('mv-client-search');
+    if(inp){inp.value=q||'';inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
+  },0);
+}
+function sMVSearchKeydown(e){
+  if(e.key==='Escape'){STAT.mvSearchQuery='';sSetMVSearch('');}
 }
 function sSetMVPeriod(field,val){
   if(field==='year')  STAT.mvYear=+val;
   if(field==='month') STAT.mvMonth=+val;
   if(field==='q')     STAT.mvQ=+val;
   STAT.mvAutoSelected=false; // sélection manuelle : le badge d'info disparaît
+  STAT.mvSearchQuery=''; // reset recherche sur changement de période
   sMeilleursVendeurs(document.getElementById('stat-content'));
 }
 function sSetMVDepth(v){
@@ -20167,7 +20046,12 @@ function sMeilleursVendeurs(c){
 
   const totCA=all.reduce((s,r)=>s+r.total,0);
   const limit=STAT.mvLimit||10;
-  const shown=all.slice(0,limit);
+  // Filtre recherche client (appliqué sur all avant la troncature de limit)
+  const _mvSearchQ=(STAT.mvSearchQuery||'').trim().toUpperCase();
+  const filteredAll=_mvSearchQ
+    ? all.filter(r=>r.name.toUpperCase().includes(_mvSearchQ)||(r.aux||'').toUpperCase().includes(_mvSearchQ)||(r.compte||'').toUpperCase().includes(_mvSearchQ))
+    : all;
+  const shown=filteredAll.slice(0,_mvSearchQ?filteredAll.length:limit);
   const shownKeys=new Set(shown.map(r=>r.compte+'|'+r.aux));
 
   // ── 2) Moyenne de référence par client — MODE QUINZAINE : moyenne de CA
@@ -20328,8 +20212,8 @@ function sMeilleursVendeurs(c){
     </tr>`;
   });
 
-  const moreCount=all.length-shown.length;
-  const limitBtns=[10,25,50].map(n=>
+  const moreCount=filteredAll.length-shown.length;
+  const limitBtns=_mvSearchQ?'':[10,25,50].map(n=>
     `<button class="stat-topmode-btn${limit===n?' on':''}" onclick="sSetMVLimit(${n})">TOP ${n}</button>`
   ).join('')+`<button class="stat-topmode-btn${limit>=all.length?' on':''}" onclick="sSetMVLimit(${all.length})">Tout (${SFN(all.length)})</button>`;
 
@@ -20369,7 +20253,7 @@ function sMeilleursVendeurs(c){
         <div style="font-size:12px;font-weight:900;color:#1d4ed8">${SFN(all.length)}</div>
       </div>
       <div style="flex:1;min-width:90px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:6px 10px">
-        <div style="font-size:9px;color:#166534;font-weight:700">AFFICHÉS</div>
+        <div style="font-size:9px;color:#166534;font-weight:700">${_mvSearchQ?'RÉSULTATS':'AFFICHÉS'}</div>
         <div style="font-size:12px;font-weight:900;color:#15803d">${SFN(shown.length)}${moreCount>0?` <span style="font-size:9px;font-weight:700;color:#16a34a">(+${SFN(moreCount)} restants)</span>`:''}</div>
       </div>
       ${isAnnee?'':`
@@ -20381,6 +20265,21 @@ function sMeilleursVendeurs(c){
         <div style="font-size:9px;color:#5b21b6;font-weight:700">MOY. Q2 (16-fin) · ${year}</div>
         <div style="font-size:12px;font-weight:900;color:#6d28d9">${globalAvgQ2>0?SFM(globalAvgQ2):'—'}${(globalAvgQ1>0&&globalAvgQ2>0)?` <span style="font-size:8.5px;font-weight:700">${globalAvgQ2>=globalAvgQ1?'▲':'▼'} vs Q1</span>`:''}</div>
       </div>`}
+    </div>
+    <!-- Barre de recherche client fluide -->
+    <div style="position:relative;margin-bottom:8px;max-width:380px">
+      <input id="mv-client-search"
+        type="text"
+        value="${STAT.mvSearchQuery||''}"
+        placeholder="🔍 Chercher un client..."
+        autocomplete="off"
+        oninput="sSetMVSearch(this.value)"
+        onkeydown="sMVSearchKeydown(event)"
+        style="width:100%;padding:7px 34px 7px 10px;border:1.5px solid ${_mvSearchQ?'#e11d48':'var(--bo)'};border-radius:8px;font-size:11px;background:var(--surface);color:var(--txt);outline:none;transition:.15s;box-sizing:border-box;"
+        onfocus="this.style.borderColor='#e11d48';this.style.boxShadow='0 0 0 3px rgba(225,29,72,.1)'"
+        onblur="this.style.borderColor='${_mvSearchQ?'#e11d48':'var(--bo)'}';this.style.boxShadow='none'">
+      ${_mvSearchQ?`<button onclick="sSetMVSearch('')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;font-size:14px;color:#e11d48;padding:2px 4px" title="Effacer">✕</button>`:''}
+      ${_mvSearchQ?`<div style="font-size:9px;color:#e11d48;margin-top:3px;font-weight:700">${filteredAll.length} résultat(s) pour « ${STAT.mvSearchQuery} »</div>`:''}
     </div>
     <div style="overflow-x:auto">
       <table class="stat-mv-tbl">
@@ -20798,7 +20697,13 @@ function sQuinzaine(c){
   const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
 
   // Construire les en-têtes N-x
-  const nxHeaders=Array.from({length:depth},(_,i)=>`<th class="r">N-${i+1}</th><th class="r">Évol N-${i+1}</th>`).join('');
+  // Calculer les années N-x disponibles
+  const _quinzAllYears=[...new Set([...qmap.values()].map(d=>d.year))].sort();
+  const _quinzMaxYear=_quinzAllYears.length?Math.max(..._quinzAllYears):(STAT.year||new Date().getFullYear());
+  const nxHeaders=Array.from({length:depth},(_,i)=>{
+    const yr=_quinzMaxYear-(i+1);
+    return `<th class="r">${yr}</th><th class="r">Évol ${yr}</th>`;
+  }).join('');
 
   // Calculer moyenne par quinzaine (même Q, même mois, sur toutes les années)
   // clé: 'MM-Q' → [CA1, CA2, ...]
@@ -20822,7 +20727,7 @@ function sQuinzaine(c){
     // N-1, N-2, N-3 cells — YTD équitable (même fenêtre de mois)
     const ytdMrk=_ytdMonth(year);
     const nxCells=Array.from({length:depth},(_,i)=>{
-      const ny=year-(i+1);
+      const ny=_quinzMaxYear-(i+1);
       // mode quinzaine → même mois+Q ; mode folio → même folio mais YTD-cappé
       const nca=_sCAForPeriod(ny,month,q);
       return `<td class="r m">${nca>0?SFM(nca):'<span class="evo-na">—</span>'}</td><td class="r">${_evoBadge(nca,ca,true)}</td>`;
@@ -20914,7 +20819,8 @@ function sQuinzaine(c){
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
       <span style="font-size:11px;font-weight:900;color:#7c3aed;letter-spacing:1px">🔢 ANALYSE QUINZAINE (Q1 = 1-15 / Q2 = 16-fin)</span>
       <span style="font-size:9px;color:var(--txt4)">${SFN(qkeys.length)} quinzaines · ${SFM(totalCA)}</span>
-      <span style="font-size:9px;padding:2px 8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:8px;color:#7c3aed">Profondeur : N-${depth} ans</span>
+      <span style="font-size:9px;padding:2px 8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:8px;color:#7c3aed">Profondeur : ${_quinzMaxYear-depth}→${_quinzMaxYear-1}</span>
+      <button class="stat-topmode-btn" style="margin-left:auto;border-radius:7px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;box-shadow:0 3px 10px rgba(124,58,237,.3)" onclick="printQuinzaine()">🖨️ Imprimer</button>
     </div>
 
     <!-- v75 : toggle scope — toute période dispo vs période sélectionnée -->
@@ -21001,6 +20907,74 @@ function sQuinzaine(c){
       </div>
     </div>
   </div>`;
+}
+
+/* ── Impression vue Quinzaine ── */
+function printQuinzaine(){
+  try{
+    const c=document.getElementById('stat-content');
+    if(!c){alert('Aucun contenu');return;}
+    const depth=STAT.evolDepth||3;
+    const quinzScope=STAT.quinzScope||'all';
+    const srcRows=quinzScope==='sel'?sRawFiltered():STAT.raw.filter(_sBaseFilter);
+    const qmap=new Map();
+    srcRows.forEach(r=>{
+      if(!r.date||!r.year||!r.month) return;
+      const q=_dateQ(r.date), k=`${r.year}-${String(r.month).padStart(2,'0')}-${q}`;
+      if(!qmap.has(k)) qmap.set(k,{year:r.year,month:r.month,q,ca:0,ops:0});
+      const o=qmap.get(k); o.ca+=r.debit; o.ops++;
+    });
+    if(!qmap.size){alert('Aucune donnée à imprimer');return;}
+    const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    const qkeys=[...qmap.keys()].sort();
+    const allYears=[...new Set([...qmap.values()].map(d=>d.year))].sort();
+    const maxYear=allYears.length?Math.max(...allYears):(STAT.year||new Date().getFullYear());
+    const totalCA=qkeys.reduce((s,k)=>s+(qmap.get(k)?.ca||0),0);
+    const FM=v=>new Intl.NumberFormat('fr-FR').format(Math.round(v))+' DA';
+
+    const nxHdrs=Array.from({length:depth},(_,i)=>{const yr=maxYear-(i+1);return `<th>${yr}</th><th>Évol ${yr}</th>`;}).join('');
+    let bodyRows='';
+    qmap.forEach((d,k)=>{
+      const {year,month,q,ca,ops}=d;
+      const lbl=`${SMOIS2[month-1]} ${year} — Q${q} (${q===1?'1-15':'16-fin'})`;
+      const pq=_prevQ(year,month,q), prevCA=_sCAForPeriod(pq.year,pq.month,pq.q);
+      const evoP=prevCA>0?((ca-prevCA)/prevCA*100):null;
+      const evoPTxt=evoP===null?'—':(evoP>=0?`▲ +${evoP.toFixed(1)}%`:`▼ ${evoP.toFixed(1)}%`);
+      const nxCells=Array.from({length:depth},(_,i)=>{
+        const ny=maxYear-(i+1), nca=_sCAForPeriod(ny,month,q);
+        const evo=nca>0?((ca-nca)/nca*100):null;
+        const evoTxt=evo===null?'—':(evo>=0?`▲ +${evo.toFixed(1)}%`:`▼ ${evo.toFixed(1)}%`);
+        return `<td>${nca>0?FM(nca):'—'}</td><td style="color:${evo===null?'#6b7280':evo>=0?'#059669':'#dc2626'}">${evoTxt}</td>`;
+      }).join('');
+      bodyRows+=`<tr><td><b>${lbl}</b></td><td style="color:#1d4ed8">${FM(ca)}</td><td>${ops}</td><td style="color:${evoP===null?'#6b7280':evoP>=0?'#059669':'#dc2626'}">${evoPTxt}</td>${nxCells}</tr>`;
+    });
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Quinzaine — FWT Analytics</title><style>
+      body{font-family:Arial,sans-serif;font-size:10px;padding:20px;color:#111;}
+      h1{font-size:14px;color:#7c3aed;margin-bottom:4px;} h2{font-size:11px;color:#374151;margin:16px 0 6px;}
+      table{width:100%;border-collapse:collapse;font-size:9.5px;}
+      th{background:#7c3aed;color:#fff;padding:5px 8px;text-align:right;white-space:nowrap;}
+      th:first-child{text-align:left;}
+      td{padding:5px 8px;border-bottom:1px solid #e5e7eb;text-align:right;}
+      td:first-child{text-align:left;font-weight:600;}
+      tfoot td{background:#1e1b4b;color:#fff;font-weight:700;padding:5px 8px;text-align:right;}
+      tfoot td:first-child{text-align:left;}
+      @media print{@page{margin:1.5cm;size:A4 landscape;}}
+    </style></head><body>
+    <h1>🔢 ANALYSE QUINZAINE — FWT Analytics Pro</h1>
+    <p style="font-size:9px;color:#6b7280">Généré le ${new Date().toLocaleDateString('fr-FR')} · ${SFN(qkeys.length)} quinzaines · CA total : ${FM(totalCA)}</p>
+    <h2>📅 Évolution par Quinzaine</h2>
+    <table>
+      <thead><tr><th style="text-align:left;min-width:160px">QUINZAINE</th><th>CA (DA)</th><th>OPS</th><th>vs Q préc.</th>${nxHdrs}</tr></thead>
+      <tbody>${bodyRows}</tbody>
+      <tfoot><tr><td>TOTAL</td><td>${FM(totalCA)}</td><td>${SFN(qkeys.reduce((s,k)=>s+(qmap.get(k)?.ops||0),0))}</td><td>—</td>${Array.from({length:depth},()=>'<td>—</td><td>—</td>').join('')}</tr></tfoot>
+    </table>
+    </body></html>`;
+    const w=window.open('','_blank');
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(()=>w.print(),500);
+  }catch(e){console.error(e);alert('Erreur impression: '+e.message);}
 }
 
 /* ── Agrège sRawFiltered → Map compte|aux → {total,ops,journals,folios} */
@@ -21131,10 +21105,6 @@ function sCliEvol(c){
     const curRank=curRankMap.get(ck)||'—';
     const nMonthsCli=r.months.size||nMonthsGlobal;
     const avgMoisCli=r.total/nMonthsCli;
-    // Taux = ratio de la moy. mensuelle client vs moy. mensuelle globale
-    const taux=avgMoisGlobal>0?(avgMoisCli/avgMoisGlobal*100):null;
-    const tauxHTML=taux===null?'—':
-      `<span style="font-weight:700;font-size:8px;color:${taux>=100?'#059669':'#dc2626'}">${taux>=100?'▲':'▼'}${taux.toFixed(0)}%</span>`;
 
     const nxCells=nxData.map(d=>{
       const ncaTot=d.totMap.get(ck)||0;
@@ -21160,7 +21130,6 @@ function sCliEvol(c){
       <td style="font-size:8px;color:var(--txt4)">${r.aux||r.compte}</td>
       <td class="r" style="font-weight:800;color:var(--sky-deep);font-size:9.5px">${SFM(r.total)}</td>
       <td class="r" style="font-size:8.5px;color:#7c3aed">${SFM(avgMoisCli)}</td>
-      <td class="r">${tauxHTML}</td>
       ${nxCells}
     </tr>`;
   });
@@ -21206,14 +21175,13 @@ function sCliEvol(c){
           <th>CODE</th>
           <th class="r">CA · ${periodLabel}</th>
           <th class="r" style="color:#7c3aed">MOY./MOIS</th>
-          <th class="r" style="color:#7c3aed">TAUX vs MOY.GLOB</th>
           ${nxTh}
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
     <div style="margin-top:6px;font-size:8px;color:var(--txt4)">
-      ℹ️ Comparaisons N-x sur la même période exacte · MOY./MOIS = CA période ÷ nb mois actifs · TAUX = moy.client ÷ moy.globale · ÉVO = CA même période N-x
+      ℹ️ Comparaisons N-x sur la même période exacte · MOY./MOIS = CA période ÷ nb mois actifs · ÉVO = CA même période N-x
     </div>
   </div>`;
 }
@@ -26317,7 +26285,6 @@ ${alertYTD}
   <th class="lft" style="width:50px">CODE AUX.</th>
   <th style="width:78px">CA · ${periodLabel}</th>
   <th style="width:65px">MOY./MOIS</th>
-  <th style="width:42px">TAUX vs MOY.GLOB</th>
   ${nxTh}
 </tr></thead>
 <tbody>${rows}${totalRow}</tbody>
@@ -26545,124 +26512,139 @@ ${isPartial?`<div class="notice">⚠️ Données ${curYear} disponibles jusqu'à
 
 function printTopVendeurs(){
  try{
-  if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
+  if(!STAT.agg||!STAT.agg.length){alert('❌ Aucune donnée');return;}
   const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
-  const moisLbl=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-  const mode=STAT.topMode||'global';
-  const tYear=STAT.topYear||(STAT.year||new Date().getFullYear());
-  const tMonth=STAT.topMonth||1;
-  const tQ=STAT.topQ||1;
-  const tComp=STAT.topComp||'ALL';
-  const tLimit=STAT.topLimit||20;
+  const curYear=STAT.year||new Date().getFullYear();
+  const periodLabel=sPeriodLabel();
+  const ytdM=_ytdMonth(curYear);
+  const isPartial=ytdM<12;
+  const ytdLbl=isPartial?` Jan-${SMOIS[ytdM-1]}`:' (complet)';
 
-  let list, periodLabel;
-  if(mode==='global'){
-    list=[...STAT.agg].sort((a,b)=>b.total-a.total);
-    periodLabel='Toutes périodes';
-  } else if(mode==='annuel'){
-    list=_mvAgg(tYear,undefined,undefined,tComp);
-    periodLabel=`Année ${tYear}`;
-  } else if(mode==='mensuel'){
-    list=_mvAgg(tYear,tMonth,undefined,tComp);
-    periodLabel=`${moisLbl[tMonth-1]} ${tYear}`;
-  } else {
-    list=_mvAgg(tYear,tMonth,tQ,tComp);
-    periodLabel=`Q${tQ} ${moisLbl[tMonth-1]} ${tYear} (${tQ===1?'1-15':'16-fin'})`;
-  }
-  if(!list.length){alert('❌ Aucun client sur cette sélection');return;}
-  const shown=list.slice(0,tLimit==='tout'?list.length:tLimit);
-  const totCA=list.reduce((s,r)=>s+r.total,0);
+  const rawCur=sRawFiltered();
+  const rawN1=sRawFiltered(curYear-1).filter(r=>!isPartial||!r.month||r.month<=ytdM);
+  const totGlobal=rawCur.reduce((s,r)=>s+r.debit,0);
+  const totN1Global=rawN1.reduce((s,r)=>s+r.debit,0);
+  const evoGlob=totN1Global>0?((totGlobal-totN1Global)/totN1Global*100):null;
 
-  let interp='', pqRankMap=new Map(), avgMap=new Map();
-  let pAvgQ1=0, pAvgQ2=0;
-  if(mode==='quinzaine'){
-    const shownKeys=new Set(shown.map(r=>r.compte+'|'+r.aux));
-    const bucketMap=new Map();
-    STAT.raw.forEach(r=>{
-      if(!_sBaseFilter(r)) return;
-      if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
-      if(!r.date) return;
-      const aux=r.aux||r.compte, ck=r.compte+'|'+aux;
-      if(!shownKeys.has(ck)) return;
-      const qq=_dateQ(r.date), bKey=String(r.month||0).padStart(2,'0')+'-Q'+qq;
-      if(!bucketMap.has(ck)) bucketMap.set(ck,new Map());
-      const bm=bucketMap.get(ck); bm.set(bKey,(bm.get(bKey)||0)+r.debit);
+  function aggBySym(rows){
+    const symMap=new Map();
+    rows.forEach(r=>{
+      const sym=sNDCSym(r)||(r.journal?'AUT':null);
+      if(!sym) return;
+      const ck=r.compte+'|'+(r.aux||r.compte);
+      if(!symMap.has(sym)) symMap.set(sym,new Map());
+      const m=symMap.get(sym);
+      if(!m.has(ck)) m.set(ck,{compte:r.compte,aux:r.aux||r.compte,name:'',total:0,ops:0});
+      const o=m.get(ck);
+      o.total+=r.debit; o.ops++;
+      if(!o.name||(r.libelle||'').length>o.name.length) o.name=sResolveName(r.aux,r.compte,r.libelle);
     });
-    bucketMap.forEach((bm,ck)=>{ const vals=[...bm.values()]; avgMap.set(ck, vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:0); });
-
-    const pPQ=_prevQ(tYear,tMonth,tQ);
-    const pPqAgg=_mvAgg(pPQ.year,pPQ.month,pPQ.q,tComp);
-    pPqAgg.forEach((rr,idx)=>pqRankMap.set(rr.compte+'|'+rr.aux, idx+1));
-
-    const globalQ={1:new Map(),2:new Map()};
-    STAT.raw.forEach(r=>{
-      if(!_sBaseFilter(r)) return;
-      if(r.year!==tYear) return;
-      if(tComp!=='ALL'){ const sym=sNDCSym(r)||(r.journal?'AUT':null); if(sym!==tComp) return; }
-      if(!r.date) return;
-      const qq=_dateQ(r.date), mkey=r.month||0;
-      const gm=globalQ[qq]; gm.set(mkey,(gm.get(mkey)||0)+r.debit);
+    const result=new Map();
+    symMap.forEach((m,sym)=>{
+      result.set(sym,[...m.values()].sort((a,b)=>b.total-a.total));
     });
-    const gq1=[...globalQ[1].values()], gq2=[...globalQ[2].values()];
-    pAvgQ1=gq1.length?gq1.reduce((s,v)=>s+v,0)/gq1.length:0;
-    pAvgQ2=gq2.length?gq2.reduce((s,v)=>s+v,0)/gq2.length:0;
-    const pAvgSel=tQ===1?pAvgQ1:pAvgQ2;
-    const pEcart=pAvgSel>0?((totCA-pAvgSel)/pAvgSel*100):null;
-    const quinzForte=pAvgQ1>=pAvgQ2?'la première quinzaine (1-15)':'la seconde quinzaine (16-fin)';
-    const ecartPct=(pAvgQ1>0&&pAvgQ2>0)?(Math.abs(pAvgQ1-pAvgQ2)/Math.min(pAvgQ1,pAvgQ2)*100).toFixed(1):null;
-    interp=`Sur l'année ${tYear}${tComp==='ALL'?', toutes compagnies confondues':' pour '+tComp}, ${quinzForte} génère en moyenne le CA le plus élevé${ecartPct?` (écart d'environ ${ecartPct}%)`:''}. Moyenne Q1 : ${pAvgQ1>0?FM(pAvgQ1):'—'} · Moyenne Q2 : ${pAvgQ2>0?FM(pAvgQ2):'—'}.`;
-    if(pEcart!==null){
-      interp+= pEcart>=0
-        ? ` La période affichée est ${pEcart.toFixed(0)}% AU-DESSUS de la moyenne habituelle de cette quinzaine — période commercialement forte.`
-        : ` La période affichée est ${Math.abs(pEcart).toFixed(0)}% EN-DESSOUS de la moyenne habituelle de cette quinzaine — période plus calme que d'habitude.`;
-    }
+    return result;
   }
 
-  const rows=shown.map((r,i)=>{
-    const ck=r.compte+'|'+r.aux, curRank=i+1;
-    let extra='';
-    if(mode==='quinzaine'){
-      const prevRank=pqRankMap.get(ck)||null;
-      const rankTxt=!prevRank?'<span style="color:#9ca3af">nouveau</span>':(prevRank===curRank?`#${prevRank} =`:(prevRank>curRank?`<span style="color:#059669">#${prevRank} ▲${prevRank-curRank}</span>`:`<span style="color:#dc2626">#${prevRank} ▼${curRank-prevRank}</span>`));
-      const avgQ=avgMap.get(ck)||0;
-      const taux=avgQ>0?(r.total/avgQ*100):null;
-      const tauxTxt=taux===null?'—':(taux>=100?'▲ ':'▼ ')+taux.toFixed(0)+'%';
-      extra=`<td>${rankTxt}</td><td>${avgQ>0?FM(avgQ):'—'}</td><td style="color:${taux===null?'#6b7280':(taux>=100?'#059669':'#dc2626')};font-weight:700">${tauxTxt}</td>`;
-    }
-    return `<tr><td><strong style="color:#059669;">${curRank}</strong></td><td><strong>${(r.name||'—').substring(0,45)}</strong></td><td>${r.aux||r.compte}</td><td style="font-weight:700;color:#059669;">${FM(r.total)}</td><td>${r.ops}</td>${extra}</tr>`;
+  const curBySym=aggBySym(rawCur);
+  const n1BySym=aggBySym(rawN1);
+  const allSyms=[...curBySym.entries()]
+    .map(([sym,arr])=>({sym,total:arr.reduce((s,r)=>s+r.total,0)}))
+    .sort((a,b)=>b.total-a.total).map(d=>d.sym);
+
+  const css=`body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a1a;margin:0;padding:0}
+.page{max-width:1400px;margin:0 auto;padding:24px}
+h1{font-size:18px;font-weight:800;color:#d97706;border-bottom:3px solid #d97706;padding-bottom:8px;margin-bottom:6px}
+.meta{font-size:10px;color:#6b7280;margin-bottom:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px;text-align:center}
+.kpi-val{font-size:15px;font-weight:800;color:#d97706}.kpi-lbl{font-size:9px;color:#6b7280;text-transform:uppercase;margin-top:2px}
+.notice{background:#fff7ed;border:1px solid #f97316;border-radius:6px;padding:6px 12px;margin-bottom:12px;font-size:9px;color:#7c2d12;font-weight:600}
+.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.col-box{border-radius:8px;border:1px solid #e5e7eb;padding:10px;break-inside:avoid}
+.col-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e5e7eb}
+.sym-badge{color:#fff;font-weight:900;font-size:11px;padding:2px 10px;border-radius:20px}
+.col-total{font-size:12px;font-weight:800}
+.row{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:5px;margin-bottom:2px}
+.row-rank{font-weight:900;font-size:11px;min-width:20px;text-align:center}
+.row-name{flex:1;font-size:9px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-ca{font-size:9px;font-weight:800;text-align:right;white-space:nowrap}
+.evo{font-size:7.5px;font-weight:800;white-space:nowrap}
+.up{color:#059669}.down{color:#dc2626}.same{color:#9ca3af}
+@media print{.page{padding:10px}@page{size:landscape;margin:0.8cm}}`;
+
+  const colsHTML=allSyms.map(sym=>{
+    const col=SCOL2[sym]||SCOL[sym]||'#6b7280';
+    const arr=curBySym.get(sym)||[];
+    const n1arr=n1BySym.get(sym)||[];
+    const n1RankMap=new Map(n1arr.map((r,i)=>[r.compte+'|'+(r.aux||r.compte),{rank:i+1,total:r.total}]));
+    const totCom=arr.reduce((s,r)=>s+r.total,0);
+    const n1Tot=n1arr.reduce((s,r)=>s+r.total,0);
+    const evoTot=n1Tot>0?((totCom-n1Tot)/n1Tot*100):null;
+    const evoTotStr=evoTot===null?''
+      :evoTot>=0?`<span class="evo up">▲${evoTot.toFixed(0)}%</span>`
+      :`<span class="evo down">▼${Math.abs(evoTot).toFixed(0)}%</span>`;
+    const rowsHTML=arr.slice(0,10).map((r,i)=>{
+      const ck=r.compte+'|'+(r.aux||r.compte);
+      const n1d=n1RankMap.get(ck);
+      const rankDiff=n1d?(n1d.rank-(i+1)):null;
+      const evo=n1d&&n1d.total>0?((r.total-n1d.total)/n1d.total*100):null;
+      const rkBadge=rankDiff===null?'<span class="evo same">nv.</span>'
+        :rankDiff===0?'<span class="evo same">=</span>'
+        :rankDiff>0?`<span class="evo up">▲${rankDiff}</span>`
+        :`<span class="evo down">▼${Math.abs(rankDiff)}</span>`;
+      const evoBadge=evo===null?''
+        :evo>=0?`<span class="evo up">▲${evo.toFixed(0)}%</span>`
+        :`<span class="evo down">▼${Math.abs(evo).toFixed(0)}%</span>`;
+      const bg=i===0?'background:#fef9c3;':i===1?'background:#f1f5f9;':i===2?'background:#fff7ed;':'';
+      const medal=i<3?['🥇','🥈','🥉'][i]:`<span style="color:#9ca3af">#${i+1}</span>`;
+      return `<div class="row" style="${bg}">
+        <span class="row-rank">${medal}</span>
+        <span class="row-name" title="${r.name||r.aux}">${(r.name||r.aux).substring(0,28)}</span>
+        <span class="row-ca">${FM(r.total)}</span>
+        <span>${rkBadge} ${evoBadge}</span>
+      </div>`;
+    }).join('');
+    const more=arr.length>10?`<div style="font-size:8px;color:#9ca3af;text-align:center;margin-top:4px">+ ${arr.length-10} autres clients</div>`:'';
+    return `<div class="col-box" style="border-top:3px solid ${col}">
+      <div class="col-hdr">
+        <span class="sym-badge" style="background:${col}">${sym}</span>
+        <div><div class="col-total" style="color:#0369a1">${FM(totCom)}</div>
+        <div style="font-size:8px;color:#6b7280">${arr.length} clients ${evoTotStr}</div></div>
+        <span style="margin-left:auto;font-size:8.5px;color:#9ca3af">${totGlobal>0?(totCom/totGlobal*100).toFixed(1)+'%':''}</span>
+      </div>
+      ${rowsHTML}${more}
+    </div>`;
   }).join('');
-  const extraTh=mode==='quinzaine'?'<th>Rang vs préc.</th><th>Moy./Qz client</th><th>Taux réal.</th>':'';
 
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Top Vendeurs</title><style>body{font-family:Arial;color:#1a1a1a;}.page{max-width:1050px;margin:0 auto;padding:40px;}.header{border-bottom:3px solid #059669;padding-bottom:20px;margin-bottom:20px;}.title{font-size:22px;font-weight:700;color:#059669;}.sub{font-size:12px;color:#666;margin-top:4px}.date{font-size:11px;color:#999;margin-top:6px}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}.metric{background:#f0fdf4;border:1px solid #86efac;padding:10px;border-radius:6px;text-align:center;}.metric-val{font-size:15px;font-weight:700;color:#059669;}.metric-lbl{font-size:9px;color:#666;text-transform:uppercase;}.interp{font-size:12px;line-height:1.6;color:#374151;background:#f9fafb;border-left:4px solid #059669;padding:10px 14px;margin-bottom:18px}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#e8f5e9;padding:8px;text-align:left;font-weight:600;border-bottom:2px solid #059669;}td{padding:7px 8px;border-bottom:1px solid #eee;}tr:nth-child(odd){background:#f9f9f9;}@media print{.page{padding:15px}}</style></head><body><div class="page">
-<div class="header"><div class="title">🏆 TOP VENDEURS</div><div class="sub">${periodLabel}${mode!=='global'?' · '+(tComp==='ALL'?'Toutes compagnies':tComp):''}</div><div class="date">Généré le ${new Date().toLocaleDateString('fr-FR')}</div></div>
-<div class="metric-grid">
-  <div class="metric"><div class="metric-val">${shown.length}</div><div class="metric-lbl">Clients affichés</div></div>
-  <div class="metric"><div class="metric-val">${FM(totCA)}</div><div class="metric-lbl">CA de la sélection</div></div>
-  ${mode==='quinzaine'?`<div class="metric"><div class="metric-val">${pAvgQ1>0?FM(pAvgQ1):'—'}</div><div class="metric-lbl">Moy. Q1 (1-15)</div></div><div class="metric"><div class="metric-val">${pAvgQ2>0?FM(pAvgQ2):'—'}</div><div class="metric-lbl">Moy. Q2 (16-fin)</div></div>`:`<div class="metric"><div class="metric-val">${FM(totCA/shown.length)}</div><div class="metric-lbl">Moyenne/client</div></div><div class="metric"><div class="metric-val">${list.length}</div><div class="metric-lbl">Total clients</div></div>`}
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Top Vendeurs — ${periodLabel}</title>
+<style>${css}</style></head><body><div class="page">
+<h1>🏆 TOP VENDEURS PAR COMPAGNIE — ${periodLabel}${ytdLbl}</h1>
+<div class="meta">Généré le ${new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} · ${sCompLabel()}</div>
+${isPartial?`<div class="notice">⚠️ Données ${curYear} disponibles jusqu'à ${SMOIS[ytdM-1]} — N-1 limité à Jan-${SMOIS[ytdM-1]} pour comparaison équitable</div>`:''}
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-val">${FM(totGlobal)}</div><div class="kpi-lbl">CA Total</div></div>
+  <div class="kpi"><div class="kpi-val">${evoGlob===null?'—':(evoGlob>=0?'▲ +':'▼ ')+evoGlob.toFixed(1)+'%'}</div><div class="kpi-lbl">Évolution vs N-1</div></div>
+  <div class="kpi"><div class="kpi-val">${allSyms.length}</div><div class="kpi-lbl">Compagnies</div></div>
+  <div class="kpi"><div class="kpi-val">${FM(totGlobal/Math.max(allSyms.length,1))}</div><div class="kpi-lbl">Moy./Compagnie</div></div>
 </div>
-${interp?`<div class="interp">${interp}</div>`:''}
-<table><tr><th>Rang</th><th>Client</th><th>Code aux.</th><th>CA</th><th>Ops</th>${extraTh}</tr>${rows}</table>
+<div class="cols">${colsHTML}</div>
+<div style="margin-top:12px;font-size:8px;color:#9ca3af">🥇🥈🥉 = podium · ▲▼ rang = mouvement classement vs N-1 · ▲▼% = évolution CA vs même période N-1</div>
 </div></body></html>`;
 
-  const htmlAutoPrint=html.replace('</body></html>',
-    '<script>window.onload=function(){setTimeout(function(){window.print();},300);};<'+'/script></body></html>');
-  const blob=new Blob([htmlAutoPrint],{type:'text/html;charset=utf-8'});
+  const htmlP=html.replace('</body></html>','<script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script></body></html>');
+  const blob=new Blob([htmlP],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;
-  a.download=`Top_Vendeurs_${mode}_${tYear}${mode==='mensuel'||mode==='quinzaine'?'-'+String(tMonth).padStart(2,'0'):''}${mode==='quinzaine'?'-Q'+tQ:''}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.download=`Top_Vendeurs_${curYear}.html`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),3000);
-  alert('📄 Fichier téléchargé. Ouvre-le (double-clic dans tes Téléchargements) : l\'impression se lancera automatiquement, et tu pourras aussi l\'enregistrer en PDF depuis la fenêtre d\'impression.');
- }catch(e){
-  alert('⚠️ Erreur lors de la génération de l\'impression : '+(e&&e.message?e.message:e));
- }
+  alert("📄 Fichier téléchargé. Ouvre-le — impression automatique en format paysage.");
+ }catch(e){alert('⚠️ Erreur : '+(e&&e.message?e.message:e));}
 }
 
-// ══ Pareto 80/20 ══
 function printPareto(){
   if(!STAT.agg || !STAT.agg.length){alert('❌ Aucune donnée');return;}
   const FM=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'DZD'}).format(Math.round(v*100)/100);
@@ -27645,18 +27627,7 @@ function fluxCreateEcriture() {
             🔍 Critère : LIBELLE ou RÉFÉRENCE contient <strong>RED</strong> (insensible casse) — <strong>aucun seuil de montant</strong>, toute valeur (positive, négative, faible ou très élevée) est concernée.
           </div>
         </div>
-        <!-- QUINZAINE -->
-        <div style="margin-top:8px">
-          <div class="stat-sect-title">🔢 QUINZAINE</div>
-          <div class="stat-qnz-grp">
-            <button class="stat-qnz-btn on" data-qnz="all" onclick="sSetQuinzaine('all',this)" title="Toutes les dates">TOUT</button>
-            <button class="stat-qnz-btn" data-qnz="1"   onclick="sSetQuinzaine('1',this)"   title="Jours 1 à 15">Q1 (1-15)</button>
-            <button class="stat-qnz-btn" data-qnz="2"   onclick="sSetQuinzaine('2',this)"   title="Jours 16 à fin">Q2 (16-fin)</button>
-          </div>
-          <div style="font-size:9px;color:var(--txt4);margin-top:4px;line-height:1.4;padding:3px 6px;background:var(--bg2);border-radius:4px;">
-            🔍 Filtre sur le jour de la colonne DATE.<br>Q1 = jours 1-15 · Q2 = jours 16-fin.<br>Nécessite que la colonne DATE soit renseignée.
-          </div>
-        </div>
+
         <!-- PROFONDEUR ÉVOLUTION N-x -->
         <div style="margin-top:8px">
           <div class="stat-sect-title">📐 PROFONDEUR ÉVOLUTION</div>
@@ -28093,5 +28064,21 @@ function fluxCreateEcriture() {
 })();
 </script>
 
+
+<!-- ── Bouton flottant Plein Écran ── -->
+<button id="fwt-fs-btn"
+  onclick="_fwtToggleFullscreen()"
+  title="Plein écran (F11)"
+  style="position:fixed;bottom:14px;right:14px;z-index:99999;
+         width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;
+         background:rgba(15,23,42,.72);color:#e2e8f0;
+         display:flex;align-items:center;justify-content:center;
+         box-shadow:0 2px 10px rgba(0,0,0,.4);
+         backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+         transition:.2s;opacity:.7;"
+  onmouseenter="this.style.opacity='1';this.style.transform='scale(1.12)'"
+  onmouseleave="this.style.opacity='.7';this.style.transform='scale(1)'">
+  <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15"><path d="M1 1h6v2H3v4H1V1zm12 0h6v6h-2V3h-4V1zM1 13h2v4h4v2H1v-6zm16 4h-4v2h6v-6h-2v4z"/></svg>
+</button>
 </body>
 </html>
