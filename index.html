@@ -4650,7 +4650,30 @@ function getAUX(c){
   return c.code; // 411*** ou 165***
 }
 function getFOLIO(d){return d?d.split('-')[1]:'--';}
-function PM(s){return parseFloat(String(s).replace(/[\s ]/g,'').replace(',','.').replace(/[^\d.]/g,''))||0;}
+function PM(s){
+  let v=String(s).replace(/\u00a0/g,' ').trim();
+  const neg=v.startsWith('-');
+  if(neg) v=v.slice(1).trim();
+  // Supprimer espaces (séparateurs milliers)
+  v=v.replace(/[\s ]/g,'');
+  // Détecter séparateur décimal
+  const hasComma=v.indexOf(',')>-1;
+  const hasDot=v.indexOf('.')>-1;
+  if(hasComma && hasDot){
+    // Format "1.234,56" ou "1,234.56"
+    if(v.lastIndexOf(',')>v.lastIndexOf('.')){
+      v=v.replace(/\./g,'').replace(',','.');
+    } else {
+      v=v.replace(/,/g,'');
+    }
+  } else if(hasComma){
+    // virgule seule : décimal si suivi de 1-3 chiffres, sinon milliers
+    v=v.match(/,(\d{1,3})$/) ? v.replace(',','.') : v.replace(/,/g,'');
+  }
+  v=v.replace(/[^\d.]/g,'');
+  const n=parseFloat(v)||0;
+  return neg ? -n : n;
+}
 function FM(n){return n.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
 // ══ STATE ════════════════════════════════════════════════════
@@ -5724,10 +5747,10 @@ function showMtSuggestTot(digits){
   const seen=new Set();
   mtSugTotList=[];
   RV.forEach(r=>{
-    const mt=String(Math.round(r.credit));
+    const mt=String(Math.abs(r.credit));
     if(mt.startsWith(digits)&&!seen.has(mt)){
       seen.add(mt);
-      mtSugTotList.push({mt:parseInt(mt), lib:r.libelle||r.lib_orig||''});
+      mtSugTotList.push({mt:parseFloat(mt), lib:r.libelle||r.lib_orig||''});
     }
   });
   mtSugTotList.sort((a,b)=>a.mt-b.mt);
@@ -5826,13 +5849,13 @@ function showMtSuggest(digits){
   const seen=new Set();
   mtSugList=[];
   RV.forEach(r=>{
-    const mt=String(Math.round(r.credit));
+    const mt=String(Math.abs(r.credit));
     if(!mt.startsWith(digits))return;
     const lib=(r.libelle||r.lib_orig||'').trim();
     const key=mt+'|'+lib;
     if(!seen.has(key)){
       seen.add(key);
-      mtSugList.push({mt:parseInt(mt), lib});
+      mtSugList.push({mt:parseFloat(mt), lib});
     }
   });
   mtSugList.sort((a,b)=>a.mt-b.mt||a.lib.localeCompare(b.lib));
@@ -7374,8 +7397,9 @@ function loadNDCF(inp){
         const keys=Object.keys(row);
         const getVal=(patterns)=>{
           const k=keys.find(k=>patterns.some(p=>k.toLowerCase().replace(/[\s\xa0]/g,'').includes(p)));
-          if(!k)return 0;
-          return parseFloat(String(row[k]).replace(/[\s\xa0]/g,'').replace(',','.')) || 0;
+          if(!k) return 0;
+          // CORRIGÉ : utilise rapParseAmt pour préserver sign +/-, virgule décimale, formats complexes
+          return rapParseAmt(row[k]);
         };
         const getStr=(patterns)=>{
           const k=keys.find(k=>patterns.some(p=>k.toLowerCase().replace(/[\s\xa0]/g,'').includes(p)));
@@ -8490,16 +8514,18 @@ function _rvHL(text, term){
 function filtreRV(){
   const q   = (document.getElementById('rv-q')||{value:''}).value.trim();
   const mRaw= (document.getElementById('rv-m')||{value:''}).value.trim();
-  // Pour le montant : chercher la SÉRIE de chiffres dans la représentation string du montant
-  const mSeries = mRaw.replace(/\s/g,'').replace(/[,\.]/g,''); // ex: "346" ou "58000"
+  // Pour le montant : normaliser la saisie (virgule → point) puis chercher dans la valeur complète
+  // CORRIGÉ : on ne supprime plus les décimales, on cherche dans le montant complet avec centimes
+  const mNorm = mRaw.replace(/\s/g,'').replace(',','.'); // "1 234,56" → "1234.56"
 
   const filtered = RV.filter(r=>{
     const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
     let amtOk = true;
-    if(mSeries){
-      // Supprimer séparateurs du montant de la base et chercher la série
-      const amtStr = String(Math.round(r.credit)).replace(/\s/g,'');
-      amtOk = amtStr.includes(mSeries);
+    if(mNorm){
+      // Chercher dans la représentation complète (débit ET crédit, valeur exacte avec décimales)
+      const cStr = String(Math.abs(r.credit)).replace(',','.');
+      const dStr = String(Math.abs(r.debit||0)).replace(',','.');
+      amtOk = cStr.includes(mNorm) || dStr.includes(mNorm);
     }
     return libOk && amtOk;
   });
@@ -8570,11 +8596,11 @@ function _showColReleve(){
 function filtreRVInline(){
   const q      = (document.getElementById('rv-q-inline')||{value:''}).value.trim();
   const mRaw   = (document.getElementById('rv-m-inline')||{value:''}).value.trim();
-  const mSeries= mRaw.replace(/\s/g,'').replace(/[,\.]/g,'');
+  const mNorm= mRaw.replace(/\s/g,'').replace(',','.');
   const filtered= RV.filter(r=>{
     const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
     let amtOk = true;
-    if(mSeries){ const s=String(Math.round(r.credit)); amtOk=s.includes(mSeries); }
+    if(mNorm){ const s=String(Math.abs(r.credit)); amtOk=s.includes(mNorm); }
     return libOk && amtOk;
   });
   const tbody = document.getElementById('rvtb-inline');
@@ -8649,16 +8675,16 @@ function onRVMInputInline(){
   const drop=document.getElementById('rv-m-drop-inline');
   if(!drop||!RV.length) return;
   if(!val){drop.style.display='none';return;}
-  const series=val.replace(/\s/g,'').replace(/[,\.]/g,'');
-  if(!series||!/^\d+$/.test(series)){drop.style.display='none';return;}
+  const series=val.replace(/\s/g,'').replace(',','.');
+  if(!series){drop.style.display='none';return;}
   const seen=new Set();
   const matches=RV.filter(r=>{
-    const s=String(Math.round(r.credit));
+    const s=String(Math.abs(r.credit));
     if(!s.includes(series)) return false;
     if(seen.has(r.credit)) return false;
     seen.add(r.credit); return true;
   }).sort((a,b)=>{
-    const as=String(Math.round(a.credit)),bs=String(Math.round(b.credit));
+    const as=String(Math.abs(a.credit)),bs=String(Math.abs(b.credit));
     return (as.startsWith(series)?0:1)-(bs.startsWith(series)?0:1)||a.credit-b.credit;
   }).slice(0,12);
   if(!matches.length){drop.style.display='none';return;}
@@ -8759,21 +8785,21 @@ function onRVMInput(){
   if(!val){ drop.style.display='none'; return; }
 
   // Chercher la série de chiffres bruts dans les montants disponibles
-  const series = val.replace(/\s/g,'').replace(/[,\.]/g,'');
-  if(!series || !/^\d+$/.test(series)){ drop.style.display='none'; return; }
+  const series = val.replace(/\s/g,'').replace(',','.');
+  if(!series){ drop.style.display='none'; return; }
 
   // Montants qui contiennent la série + triés par pertinence
   const seen = new Set();
   const matches = RV.filter(r=>{
-    const amtStr = String(Math.round(r.credit));
+    const amtStr = String(Math.abs(r.credit));
     if(!amtStr.includes(series)) return false;
     if(seen.has(r.credit)) return false;
     seen.add(r.credit);
     return true;
   }).sort((a,b)=>{
     // Trier : commençant par la série en premier
-    const as = String(Math.round(a.credit));
-    const bs = String(Math.round(b.credit));
+    const as = String(Math.abs(a.credit));
+    const bs = String(Math.abs(b.credit));
     return (as.startsWith(series)?0:1) - (bs.startsWith(series)?0:1) || a.credit - b.credit;
   }).slice(0, 15);
 
@@ -9992,33 +10018,34 @@ function rapFormatDate(raw){
 }
 
 function rapParseAmt(v){
-  if(!v) return 0;
-  // Accepte : "1 234,56" / "1 234.56" / "1234,56" / "1234.56" / "-1 234,56"
+  if(v===null||v===undefined||v==='') return 0;
   let s=String(v).replace(/\u00a0/g,' ').trim();
-  // Détecter le séparateur décimal : si virgule est le dernier séparateur → décimal
-  // Exemple : "1 234,56" → virgule = décimal ; "1.234,56" → point = milliers, virgule = décimal
+  // Préserver le signe négatif
+  const neg=s.startsWith('-');
+  if(neg) s=s.slice(1).trim();
+  // Détecter le séparateur décimal
   const hasComma=s.indexOf(',')>-1;
   const hasDot  =s.indexOf('.')>-1;
   if(hasComma && hasDot){
-    // Format européen "1.234,56" → supprimer le point (milliers), virgule → décimal
     const lastComma=s.lastIndexOf(',');
     const lastDot  =s.lastIndexOf('.');
     if(lastComma>lastDot){
-      // virgule = décimal (après le dernier point)
+      // virgule = décimal : "1.234,56" → "1234.56"
       s=s.replace(/\./g,'').replace(',','.');
     } else {
-      // point = décimal
+      // point = décimal : "1,234.56" → "1234.56"
       s=s.replace(/,/g,'');
     }
   } else if(hasComma){
-    // Pas de point → virgule = décimal ou milliers
-    // Si virgule est présente et ce qui suit a exactement 2–3 chiffres → décimal
-    const m=s.match(/,(\d{1,2})$/);
-    s = m ? s.replace(',','.') : s.replace(',','');
+    // Virgule seule : décimal si suivi de 1-3 chiffres, sinon milliers
+    // CORRIGÉ : accepte 1, 2 OU 3 chiffres après virgule
+    const m=s.match(/,(\d{1,3})$/);
+    s = m ? s.replace(',','.') : s.replace(/,/g,'');
   }
-  // Supprimer espaces (séparateurs de milliers) et tout sauf chiffres, point, signe
-  s=s.replace(/\s/g,'').replace(/[^\d.\-]/g,'');
-  return parseFloat(s)||0;
+  // Supprimer espaces restants et tout sauf chiffres et point
+  s=s.replace(/\s/g,'').replace(/[^\d.]/g,'');
+  const n=parseFloat(s)||0;
+  return neg ? -n : n;
 }
 
 
@@ -15242,33 +15269,34 @@ function _rapExportIntoWb(wb, modeKey){
 
 // ══ UTILITAIRES ══════════════════════════════════════════════════════════════
 function rapParseAmt(v){
-  if(!v) return 0;
-  // Accepte : "1 234,56" / "1 234.56" / "1234,56" / "1234.56" / "-1 234,56"
+  if(v===null||v===undefined||v==='') return 0;
   let s=String(v).replace(/\u00a0/g,' ').trim();
-  // Détecter le séparateur décimal : si virgule est le dernier séparateur → décimal
-  // Exemple : "1 234,56" → virgule = décimal ; "1.234,56" → point = milliers, virgule = décimal
+  // Préserver le signe négatif
+  const neg=s.startsWith('-');
+  if(neg) s=s.slice(1).trim();
+  // Détecter le séparateur décimal
   const hasComma=s.indexOf(',')>-1;
   const hasDot  =s.indexOf('.')>-1;
   if(hasComma && hasDot){
-    // Format européen "1.234,56" → supprimer le point (milliers), virgule → décimal
     const lastComma=s.lastIndexOf(',');
     const lastDot  =s.lastIndexOf('.');
     if(lastComma>lastDot){
-      // virgule = décimal (après le dernier point)
+      // virgule = décimal : "1.234,56" → "1234.56"
       s=s.replace(/\./g,'').replace(',','.');
     } else {
-      // point = décimal
+      // point = décimal : "1,234.56" → "1234.56"
       s=s.replace(/,/g,'');
     }
   } else if(hasComma){
-    // Pas de point → virgule = décimal ou milliers
-    // Si virgule est présente et ce qui suit a exactement 2–3 chiffres → décimal
-    const m=s.match(/,(\d{1,2})$/);
-    s = m ? s.replace(',','.') : s.replace(',','');
+    // Virgule seule : décimal si suivi de 1-3 chiffres, sinon milliers
+    // CORRIGÉ : accepte 1, 2 OU 3 chiffres après virgule
+    const m=s.match(/,(\d{1,3})$/);
+    s = m ? s.replace(',','.') : s.replace(/,/g,'');
   }
-  // Supprimer espaces (séparateurs de milliers) et tout sauf chiffres, point, signe
-  s=s.replace(/\s/g,'').replace(/[^\d.\-]/g,'');
-  return parseFloat(s)||0;
+  // Supprimer espaces restants et tout sauf chiffres et point
+  s=s.replace(/\s/g,'').replace(/[^\d.]/g,'');
+  const n=parseFloat(s)||0;
+  return neg ? -n : n;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
