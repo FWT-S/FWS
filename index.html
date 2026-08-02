@@ -8522,10 +8522,13 @@ function filtreRV(){
     const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
     let amtOk = true;
     if(mNorm){
-      // Chercher dans la représentation complète (débit ET crédit, valeur exacte avec décimales)
-      const cStr = String(Math.abs(r.credit)).replace(',','.');
-      const dStr = String(Math.abs(r.debit||0)).replace(',','.');
-      amtOk = cStr.includes(mNorm) || dStr.includes(mNorm);
+      // Chercher dans crédit ET débit, avec et sans signe négatif
+      const cAbs = String(Math.abs(r.credit));
+      const dAbs = String(Math.abs(r.debit||0));
+      const cNeg = '-'+cAbs;
+      const dNeg = '-'+dAbs;
+      const q = mNorm.replace('-','');
+      amtOk = cAbs.includes(q) || dAbs.includes(q) || cNeg.includes(mNorm) || dNeg.includes(mNorm);
     }
     return libOk && amtOk;
   });
@@ -8600,7 +8603,12 @@ function filtreRVInline(){
   const filtered= RV.filter(r=>{
     const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
     let amtOk = true;
-    if(mNorm){ const s=String(Math.abs(r.credit)); amtOk=s.includes(mNorm); }
+    if(mNorm){
+      const cAbs=String(Math.abs(r.credit));
+      const dAbs=String(Math.abs(r.debit||0));
+      const q=mNorm.replace('-','');
+      amtOk=cAbs.includes(q)||dAbs.includes(q)||('-'+cAbs).includes(mNorm)||('-'+dAbs).includes(mNorm);
+    }
     return libOk && amtOk;
   });
   const tbody = document.getElementById('rvtb-inline');
@@ -8675,28 +8683,37 @@ function onRVMInputInline(){
   const drop=document.getElementById('rv-m-drop-inline');
   if(!drop||!RV.length) return;
   if(!val){drop.style.display='none';return;}
+  // Normaliser : espaces, virgule → point, garder le signe -
+  const neg=val.startsWith('-');
   const series=val.replace(/\s/g,'').replace(',','.');
   if(!series){drop.style.display='none';return;}
   const seen=new Set();
   const matches=RV.filter(r=>{
-    const s=String(Math.abs(r.credit));
-    if(!s.includes(series)) return false;
-    if(seen.has(r.credit)) return false;
-    seen.add(r.credit); return true;
+    // Chercher dans crédit ET débit (valeurs positives et négatives)
+    const vals=[r.credit, r.debit||0].map(n=>String(n));
+    const negVals=[r.credit, r.debit||0].map(n=>'-'+String(Math.abs(n)));
+    const allVals=vals.concat(negVals);
+    const found=allVals.some(s=>s.includes(series));
+    if(!found) return false;
+    const key=r.credit+'|'+r.dateOp;
+    if(seen.has(key)) return false;
+    seen.add(key); return true;
   }).sort((a,b)=>{
     const as=String(Math.abs(a.credit)),bs=String(Math.abs(b.credit));
-    return (as.startsWith(series)?0:1)-(bs.startsWith(series)?0:1)||a.credit-b.credit;
+    return (as.startsWith(series.replace('-',''))?0:1)-(bs.startsWith(series.replace('-',''))?0:1)||Math.abs(a.credit)-Math.abs(b.credit);
   }).slice(0,12);
   if(!matches.length){drop.style.display='none';return;}
   _rvi.mIdx=-1;
-  drop.innerHTML=matches.map((r,i)=>`
-    <div class="rv-sug-item" data-idx="${i}"
+  drop.innerHTML=matches.map((r,i)=>{
+    const dispAmt=FM(r.credit);
+    const isNeg=r.credit<0;
+    return `<div class="rv-sug-item" data-idx="${i}"
       onmousedown="pickRVMtInline(${r.credit})"
       onmouseover="_rvi.mIdx=${i};highlightRVDropInline('m',${i})">
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--txt3);">${r.libelle}</span>
-      <span class="sug-amt">${FM(r.credit)}</span>
+      <span class="sug-amt" style="color:${isNeg?'var(--red)':'inherit'}">${dispAmt}</span>
       <span class="sug-date">${r.dateOp}</span>
-    </div>`).join('');
+    </div>`;}).join('');
   drop.style.display='block';
 }
 function onRVMKeyInline(e){
@@ -8784,42 +8801,44 @@ function onRVMInput(){
 
   if(!val){ drop.style.display='none'; return; }
 
-  // Chercher la série de chiffres bruts dans les montants disponibles
+  // Normaliser saisie : espaces, virgule → point, garder le signe -
   const series = val.replace(/\s/g,'').replace(',','.');
   if(!series){ drop.style.display='none'; return; }
 
-  // Montants qui contiennent la série + triés par pertinence
+  // Chercher dans crédit ET débit, valeurs + ET - (montant complet avec décimales)
   const seen = new Set();
   const matches = RV.filter(r=>{
-    const amtStr = String(Math.abs(r.credit));
-    if(!amtStr.includes(series)) return false;
-    if(seen.has(r.credit)) return false;
-    seen.add(r.credit);
+    const vals=[String(r.credit), String(r.debit||0), '-'+String(Math.abs(r.credit)), '-'+String(Math.abs(r.debit||0))];
+    const found=vals.some(s=>s.includes(series));
+    if(!found) return false;
+    const key=r.credit+'|'+r.dateOp;
+    if(seen.has(key)) return false;
+    seen.add(key);
     return true;
   }).sort((a,b)=>{
-    // Trier : commençant par la série en premier
     const as = String(Math.abs(a.credit));
     const bs = String(Math.abs(b.credit));
-    return (as.startsWith(series)?0:1) - (bs.startsWith(series)?0:1) || a.credit - b.credit;
+    const q = series.replace('-','');
+    return (as.startsWith(q)?0:1) - (bs.startsWith(q)?0:1) || Math.abs(a.credit) - Math.abs(b.credit);
   }).slice(0, 15);
 
   if(!matches.length){ drop.style.display='none'; return; }
 
   _rv.mIdx = -1;
   drop.innerHTML = matches.map((r,i)=>{
+    const isNeg = r.credit < 0;
     const amtStr = FM(r.credit);
-    // Surligner la série dans le montant formaté
-    const rawStr = String(Math.round(r.credit));
-    const pos = rawStr.indexOf(series);
+    // Surligner la série dans le montant formaté (sur les chiffres)
+    const rawStr = String(r.credit);
+    const q = series.replace('-','');
+    const pos = String(Math.abs(r.credit)).indexOf(q);
     let amtHL = amtStr;
     if(pos>=0){
-      // Retrouver la position dans le montant formaté (avec espaces)
-      let fmtPos=0, rawCount=0;
-      let hlStart=-1, hlEnd=-1;
+      let rawCount=0, hlStart=-1, hlEnd=-1;
       for(let fi=0;fi<amtStr.length;fi++){
         if(/\d/.test(amtStr[fi])){
           if(rawCount===pos) hlStart=fi;
-          if(rawCount===pos+series.length-1) hlEnd=fi;
+          if(rawCount===pos+q.length-1) hlEnd=fi;
           rawCount++;
         }
       }
@@ -8833,7 +8852,7 @@ function onRVMInput(){
       onmousedown="pickRVMt(${r.credit})"
       onmouseover="_rv.mIdx=${i};highlightRVDrop('m',${i})">
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--txt3);">${r.libelle}</span>
-      <span class="sug-amt" style="font-family:var(--font-mono);font-weight:700;">${amtHL}</span>
+      <span class="sug-amt" style="font-family:var(--font-mono);font-weight:700;color:${isNeg?'var(--red)':'inherit'}">${amtHL}</span>
       <span class="sug-date">${r.dateOp}</span>
     </div>`;
   }).join('');
