@@ -2483,6 +2483,36 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
 .transition-shadow{transition:box-shadow .15s ease;}
 .duration-150{transition-duration:.15s;}
 .hover\:shadow-md:hover{box-shadow:0 4px 12px rgba(15,23,42,.10),0 2px 4px rgba(15,23,42,.05);}
+
+/* ═══ v72 — STAT : en-têtes fixes, tableaux évolution ; JBR : relevé imputé ═══ */
+#stat-content table thead{position:static !important;}
+#stat-content table thead th{position:sticky;top:0;z-index:8;background-color:var(--bg2,#fff);}
+#stat-content .ec-wrap{overflow:auto;max-height:62vh;border:1px solid var(--bo);border-radius:6px;}
+#stat-content .ec-tbl td:first-child,#stat-content .ec-tbl th:first-child{position:sticky;left:0;background-color:var(--bg2,#fff);z-index:6;white-space:nowrap;}
+#stat-content .ec-tbl thead th:first-child{z-index:9;}
+#stat-content .ec-tbl td.r,#stat-content .ec-tbl th.r{white-space:nowrap;}
+#stat-content .ec-evo{font-size:8px;font-weight:800;line-height:1.1;font-family:var(--font-ui,sans-serif);}
+.rv-row.rv-used td{background:rgba(16,185,129,.18) !important;color:var(--txt3) !important;}
+.rv-row.rv-used:hover td{background:rgba(16,185,129,.18) !important;}
+.rv-row.rv-used{cursor:not-allowed;opacity:.8;}
+.rv-row.rv-used td.tcc{text-decoration:line-through;text-decoration-color:rgba(5,150,105,.6);}
+.rv-row.rv-used .rv-use-btn{display:none;}
+.rv-used-tag{display:inline-block;margin-left:6px;background:#059669;color:#fff;border-radius:4px;padding:0 5px;font-size:8px;font-weight:800;letter-spacing:.4px;text-decoration:none;}
+
+/* ═══ v79 — Barre d'onglets STAT : tous les onglets visibles (retour à la ligne, groupés par thème) ═══ */
+.stat-tabbar{flex-wrap:wrap;row-gap:5px;column-gap:6px;align-items:stretch;}
+.stat-tabgrp{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:3px 6px;border:1px dashed var(--bo);border-radius:8px;background:rgba(2,132,199,.03);}
+.stat-tabgrp-l{font-size:7px;font-weight:800;letter-spacing:.9px;color:var(--txt4);text-transform:uppercase;margin:0 3px 0 1px;white-space:nowrap;}
+.stat-tabxp{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.stat-tabxp .stat-xport-btn{margin-left:0;}
+.stat-vtab{white-space:nowrap;}
+
+/* ═══ v81 — EBV : onglet IMPORTS défilable (barre de défilement visible) ═══ */
+#tab-import{overflow-y:scroll;overflow-x:hidden;padding-right:8px;scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:var(--sky,#0284c7) rgba(2,132,199,.12);}
+#tab-import::-webkit-scrollbar{width:12px;}
+#tab-import::-webkit-scrollbar-track{background:rgba(2,132,199,.10);border-radius:6px;}
+#tab-import::-webkit-scrollbar-thumb{background:var(--sky,#0284c7);border-radius:6px;border:2px solid transparent;background-clip:content-box;}
+#tab-import::-webkit-scrollbar-thumb:hover{background:var(--sky-deep,#0369a1);background-clip:content-box;}
 </style>
 </head>
 <body>
@@ -3026,7 +3056,8 @@ document.addEventListener('keydown',function(e){
 
     <!-- CLIENT -->
     <div class="saisie-zone" style="margin-top:9px;">
-      <div class="sz-lbl">CLIENT ✈ &nbsp;<span style="color:var(--txt3);">↑↓ ENTRÉE TAB ECHAP</span></div>
+      <div class="sz-lbl">CLIENT ✈ &nbsp;<span style="color:var(--txt3);">↑↓ ENTRÉE TAB ECHAP</span>
+        <button type="button" onclick="sbasOpen()" title="Rechercher dans la base RAP (F4)" style="float:right;padding:1px 9px;background:#0c447c;color:#fff;border:none;border-radius:5px;font-size:9px;font-weight:800;cursor:pointer;">🔎 BAS RAP <span style="opacity:.7">F4</span></button></div>
       <div class="ac-wrap">
         <input id="isrc" placeholder="Nom ou code client..." autocomplete="off"
           oninput="ACS(this.value)" onkeydown="ACK(event)">
@@ -3113,8 +3144,8 @@ document.addEventListener('keydown',function(e){
           <div id="rv-m-drop-inline" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo2);border-radius:var(--r-sm);z-index:500;max-height:180px;overflow-y:auto;box-shadow:var(--shadow-lg);"></div>
         </div>
         <!-- RAZ rapide -->
-        <div style="display:flex;justify-content:flex-end;">
-          <button onclick="razFiltreRVInline()" style="padding:2px 9px;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:var(--txt3);font-size:9px;cursor:pointer;font-family:var(--font-ui);">✕ RAZ</button>
+        <div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;">
+          <span id="rv-used-cnt" style="margin-right:auto;font-size:9px;font-weight:800;color:#059669;"></span><button id="rv-hideused-btn" onclick="rvToggleHideUsed()" style="padding:2px 9px;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:var(--txt3);font-size:9px;cursor:pointer;font-family:var(--font-ui);">🙈 Masquer imputés</button><button onclick="razFiltreRVInline()" style="padding:2px 9px;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:var(--txt3);font-size:9px;cursor:pointer;font-family:var(--font-ui);">✕ RAZ</button>
         </div>
       </div>
       <!-- Tableau -->
@@ -3433,8 +3464,7 @@ document.addEventListener('keydown',function(e){
   <div class="section">
     <div class="tabs">
       <button class="tab active" id="main-tab-saisie" onclick="switchMainTab('saisie',this)">✏️ Saisie</button>
-      <button class="tab" id="main-tab-import" onclick="switchMainTab('import',this)">📂 Import</button>
-      <button class="tab" id="main-tab-clients" onclick="switchMainTab('clients',this)">📋 Clients</button>
+      <button class="tab" id="main-tab-import" onclick="switchMainTab('import',this)">📥 IMPORTS</button>
     </div>
 
     <!-- TAB SAISIE -->
@@ -3466,12 +3496,19 @@ document.addEventListener('keydown',function(e){
         <span id="comp-badge-name"></span>
         <span id="comp-badge-cnt" style="margin-left:auto;font-size:10px;color:var(--txt3);font-weight:400;"></span>
       </div>
+      <div id="ebv-piece-ctr" style="display:none;margin-top:8px;border:1.5px solid var(--bo-sky);border-radius:var(--r-sm);padding:8px 11px;background:var(--surface);"></div>
       <!-- hidden div kept for JS compatibility -->
       <div class="company-grid" id="company-grid" style="display:none;"></div>
     </div>
 
-    <!-- TAB IMPORT -->
+    <!-- TAB IMPORT (v80 : hub de TOUS les imports de fichiers et bases de données) -->
     <div id="tab-import" style="display:none">
+      <div style="font-size:12px;font-weight:800;color:var(--sky);margin-bottom:2px;">📥 IMPORTS — fichiers &amp; bases de données</div>
+      <div style="font-size:9px;color:var(--txt3);margin-bottom:8px;">Tous les chargements du module EBV au même endroit. Le récapitulatif se met à jour après chaque import.</div>
+      <div id="ebv-imp-status" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;"></div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-left:4px solid var(--sky);border-radius:9px;padding:11px 13px;margin-bottom:11px;">
+        <div style="font-size:11px;font-weight:800;color:var(--sky);letter-spacing:.4px;">📋 1 · PLANNING DE RÉCEPTION (base compagnies)</div>
+        <div style="font-size:9px;color:var(--txt3);margin:2px 0 8px;">Planning Excel .xlsx / .xls → clients par compagnie, ou base intégrée</div>
       <div class="section-label">Importer un planning Excel</div>
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
            ondragover="event.preventDefault();this.classList.add('drag')"
@@ -3486,6 +3523,63 @@ document.addEventListener('keydown',function(e){
       <div style="margin-top:14px">
         <div class="section-label">Base intégrée</div>
         <button class="btn btn-secondary" style="width:100%;font-size:11px" onclick="loadBuiltinDB()">Charger base Février 2026</button>
+      </div>
+
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-left:4px solid #0d9488;border-radius:9px;padding:11px 13px;margin-bottom:11px;">
+        <div style="font-size:11px;font-weight:800;color:#0d9488;letter-spacing:.4px;">👥 2 · BASE CLIENTS (IATA / SBAS)</div>
+        <div style="font-size:9px;color:var(--txt3);margin:2px 0 8px;">CODE IATA · NOM PLANNING · NOM COMPTABLE · AUXILIAIRE COMPTABLE — alimente la recherche IATA et la liste des clients</div>
+      <div style="margin-bottom:9px;">
+        <label style="display:block;padding:7px 11px;background:rgba(14,165,233,.08);border:1.5px solid var(--bo-sky);border-radius:7px;color:var(--sky);font-size:9px;cursor:pointer;text-align:center;font-weight:700;letter-spacing:1px;" for="f-iata-import">
+          📥 IMPORTER BASE CLIENTS (Excel/CSV)
+        </label>
+        <input type="file" id="f-iata-import" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importIATAClients(this)">
+        <div style="font-size:10px;color:var(--text2);margin-top:3px;text-align:center;">
+          Colonnes: CODE IATA | NOM PLANNING | NOM COMPTABLE | AUXILIAIRE COMPTABLE
+        </div>
+      </div>
+
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-left:4px solid #7c3aed;border-radius:9px;padding:11px 13px;margin-bottom:11px;">
+        <div style="font-size:11px;font-weight:800;color:#7c3aed;letter-spacing:.4px;">📎 3 · FICHIER COMMERCIAL NDC-F</div>
+        <div style="font-size:9px;color:var(--txt3);margin:2px 0 8px;">Fichier du commercial → après chargement, vérification des noms clients avec la base CLNDC dans l'onglet NDC-F</div>
+  <div id="ndcf-import-zone" style="background:rgba(14,165,233,.07);border:1.5px solid var(--bo-sky);border-radius:9px;padding:11px 14px;margin-bottom:10px;">
+    <div style="font-size:10px;color:var(--sky);font-weight:700;margin-bottom:7px;">📂 FICHIER COMMERCIAL NDC-F</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <label style="padding:5px 14px;background:rgba(14,165,233,.15);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;" for="f-ndcf">
+        CHARGER EXCEL
+      </label>
+      <input type="file" id="f-ndcf" accept=".xlsx,.xls,.csv" style="display:none;" onchange="loadNDCF(this)">
+      <span id="ndcf-load-st" style="font-size:9px;color:var(--txt3);">Non chargé</span>
+    </div>
+  </div>
+
+
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--bo);border-left:4px solid #d97706;border-radius:9px;padding:11px 13px;margin-bottom:11px;">
+        <div style="font-size:11px;font-weight:800;color:#d97706;letter-spacing:.4px;">🗂 4 · BASE CLNDC (nom commercial ↔ nom comptable + auxiliaire)</div>
+        <div style="font-size:9px;color:var(--txt3);margin:2px 0 8px;">Import, ajout et gestion de la table de correspondance des clients NDC-F</div>
+  <div style="margin-top:9px;">
+    <button onclick="toggleNDCFClients()"
+      style="width:100%;padding:6px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .15s;">
+      ✈️ GÉRER CLIENTS NDC-F
+    </button>
+    <div id="ndcf-clients-zone" style="display:none;margin-top:7px;">
+      <div style="max-height:200px;overflow-y:auto;" id="ndcf-clients-list"></div>
+      <div style="display:flex;gap:4px;margin-top:5px;">
+        <button onclick="addNDCFClient()"
+          style="flex:1;padding:6px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;">
+          + AJOUTER
+        </button>
+        <label style="flex:1;padding:6px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;text-align:center;" for="f-ndcf-cl">
+          📥 IMPORTER
+        </label>
+        <input type="file" id="f-ndcf-cl" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importNDCFClients(this)">
+      </div>
+    </div>
+  </div>
+
+
       </div>
     </div>
   </div>
@@ -3509,16 +3603,13 @@ document.addEventListener('keydown',function(e){
 
 <!-- PANNEAU NDC-F -->
 <div id="search-ndcf" style="display:none">
-  <div id="ndcf-import-zone" style="background:rgba(14,165,233,.07);border:1.5px solid var(--bo-sky);border-radius:9px;padding:11px 14px;margin-bottom:10px;">
-    <div style="font-size:10px;color:var(--sky);font-weight:700;margin-bottom:7px;">📂 FICHIER COMMERCIAL NDC-F</div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <label style="padding:5px 14px;background:rgba(14,165,233,.15);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;" for="f-ndcf">
-        CHARGER EXCEL
-      </label>
-      <input type="file" id="f-ndcf" accept=".xlsx,.xls,.csv" style="display:none;" onchange="loadNDCF(this)">
-      <span id="ndcf-load-st" style="font-size:9px;color:var(--txt3);">Non chargé</span>
-    </div>
+  <div id="ndcf-import-zone-mini" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(14,165,233,.07);border:1.5px solid var(--bo-sky);border-radius:9px;padding:8px 12px;margin-bottom:10px;">
+    <span style="font-size:10px;color:var(--sky);font-weight:700;">📎 FICHIER COMMERCIAL NDC-F</span>
+    <span id="ndcf-load-mini" style="font-size:9px;color:var(--txt3);">Non chargé</span>
+    <button onclick="ebvGoImports()" style="margin-left:auto;padding:4px 11px;background:rgba(14,165,233,.15);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;">📥 Importer / gérer → onglet IMPORTS</button>
   </div>
+
+  <div id="ndcf-verif" style="display:none;background:rgba(14,165,233,.05);border:1.5px solid var(--bo-sky);border-radius:9px;padding:9px 12px;margin-bottom:10px;"></div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px;">
     <div>
@@ -3570,26 +3661,6 @@ document.addEventListener('keydown',function(e){
     style="width:100%;padding:9px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:7px;color:var(--sky);font-family:var(--font-ui);font-size:10px;font-weight:700;cursor:pointer;opacity:.5;letter-spacing:2px;transition:all .2s;">
     ✅ VALIDER PIÈCE NDC-F  [F1]
   </button>
-
-  <div style="margin-top:9px;">
-    <button onclick="toggleNDCFClients()"
-      style="width:100%;padding:6px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .15s;">
-      ✈️ GÉRER CLIENTS NDC-F
-    </button>
-    <div id="ndcf-clients-zone" style="display:none;margin-top:7px;">
-      <div style="max-height:200px;overflow-y:auto;" id="ndcf-clients-list"></div>
-      <div style="display:flex;gap:4px;margin-top:5px;">
-        <button onclick="addNDCFClient()"
-          style="flex:1;padding:6px;background:rgba(14,165,233,.1);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;">
-          + AJOUTER
-        </button>
-        <label style="flex:1;padding:6px;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;cursor:pointer;text-align:center;" for="f-ndcf-cl">
-          📥 IMPORTER
-        </label>
-        <input type="file" id="f-ndcf-cl" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importNDCFClients(this)">
-      </div>
-    </div>
-  </div>
 
   <div id="ndcf-pieces-zone" style="margin-top:10px;display:none;">
     <div style="font-size:9px;color:var(--sky);letter-spacing:2px;margin-bottom:7px;font-weight:600;">PIÈCES NDC-F VALIDÉES</div>
@@ -3726,25 +3797,6 @@ document.addEventListener('keydown',function(e){
       <button class="btn btn-primary" style="flex:1" onclick="addNewClient()">Ajouter</button>
       <button class="btn btn-secondary btn-sm" onclick="toggleNewClient()">✕</button>
     </div>
-  </div>
-
-  <!-- LISTE CLIENTS -->
-  <div id="tab-clients-panel" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-    <div class="section" style="flex-shrink:0;">
-      <div class="section-label">Base clients ✈</div>
-      <div style="margin-bottom:9px;">
-        <label style="display:block;padding:7px 11px;background:rgba(14,165,233,.08);border:1.5px solid var(--bo-sky);border-radius:7px;color:var(--sky);font-size:9px;cursor:pointer;text-align:center;font-weight:700;letter-spacing:1px;" for="f-iata-import">
-          📥 IMPORTER BASE CLIENTS (Excel/CSV)
-        </label>
-        <input type="file" id="f-iata-import" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importIATAClients(this)">
-        <div style="font-size:10px;color:var(--text2);margin-top:3px;text-align:center;">
-          Colonnes: CODE IATA | NOM PLANNING | NOM COMPTABLE | AUXILIAIRE COMPTABLE
-        </div>
-      </div>
-    <div class="section-label">Rechercher</div>
-      <input type="text" class="text-input" id="clients-search" placeholder="Nom, IATA, code..." oninput="renderClientsList()">
-    </div>
-    <div id="clients-list-container" style="padding:0 10px 20px;overflow-y:auto;flex:1;"></div>
   </div>
 
 </div><!-- end left -->
@@ -4287,6 +4339,7 @@ function FM(n){return n.toLocaleString('fr-DZ',{minimumFractionDigits:2,maximumF
 // ══ STATE ════════════════════════════════════════════════════
 let DB=[...BASE],RV=[],rvL=false,SEL=null,acI=-1,acR=[],LIG=[],ECR=[],editC=null;
 let TYP='411',TOT=0;
+let _rvPendIdx=null,_rvPendTot=null,_rvHideUsed=false,_rvUsedSig=''; // v72 anti double imputation relevé
 const MAX=15;
 const TC={"411":"#0c447c","165":"#d97706","181":"#7c3aed"};
 const TL={"411":"Vente","165":"Caution","181":"Unité"};
@@ -4385,8 +4438,9 @@ function onTot(v){
   const el=document.getElementById('tot-v');
   if(!TOT){el.innerHTML='';renderECC();return;}
   if(!rvL){el.innerHTML='<span style="color:var(--amber);">⚠️ Relevé non chargé</span>';renderECC();return;}
-  const ok=RV.some(r=>Math.abs(r.credit-TOT)<0.01);
-  el.innerHTML=ok?'<span style="color:var(--green);">✅ Trouvé dans relevé</span>':'<span style="color:var(--red);">❌ Absent du relevé</span>';
+  const ok=RV.some(r=>!r._used&&Math.abs(r.credit-TOT)<0.01);
+  const dupl=!ok&&RV.some(r=>r._used&&Math.abs(r.credit-TOT)<0.01)&&!LIG.some(l=>l.ventile&&Math.abs((l._vTot||0)-TOT)<0.01);
+  el.innerHTML=ok?'<span style="color:var(--green);">✅ Trouvé dans relevé</span>':dupl?'<span style="color:var(--amber);">⛔ Déjà imputé (relevé)</span>':'<span style="color:var(--red);">❌ Absent du relevé</span>';
   renderECC();
 }
 
@@ -4598,6 +4652,7 @@ function VMT(v){
   inp.style.borderColor='';
   if(!m&&formatted!=='-'){
     s.innerHTML='';hideMtSuggest();
+    _rvPendIdx=null;
     _mtLocked=false; // Montant effacé → débloquer suggestions pour prochaine saisie
     return;
   }
@@ -4618,9 +4673,10 @@ function VMT(v){
     return;
   }
   if(!rvL){s.innerHTML='<span class="vwarn">⚠️ Relevé non chargé</span>';return;}
-  const ok=RV.some(r=>Math.abs(r.credit-m)<0.01);
-  inp.style.borderColor=ok?'#4a7fb0':'#f87171';
-  s.innerHTML=ok?'<span class="vok">✅ Relevé</span>':'<span class="vko">❌ Absent relevé</span>';
+  const ok=RV.some(r=>!r._used&&Math.abs(r.credit-m)<0.01);
+  const dupl=!ok&&RV.some(r=>r._used&&Math.abs(r.credit-m)<0.01);
+  inp.style.borderColor=ok?'#4a7fb0':dupl?'#f59e0b':'#f87171';
+  s.innerHTML=ok?'<span class="vok">✅ Relevé</span>':dupl?'<span class="vko">⛔ Déjà imputé (relevé)</span>':'<span class="vko">❌ Absent relevé</span>';
 }
 
 function onTotChange(v){
@@ -4646,11 +4702,31 @@ function AL(){
     if(m>0&&deja+m>TOT+0.01){MSG('err','❌ Dépassement ! Reste : '+FM(TOT-deja)+' DA');return;}
   }
   // Modes 411/165 : vérif relevé
-  if(TYP!=='V'&&rvL&&!RV.some(r=>Math.abs(r.credit-m)<0.01)){
-    if(!confirm('⚠️ '+FM(m)+' DA absent du relevé.\nImputer quand même ?'))return;
+  // v72 — ANTI DOUBLE IMPUTATION : repérer l'opération du relevé correspondante (libre) et la verrouiller
+  let _rvIdx=null,_rvIdxV=null;
+  if(TYP!=='V'&&rvL){
+    const cand=[];RV.forEach((r,i)=>{if(Math.abs(r.credit-m)<0.01)cand.push(i);});
+    const free=cand.filter(i=>!RV[i]._used);
+    if(!cand.length){
+      if(!confirm('⚠️ '+FM(m)+' DA absent du relevé.\nImputer quand même ?'))return;
+    }else if(!free.length){
+      if(!confirm('⛔ '+FM(m)+' DA : toutes les opérations du relevé de ce montant sont DÉJÀ IMPUTÉES.\nRisque de double imputation. Imputer quand même ?'))return;
+    }else{
+      _rvIdx=(_rvPendIdx!=null&&free.includes(_rvPendIdx))?_rvPendIdx:free[0];
+    }
+  }
+  if(TYP==='V'&&rvL&&TOT>0&&!LIG.some(l=>l.ventile&&Math.abs((l._vTot||0)-TOT)<0.01)){
+    const candV=[];RV.forEach((r,i)=>{if(Math.abs(r.credit-TOT)<0.01)candV.push(i);});
+    const freeV=candV.filter(i=>!RV[i]._used);
+    if(candV.length&&!freeV.length){
+      if(!confirm('⛔ Le virement de '+FM(TOT)+' DA est DÉJÀ IMPUTÉ sur le relevé.\nRisque de double imputation. Continuer quand même ?'))return;
+    }else if(freeV.length){
+      _rvIdxV=(_rvPendTot!=null&&freeV.includes(_rvPendTot))?_rvPendTot:freeV[0];
+    }
   }
   // Stocker le type de la ligne au moment de l'ajout
-  LIG.push({id:Date.now(),client:{...SEL},montant:m,lib:SEL.label,ventile:TYP==='V',typ:TYP});
+  LIG.push({id:Date.now(),client:{...SEL},montant:m,lib:SEL.label,ventile:TYP==='V',typ:TYP,_rvIdx:TYP==='V'?_rvIdxV:_rvIdx,_vTot:TYP==='V'?TOT:0});
+  _rvPendIdx=null;
   // Reset champs
   document.getElementById('isrc').value='';
   document.getElementById('selinfo').innerHTML='';
@@ -4686,6 +4762,7 @@ function DEL(id){LIG=LIG.filter(l=>l.id!==id);renderECC();}
 
 // ══ RENDER PIÈCE EN COURS (col gauche) ═══════════════════════
 function renderECC(){
+  try{rvSyncUsed();}catch(e){}
   const ref=document.getElementById('iref').value;
   const ventile=LIG.filter(l=>l.ventile).reduce((a,l)=>a+l.montant,0);
   const nonV=LIG.filter(l=>!l.ventile);
@@ -4963,6 +5040,7 @@ document.addEventListener('keydown',function(e){
   if(document.getElementById('mov').classList.contains('on'))return;
   if(e.key==='F1'){e.preventDefault();VAL();return;}
   if(e.key==='F2'){e.preventDefault();nouvellePiece();return;}
+  if(e.key==='F4'&&document.getElementById('sbas-ov')&&document.getElementById('main')&&document.getElementById('main').style.display!=='none'){e.preventDefault();sbasOpen();return;}
 });
 
 
@@ -5270,13 +5348,14 @@ function PRVx(buf,fn){
   }catch(e){MSG('err','❌ Erreur lecture fichier.');}
 }
 function SRV(ops,fn){
-  RV=ops;rvL=true;
+  RV=ops;rvL=true;_rvUsedSig='';
+  setTimeout(()=>{try{rvSyncUsed(true);}catch(e){}},0);
   document.getElementById('rvstat').innerHTML=`<div style="background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.3);border-radius:var(--r-sm);padding:9px 13px;color:var(--green);font-size:12px;font-weight:600;">✅ ${fn} — <strong>${ops.length}</strong> opérations crédit chargées</div>`;
   document.getElementById('rvtb').innerHTML=ops.map((r,idx)=>`
-    <tr class="rv-row" onclick="selectRVLine(${r.credit}, this, ${idx})">
+    <tr class="rv-row${r._used?' rv-used':''}" onclick="selectRVLine(${r.credit}, this, ${idx})">
       <td style="color:var(--txt3);font-size:10px;white-space:nowrap;">${r.dateOp}</td>
       <td style="color:var(--txt2);">${r.libelle}</td>
-      <td class="tcc" style="white-space:nowrap;">${FM(r.credit)}</td>
+      <td class="tcc" style="white-space:nowrap;">${FM(r.credit)}${r._used?'<span class="rv-used-tag">✔ IMPUTÉ</span>':''}</td>
       <td><button class="rv-use-btn" onclick="event.stopPropagation();selectRVLine(${r.credit}, this.closest('tr'), ${idx})">↗ Utiliser</button></td>
     </tr>`).join('');
   const _cnt=document.getElementById('rvcnt');
@@ -5549,11 +5628,11 @@ function showMtSuggestTot(digits){
   if(!box)return;
   const seen=new Set();
   mtSugTotList=[];
-  RV.forEach(r=>{
+  RV.forEach((r,ri)=>{
     const mt=String(Math.abs(r.credit));
-    if(mt.startsWith(digits)&&!seen.has(mt)){
+    if(!r._used&&mt.startsWith(digits)&&!seen.has(mt)){
       seen.add(mt);
-      mtSugTotList.push({mt:parseFloat(mt), lib:r.libelle||r.lib_orig||''});
+      mtSugTotList.push({mt:parseFloat(mt), lib:r.libelle||r.lib_orig||'', idx:ri});
     }
   });
   mtSugTotList.sort((a,b)=>a.mt-b.mt);
@@ -5585,6 +5664,7 @@ function hideMtSuggestTot(){
 function selectMtTotIdx(i){
   if(i<0||i>=mtSugTotList.length)return;
   const x=mtSugTotList[i];
+  _rvPendTot=x.idx;
   const inp=document.getElementById('itot');
   inp.value=FM(x.mt);
   hideMtSuggestTot();
@@ -5657,7 +5737,7 @@ function showMtSuggest(digits){
   mtSugList=[];
   RV.forEach((r,idx)=>{
     const mt=String(Math.abs(r.credit));
-    if(!mt.startsWith(digits))return;
+    if(r._used||!mt.startsWith(digits))return;
     const lib=(r.libelle||r.lib_orig||'').trim();
     mtSugList.push({mt:parseFloat(mt), lib, date:r.date||'', idx});
   });
@@ -5788,9 +5868,163 @@ function _jbrIdentifyFromLib(libelle){
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   v72 — JBR : ANTI DOUBLE IMPUTATION RELEVÉ
+   Chaque montant du relevé imputé par une ligne de saisie (pièce en cours
+   ou pièce validée) est marqué _used : il change de couleur et n'est plus
+   proposé à la saisie. L'état est recalculé depuis LIG/ECR (donc supprimer
+   une ligne libère automatiquement l'opération du relevé).
+   ══════════════════════════════════════════════════════════════════════ */
+function _rvClaimsFromLines(lines,fallbackTot){
+  const out=[], groups=new Map();
+  (lines||[]).forEach(l=>{
+    if(!l.ventile){ out.push({amt:l.montant,idx:l._rvIdx}); return; }
+    const t=l._vTot>0?l._vTot:(fallbackTot||0);
+    if(!(t>0)) return;
+    const k=t.toFixed(2);
+    if(!groups.has(k)) groups.set(k,{amt:t,idx:l._rvIdx});
+    else if(groups.get(k).idx==null&&l._rvIdx!=null) groups.get(k).idx=l._rvIdx;
+  });
+  groups.forEach(g=>out.push(g));
+  return out;
+}
+function rvSyncUsed(force){
+  if(typeof RV==='undefined'||!RV||!RV.length) return;
+  RV.forEach(r=>{r._used=false;});
+  const claims=[];
+  ECR.forEach(e=>{
+    if(e.lines) claims.push(..._rvClaimsFromLines(e.lines,e.tot_v));
+    else if(e.credit>0) claims.push({amt:e.credit,idx:null});
+  });
+  claims.push(..._rvClaimsFromLines(LIG,TOT));
+  const pending=[];
+  claims.forEach(cl=>{
+    const r=cl.idx!=null?RV[cl.idx]:null;
+    if(r&&!r._used&&Math.abs(r.credit-cl.amt)<0.01) r._used=true; else pending.push(cl);
+  });
+  pending.forEach(cl=>{
+    const i=RV.findIndex(r=>!r._used&&Math.abs(r.credit-cl.amt)<0.01);
+    if(i>=0) RV[i]._used=true;
+  });
+  const sig=RV.map(r=>r._used?1:0).join('');
+  if(force||sig!==_rvUsedSig){ _rvUsedSig=sig; rvRefreshViews(); }
+}
+function rvRefreshViews(){
+  try{ if(document.getElementById('rvtb-inline')) filtreRVInline(); }catch(e){}
+  try{ if(document.getElementById('rvtb')) filtreRV(); }catch(e){}
+  const n=RV.filter(r=>r._used).length;
+  const el=document.getElementById('rv-used-cnt');
+  if(el) el.textContent=n?('✔ '+n+' imputé'+(n>1?'s':'')+' / '+RV.length):'';
+}
+function rvToggleHideUsed(){
+  _rvHideUsed=!_rvHideUsed;
+  const b=document.getElementById('rv-hideused-btn');
+  if(b){ b.textContent=_rvHideUsed?'👁 Afficher imputés':'🙈 Masquer imputés'; b.style.background=_rvHideUsed?'#d1fae5':'var(--bg2)'; }
+  rvRefreshViews();
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v72b — JBR : RECHERCHE DANS LA BASE RAP (BAS_RAP : clients, auxiliaires,
+   libellés de relevé, RIB). Ouverture : bouton 🔎 BAS RAP ou touche F4.
+   (les fonctions gardent le préfixe sbas* par compatibilité avec le HTML)
+   ══════════════════════════════════════════════════════════════════════ */
+let _sbasIdx=null,_sbasIdxN=-1,_sbasList=[],_sbasType='all',_sbasHi=0;
+function _sbasTypeOf(aux){
+  aux=String(aux||'');
+  if(aux.startsWith('1650')) return '165';
+  if(aux.startsWith('18')) return '181';
+  return '411';
+}
+function _sbasBuild(){
+  const n=(_V2_CLIENTS_DATA?_V2_CLIENTS_DATA.length:0)+(_V2_BAS_DATA?_V2_BAS_DATA.length:0)+(_V2_ACCT_MAP?Object.keys(_V2_ACCT_MAP).length:0);
+  if(_sbasIdx&&_sbasIdxN===n) return;
+  const m=new Map();
+  const get=(aux,nom)=>{ const k=String(aux||'').trim()||('N:'+nom); let e=m.get(k); if(!e){e={nom:nom,aux:String(aux||'').trim(),libs:new Set(),ribs:[]};m.set(k,e);} return e; };
+  (_V2_CLIENTS_DATA||[]).forEach(c=>get(c.code_client,c.client));
+  (_V2_BAS_DATA||[]).forEach(r=>{ const e=get(r.code_client,r.client); if(r.libelle_releve) e.libs.add(String(r.libelle_releve).trim()); });
+  Object.entries(_V2_ACCT_MAP||{}).forEach(([num,info])=>{ const e=m.get(String(info.code_client||'').trim()); if(e) e.ribs.push(num); });
+  _sbasIdx=[...m.values()].map(e=>({nom:e.nom,aux:e.aux,libs:[...e.libs],ribs:e.ribs,typ:_sbasTypeOf(e.aux),
+    hay:_jbrNorm(e.nom+' '+e.aux+' '+[...e.libs].join(' ')+' '+e.ribs.join(' '))}));
+  _sbasIdxN=n;
+}
+function sbasOpen(){
+  const ov=document.getElementById('sbas-ov'); if(!ov) return;
+  _sbasBuild();
+  ov.style.display='flex';
+  const q=document.getElementById('sbas-q');
+  if(q){ q.focus(); q.select(); }
+  sbasRender();
+}
+function sbasClose(){
+  const ov=document.getElementById('sbas-ov'); if(ov) ov.style.display='none';
+  setTimeout(()=>{const i=document.getElementById('isrc');if(i)i.focus();},40);
+}
+function sbasSetType(t){ _sbasType=t; _sbasHi=0; sbasRender(); }
+function sbasRender(){
+  const box=document.getElementById('sbas-res'); if(!box) return;
+  const cnt=document.getElementById('sbas-cnt');
+  if(!_V2_LOADED){
+    if(cnt) cnt.textContent='';
+    box.innerHTML='<div style="padding:26px;text-align:center;color:var(--amber,#d97706);font-size:12px">⚠️ Base RAP (BAS_RAP) non chargée — chargez-la d\'abord pour pouvoir y rechercher.</div>';
+    return;
+  }
+  _sbasBuild();
+  const qv=(document.getElementById('sbas-q')||{value:''}).value;
+  const qn=_jbrNorm(qv), toks=qn.split(' ').filter(Boolean);
+  const res=_sbasIdx.filter(e=>(_sbasType==='all'||e.typ===_sbasType)&&toks.every(t=>e.hay.includes(t)));
+  const sc=e=>{ const n=_jbrNorm(e.nom); return (qn&&(n.startsWith(qn)||e.aux===qv.trim()||e.ribs.includes(qv.trim())))?0:1; };
+  res.sort((a,b)=>sc(a)-sc(b)||a.nom.localeCompare(b.nom));
+  const total=res.length;
+  _sbasList=res.slice(0,100); _sbasHi=Math.min(_sbasHi,Math.max(_sbasList.length-1,0));
+  if(cnt) cnt.textContent=total+' résultat'+(total>1?'s':'')+(total>100?' (100 affichés — affinez la recherche)':'')+' · base RAP : '+_sbasIdx.length+' clients';
+  ['all','411','165'].forEach(t=>{const b=document.getElementById('sbas-t-'+t);if(b){b.style.background=_sbasType===t?'#0c447c':'var(--bg2)';b.style.color=_sbasType===t?'#fff':'var(--txt2)';}});
+  const col={'411':'#0c447c','165':'#d97706','181':'#7c3aed'};
+  const lab={'411':'Client 411','165':'Caution 1650','181':'Unité 181'};
+  if(!_sbasList.length){ box.innerHTML='<div style="padding:26px;text-align:center;color:var(--txt3);font-size:12px">Aucun client trouvé dans la base RAP</div>'; return; }
+  const libShow=e=>{
+    if(!e.libs.length) return '—';
+    const hit=toks.length?e.libs.filter(l=>{const ln=_jbrNorm(l);return toks.some(t=>ln.includes(t));}):[];
+    const arr=(hit.length?hit:e.libs).slice(0,2);
+    return arr.join(' ; ')+(e.libs.length>arr.length?` <span style="color:var(--txt3)">(+${e.libs.length-arr.length})</span>`:'');
+  };
+  box.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="position:sticky;top:0;background:#05101f;color:#fff;font-size:9px;letter-spacing:.8px"><th style="padding:6px 8px;text-align:left">CLIENT (BASE RAP)</th><th style="padding:6px 8px;text-align:left">AUXILIAIRE</th><th style="padding:6px 8px;text-align:left">LIBELLÉ(S) RELEVÉ</th><th style="padding:6px 8px;text-align:left">RIB</th><th style="padding:6px 8px">TYPE</th></tr></thead><tbody>'+
+   _sbasList.map((e,i)=>`<tr onmousedown="sbasPick(${i})" onmouseover="_sbasHi=${i};sbasHL()" id="sbr${i}" style="cursor:pointer;border-bottom:1px solid var(--bo);${i===_sbasHi?'background:var(--sky-pale,#e0f2fe);':''}">
+     <td style="padding:6px 8px;font-weight:700;color:${col[e.typ]}">${e.nom||'—'}</td>
+     <td style="padding:6px 8px;font-family:var(--font-mono,monospace)">${e.aux||'<span style="color:#dc2626">(sans aux)</span>'}</td>
+     <td style="padding:6px 8px;color:var(--txt2);max-width:260px">${libShow(e)}</td>
+     <td style="padding:6px 8px;font-family:var(--font-mono,monospace);font-size:10px">${e.ribs.slice(0,1).join('')||'—'}</td>
+     <td style="padding:6px 8px;text-align:center"><span style="background:${col[e.typ]}22;color:${col[e.typ]};border-radius:4px;padding:1px 6px;font-size:9px;font-weight:800">${lab[e.typ]}</span></td></tr>`).join('')+'</tbody></table>';
+}
+function sbasHL(){
+  _sbasList.forEach((_,i)=>{const r=document.getElementById('sbr'+i);if(r)r.style.background=i===_sbasHi?'var(--sky-pale,#e0f2fe)':'';});
+}
+function sbasKey(e){
+  if(e.key==='Escape'){e.preventDefault();sbasClose();}
+  else if(e.key==='ArrowDown'){e.preventDefault();_sbasHi=Math.min(_sbasHi+1,_sbasList.length-1);sbasHL();const r=document.getElementById('sbr'+_sbasHi);if(r)r.scrollIntoView({block:'nearest'});}
+  else if(e.key==='ArrowUp'){e.preventDefault();_sbasHi=Math.max(_sbasHi-1,0);sbasHL();const r=document.getElementById('sbr'+_sbasHi);if(r)r.scrollIntoView({block:'nearest'});}
+  else if(e.key==='Enter'){e.preventDefault();sbasPick(_sbasHi);}
+}
+function sbasPick(i){
+  const e=_sbasList[i]; if(!e) return;
+  if(e.typ==='165'&&TYP!=='165'&&TYP!=='V') setType('165');
+  else if(e.typ!=='165'&&TYP==='165') setType('411');
+  const inDB=DB.find(c=>(e.aux&&c.code===e.aux)||c.label.toUpperCase()===String(e.nom).toUpperCase());
+  SEL=inDB?{...inDB,_src:'db'}:{code:e.aux||(e.typ+'00000'),label:e.nom,type:e.typ,_src:'bas',_basCode:e.aux};
+  document.getElementById('isrc').value=SEL.label;
+  const col=TC[SEL.type]||'#0c447c', com=getCOM(SEL), aux=(SEL._src==='bas'?SEL._basCode:getAUX(SEL))||'';
+  document.getElementById('selinfo').innerHTML=`<div style="background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:3px;padding:3px 8px;display:flex;align-items:center;gap:7px;font-size:11px;margin-top:3px;">
+    <span style="color:#7c3aed;font-weight:700;">${com}</span>${aux?`<span style="color:#7c3aed;font-size:10px;">${aux}</span>`:''}
+    <span style="color:#4a7fb0;flex:1;">${SEL.label}</span>
+    <span style="background:#ede9fe;color:#6d28d9;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:800;">🔐 BAS RAP</span></div>`;
+  const ilb=document.getElementById('ilib-h'); if(ilb&&!ilb.value) ilb.value=SEL.label;
+  const ov=document.getElementById('sbas-ov'); if(ov) ov.style.display='none';
+  setTimeout(()=>document.getElementById('imt').focus(),40);
+}
+
 function selectMtIdx(i){
   if(i<0||i>=mtSugList.length)return;
   const x=mtSugList[i];
+  _rvPendIdx=x.idx;
   const inp=document.getElementById('imt');
   inp.value=FM(x.mt);
   hideMtSuggest();
@@ -5852,7 +6086,7 @@ function MK(e){
         AL();
       } else {
         const mv = PM(document.getElementById('imt').value);
-        const rv = RV.find(r=>Math.abs(r.credit-mv)<0.01);
+        const rv = RV.find(r=>!r._used&&Math.abs(r.credit-mv)<0.01) || RV.find(r=>Math.abs(r.credit-mv)<0.01);
         _jbrIdentifyFromLib(rv ? rv.libelle : '');
       }
     }
@@ -6434,12 +6668,9 @@ function renderCompanyGrid(){
 function switchMainTab(name, el){
   document.getElementById('main-tab-saisie').classList.remove('active');
   document.getElementById('main-tab-import').classList.remove('active');
-  document.getElementById('main-tab-clients').classList.remove('active');
   el.classList.add('active');
   document.getElementById('tab-saisie').style.display = name==='saisie'?'':'none';
   document.getElementById('tab-import').style.display = name==='import'?'':'none';
-  document.getElementById('tab-clients-panel').style.display = name==='clients'?'flex':'none';
-  if(name==='clients') renderClientsList();
 }
 
 function switchSearch(mode, el){
@@ -6862,9 +7093,50 @@ function getCompLibelle(comp){
   return acc.label.replace(/^COMMETTANT\s+/i,'').trim();
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   v82 — EBV : DÉCOMPTE DES LIGNES SAISIES PAR PIÈCE (comme dans la saisie Banque Recettes)
+   Une pièce comptable EBV = 34 lignes clients + 1 ligne commettant (35). Le compteur indique la ligne en cours,
+   le reste à saisir et signale quand la pièce est COMPLÈTE.
+   ══════════════════════════════════════════════════════════════════════ */
+const EBV_PIECE_MAX = 34;
+let _ebvPcPrev={key:null,n:0};
+function ebvPieceCounter(){
+  const box=document.getElementById('ebv-piece-ctr'); if(!box) return;
+  if(!selectedComp){ box.style.display='none'; _ebvPcPrev={key:null,n:0}; return; }
+  const rows=entries.filter(e=>e.comp===selectedComp), n=rows.length, MAX=EBV_PIECE_MAX;
+  const base=(typeof pieceDepart!=='undefined'&&pieceDepart)||1;
+  const full=Math.floor(n/MAX), rem=n%MAX, complete=n>0&&rem===0;
+  const cur=complete?MAX:rem, idx=complete?full-1:full, num=base+idx;
+  const chunk=rows.slice(idx*MAX,idx*MAX+cur), tot=chunk.reduce((s,r)=>s+r.montant,0);
+  const pct=cur/MAX*100, left=MAX-cur;
+  const col=complete?'#16a34a':left<=3?'#d97706':'#0284c7';
+  const done=complete?full:full; // pièces complètes terminées
+  box.style.display='block';
+  box.style.borderColor=complete?'rgba(22,163,74,.55)':left<=3&&cur>0?'rgba(217,119,6,.5)':'var(--bo-sky)';
+  box.style.background=complete?'rgba(22,163,74,.07)':'var(--surface)';
+  box.innerHTML=`<div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:10px;font-weight:800;color:var(--sky-deep);letter-spacing:.4px;">📄 PIÈCE N° ${num}</span>
+      <span style="margin-left:auto;font-family:var(--font-mono);font-size:15px;font-weight:800;color:${col};">${cur}/${MAX}</span>
+    </div>
+    <div style="height:7px;background:var(--bg3,#e5e7eb);border-radius:4px;overflow:hidden;margin:5px 0 4px;"><div style="height:100%;width:${pct}%;background:${col};transition:width .25s;"></div></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:9.5px;color:var(--txt3);">
+      ${complete
+        ?`<b style="color:#15803d;">✅ PIÈCE COMPLÈTE</b> — la prochaine ligne ouvrira la pièce N° ${num+1}`
+        :cur===0
+          ?`Nouvelle pièce — ${MAX} lignes à saisir`
+          :left<=3?`<b style="color:#b45309;">⚠ bientôt complète — encore ${left} ligne${left>1?'s':''}</b>`:`reste ${left} ligne${left>1?'s':''} pour compléter`}
+      <span style="margin-left:auto;font-family:var(--font-mono);">${cur?fmtAmt(Math.abs(tot))+' DA':''}</span>
+    </div>
+    <div style="font-size:9px;color:var(--txt4);margin-top:2px;">${selectedComp} · ${n} ligne${n>1?'s':''} saisie${n>1?'s':''} · ${complete?full:full} pièce${full>1?'s':''} complète${full>1?'s':''}</div>`;
+  if(_ebvPcPrev.key===selectedComp&&n>_ebvPcPrev.n&&complete){
+    try{ showToast('✅ Pièce N° '+num+' complète ('+MAX+'/'+MAX+' lignes)','success'); }catch(e){}
+  }
+  _ebvPcPrev={key:selectedComp,n:n};
+}
+
 function buildPieces(rows, startNum){
   // Each piece: max 34 client lines + 1 commettant line = 35
-  const MAX_CLIENTS = 34;
+  const MAX_CLIENTS = EBV_PIECE_MAX;
   const pieces = [];
   let i = 0;
   let offset = 0;
@@ -6882,6 +7154,7 @@ function buildPieces(rows, startNum){
 // ─── RENDER TABLE ──────────────────────────────────────────────────────────
 function renderTable(){
   const container=document.getElementById('entries-container');
+  try{ebvPieceCounter();}catch(e){}
   const filtered=selectedComp?entries.filter(e=>e.comp===selectedComp):entries;
   document.getElementById('clear-btn').style.display=entries.length>0?'':'none';
   if(!filtered.length){
@@ -6898,7 +7171,7 @@ function renderTable(){
   pieces.forEach(piece=>{
     const acc=selectedComp?COMPANY_ACCOUNTS[selectedComp]:null;
     const pieceColor=piece.num%2===0?'var(--sky-pale)':'var(--bg2)';
-    html+=`<tr class="piece-sep" style="background:${pieceColor};"><td colspan="9" style="color:var(--sky-deep);font-weight:700;">— PIÈCE N° ${piece.num}&nbsp;${selectedComp?getAirLogo(selectedComp):''}&nbsp;${piece.rows.length} client(s) | Total: ${fmtAmt(Math.abs(piece.total))} DZD ${piece.total>=0?'✓':'⚠'}</td></tr>`;
+    html+=`<tr class="piece-sep" style="background:${pieceColor};"><td colspan="9" style="color:var(--sky-deep);font-weight:700;">— PIÈCE N° ${piece.num}&nbsp;${selectedComp?getAirLogo(selectedComp):''}&nbsp;${piece.rows.length}/${EBV_PIECE_MAX} client(s)${piece.rows.length>=EBV_PIECE_MAX?' ✅ COMPLÈTE':''} | Total: ${fmtAmt(Math.abs(piece.total))} DZD ${piece.total>=0?'✓':'⚠'}</td></tr>`;
 
     piece.rows.forEach(e=>{
       const dup=isDuplicate(e,e.comp)&&filtered.filter(x=>getNomCompta(x.client)===e.nomCompta&&Math.abs(x.montant-e.montant)<0.01&&x.comp===e.comp).length>1;
@@ -7151,6 +7424,99 @@ init();
 
 // ══ FONCTIONS NDC-F ══════════════════════════════════════════
 
+/* ══════════════════════════════════════════════════════════════════════
+   v74 — NDC-F : VÉRIFICATION CLNDC après chargement du fichier commercial
+   • client commercial reconnu dans CLNDC → nom comptable + auxiliaire de la base
+   • client NON reconnu → on DEMANDE l'auxiliaire compatible et on GARDE le nom commercial
+   (plus de verrouillage, de suggestion floue, d'« ignorer » ni de déverrouillage forcé)
+   ══════════════════════════════════════════════════════════════════════ */
+let _ndcfPrevD=null;
+function _ndcfEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// Nom commercial → client CLNDC : par nom commercial (ndc), à défaut par nom comptable identique
+function ndcfResolveClient(agence){
+  const n=ndcfNorm(agence);
+  if(!n) return null;
+  if(NDCF_IDX[n]) return NDCF_IDX[n];
+  return NDCF_CLIENTS.find(c=>ndcfNorm(c.compta)===n)||null;
+}
+// Associe l'auxiliaire saisi au nom commercial (nom commercial conservé comme nom du client)
+function ndcfAssignAux(agence,aux){
+  aux=String(aux||'').trim();
+  if(!aux){ showToast('⚠ Code auxiliaire requis','warn'); return false; }
+  const inDB=DB.find(c=>c.code===aux);
+  if(!inDB&&!aux.startsWith('18')){
+    if(!confirm('Le code "'+aux+'" est absent de la base comptable (411 / 165).\nL\'utiliser quand même pour "'+agence+'" ?')) return false;
+  }
+  const n=ndcfNorm(agence);
+  for(let i=NDCF_CLIENTS.length-1;i>=0;i--){ if(ndcfNorm(NDCF_CLIENTS[i].ndc)===n&&ndcfNorm(NDCF_CLIENTS[i].compta)===n) NDCF_CLIENTS.splice(i,1); }
+  NDCF_CLIENTS.push({ndc:agence.trim(),compta:agence.trim(),aux});
+  rebuildNDCFIdx();   // → ndcfVerifRefresh()
+  const cl=NDCF_IDX[n];
+  NDCF_DATA.forEach(d=>{ if(!d.client&&ndcfNorm(d.agence)===n) d.client=cl; });
+  try{ ndcfSugList.forEach(s=>{ if(ndcfNorm(s.agence)===n){ s.client=cl; if(s._orig) s._orig.client=cl; } }); }catch(e){}
+  showToast('✓ "'+agence+'" → auxiliaire '+aux+(inDB?' ('+inDB.label+')':''),'success');
+  if(document.getElementById('ndcf-clients-zone')?.style.display==='block') renderNDCFClients();
+  return true;
+}
+function ndcfVerifRefresh(){
+  const box=document.getElementById('ndcf-verif'); if(!box) return;
+  if(!NDCF_DATA.length){ box.style.display='none'; return; }
+  NDCF_DATA.forEach(d=>{ if(!d.client){ const c=ndcfResolveClient(d.agence); if(c) d.client=c; } });
+  const total=NDCF_DATA.length;
+  const ok=NDCF_DATA.filter(d=>d.client).length;
+  const saisi=NDCF_DATA.filter(d=>d._saisi).length;
+  const seen=new Set(), list=[];
+  NDCF_DATA.forEach((d,i)=>{ if(d.client) return; const k=ndcfNorm(d.agence); if(seen.has(k)) return; seen.add(k); list.push(i); });
+  const chip=(t,c)=>`<span style="background:${c}22;color:${c};border-radius:10px;padding:1px 8px;font-size:9px;font-weight:800;">${t}</span>`;
+  let h=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:${list.length?6:0}px;">
+    <span style="font-size:10px;font-weight:800;color:var(--sky);letter-spacing:.5px;">🔎 VÉRIFICATION CLNDC</span>
+    ${chip('✅ '+ok+'/'+total+' reconnus','#16a34a')}${list.length?chip('🔑 '+list.length+' auxiliaire'+(list.length>1?'s':'')+' à renseigner','#d97706'):''}${chip('📝 '+saisi+' saisi'+(saisi>1?'s':''),'#0ea5e9')}</div>`;
+  if(list.length){
+    h+=`<div style="font-size:10px;color:var(--amber);font-weight:700;margin-bottom:5px;">Client commercial absent de la base CLNDC — entrez l'<b>auxiliaire compatible</b> (le nom commercial est conservé) :</div>
+    <div style="max-height:170px;overflow-y:auto;border:1px solid var(--bo-sky);border-radius:6px;">`+
+    list.map(i=>{
+      const d=NDCF_DATA[i];
+      return `<div style="display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px;align-items:center;padding:5px 7px;border-bottom:1px solid rgba(40,53,147,.25);font-size:10px;">
+        <span style="color:var(--txt);font-weight:700;" title="${_ndcfEsc(d.agence)}">${_ndcfEsc(d.agence)}</span>
+        <input id="ndcf-vaux-${i}" placeholder="Code auxiliaire (ex: 41100123)" onkeydown="if(event.key==='Enter'){event.preventDefault();ndcfVerifSubmit(${i});}" style="padding:4px 7px;border:1px solid var(--bo-sky);border-radius:5px;background:var(--bg2);color:var(--txt);font-size:10px;font-family:var(--font-mono);outline:none;">
+        <button onclick="ndcfVerifSubmit(${i})" style="background:var(--green);border:none;border-radius:4px;color:#fff;font-size:9px;font-weight:700;padding:4px 9px;cursor:pointer;">✔ Valider</button></div>`;
+    }).join('')+`</div>`;
+  } else {
+    h+=`<div style="font-size:10px;color:var(--green);font-weight:700;margin-top:4px;">✅ Tous les clients commerciaux ont leur auxiliaire — saisie NDC-F prête</div>`;
+  }
+  box.innerHTML=h;
+  box.style.display='block';
+  box.style.borderColor=list.length?'rgba(217,119,6,.5)':'rgba(74,222,128,.45)';
+}
+function ndcfVerifLoad(){
+  NDCF_DATA.forEach(d=>{ d._saisi=false; });
+  NDCF_DATA.forEach(d=>{
+    if(!d.client) d.client=ndcfResolveClient(d.agence)||null;
+    if(!d.client) return;
+    const p=NDCF_PIECES.find(p=>!p._rowRef&&p.compta===d.client.compta&&Math.abs(p.total_reg-Math.round(d.total_reg||d.ttc))<1&&(!p.facture||p.facture===d.facture));
+    if(p){ d._saisi=true; p._rowRef=d; }
+  });
+  ndcfVerifRefresh();
+  // v80 — le fichier commercial se charge depuis l'onglet IMPORTS : on bascule sur NDC-F pour la vérification CLNDC
+  if(typeof ebvImportsActive==='function'&&ebvImportsActive()){ try{ switchMainTab('saisie',document.getElementById('main-tab-saisie')); switchSearch('ndcf',document.getElementById('tab-ndcf-btn')); }catch(e){} }
+  const first=document.querySelector('[id^="ndcf-vaux-"]'); if(first) setTimeout(()=>first.focus(),120);
+}
+function ndcfVerifSubmit(i){
+  const d=NDCF_DATA[i]; if(!d) return;
+  const inp=document.getElementById('ndcf-vaux-'+i);
+  ndcfAssignAux(d.agence, inp?inp.value:'');
+}
+// Même demande au moment de la saisie (aperçu) si le client n'a pas encore d'auxiliaire
+function ndcfAuxFromPreview(){
+  const d=_ndcfPrevD; if(!d) return;
+  const inp=document.getElementById('ndcf-aux-in');
+  if(!ndcfAssignAux(d.agence, inp?inp.value:'')) return;
+  const cl=NDCF_IDX[ndcfNorm(d.agence)];
+  d.client=cl; if(d._orig) d._orig.client=cl;
+  showNDCFPreview(d);
+}
+
+
 function loadNDCF(inp){
   const f=inp.files[0];if(!f)return;
   const r=new FileReader();
@@ -7225,7 +7591,7 @@ function loadNDCF(inp){
         // présent dans CLNDC mais orthographié légèrement différemment dans le
         // fichier commercial (espace double, point, accent) était auparavant
         // traité comme "non trouvé" malgré sa présence réelle dans la liste.
-        const cl=NDCF_IDX[ndcfNorm(agence)];
+        const cl=ndcfResolveClient(agence);
         NDCF_DATA.push({
           agence,
           facture,                     // N° facture depuis fichier commercial
@@ -7234,7 +7600,7 @@ function loadNDCF(inp){
           tva: tva9,
           ttc,
           client: cl||null,
-          _suggestion: cl?null:ndcfFindBestMatch(agence) // 🔧 FIX — meilleur candidat flou si non trouvé en exact
+          _suggestion: null
         });
       });
       const _ndcfTotalLues=rows.length;
@@ -7246,6 +7612,7 @@ function loadNDCF(inp){
         : '✅ '+NDCF_DATA.length+' clients chargés';
       document.getElementById('ndcf-load-st').style.color = _ndcfTotalLues !== NDCF_DATA.length ? 'var(--warn)' : 'var(--green)';
       document.getElementById('ndcf-import-zone').style.borderColor='rgba(74,222,128,.4)';
+      ndcfVerifLoad(); // v73 — vérification CLNDC avant d'armer la saisie
       // Proposer prochain numéro
       if(ndcfLastNum>0){
         document.getElementById('ndcf-num').value=ndcfLastNum+1;
@@ -7285,9 +7652,11 @@ function showNDCFSuggest(digits,neg=false){
   ndcfSugList=[];
   const seen=new Set();
   NDCF_DATA.forEach(d=>{
+    if(d._saisi) return; // déjà saisi : plus proposé
     const mt=String(Math.abs(Math.round(d.total_reg||d.ttc))).replace(/[^0-9]/g,'');
-    if(mt.startsWith(digits)&&!seen.has(mt)){
-      seen.add(mt);
+    const _k=mt+'|'+ndcfNorm(d.agence)+'|'+(d.facture||'');
+    if(mt.startsWith(digits)&&!seen.has(_k)){
+      seen.add(_k);
       if(neg){
         // 🔧 FIX — garder une référence à la ligne NDCF_DATA d'origine (_orig) pour
         // qu'une association manuelle (associerNDCFClientInline/confirmerNDCFSuggestion)
@@ -7318,7 +7687,7 @@ function renderNDCFSug(){
   const year=new Date().getFullYear();
   box.innerHTML=ndcfSugList.map((d,i)=>{
     const hi=i===ndcfSugIdx?'background:var(--sky-pale);':'background:var(--surface);';
-    const clientOk=d.client?`<span style="color:var(--green);font-size:9px;font-weight:700;">${d.client.compta}</span>`:`<span style="color:var(--red);font-size:9px;">⚠️ ${d.agence}</span>`;
+    const clientOk=d.client?`<span style="color:var(--green);font-size:9px;font-weight:700;">✓ ${d.client.compta} <span style="color:var(--amber);font-weight:600;">${d.client.aux||''}</span></span>`:`<span style="color:var(--red);font-size:9px;">⚠️ ${d.agence}</span>`;
     const mtColor=d._neg?'var(--red)':'var(--green)';
     const mtSign=d._neg?'(AVOIR) ':'';
     return `<div id="ndcs${i}" onmousedown="selectNDCF(${i})"
@@ -7351,15 +7720,14 @@ function showNDCFPreview(d){
   const prev=document.getElementById('ndcf-preview');
   const btn=document.getElementById('ndcf-btn-val');
   if(!d.client){
-    const sug=d._suggestion;
-    const sugHTML = sug
-      ? `<div style="margin-top:5px;font-size:10px;color:var(--txt2);">Suggestion : <b style="color:var(--amber);">${sug.label}</b> <span style="color:var(--txt3);">(${Math.round(sug.score*100)}% proche)</span>
-           <button onclick="confirmerNDCFSuggestion('${d.agence.replace(/'/g,"\\'")}','${sug.label.replace(/'/g,"\\'")}','${(sug.aux||'').replace(/'/g,"\\'")}')" style="margin-left:6px;background:var(--green);border:none;border-radius:4px;color:#06280f;font-weight:700;font-size:9px;padding:3px 8px;cursor:pointer;">✓ Confirmer</button></div>`
-      : '';
-    prev.innerHTML=`<div style="color:var(--red);font-size:10px;">⚠️ "${d.agence}" non trouvé dans la base NDC-F</div>${sugHTML}
-      <button onclick="associerNDCFClientInline('${d.agence.replace(/'/g,"\\'")}')" style="margin-top:6px;background:var(--amber);border:none;border-radius:4px;color:#1a1305;font-weight:700;font-size:10px;padding:5px 10px;cursor:pointer;">🔗 Associer manuellement</button>`;
+    _ndcfPrevD=d;
+    prev.innerHTML=`<div style="color:var(--amber);font-size:10px;font-weight:700;">⚠️ "${_ndcfEsc(d.agence)}" absent de la base CLNDC — entrez l'auxiliaire compatible (nom commercial conservé)</div>
+      <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
+        <input id="ndcf-aux-in" placeholder="Code auxiliaire (ex: 41100123)" onkeydown="if(event.key==='Enter'){event.preventDefault();ndcfAuxFromPreview();}" style="flex:1;padding:5px 8px;border:1px solid var(--bo-sky);border-radius:5px;background:var(--bg2);color:var(--txt);font-size:11px;font-family:var(--font-mono);outline:none;">
+        <button onclick="ndcfAuxFromPreview()" style="background:var(--green);border:none;border-radius:4px;color:#fff;font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer;">✔ Valider</button></div>`;
     res.style.display='block';
     btn.disabled=true;btn.style.opacity='0.5';
+    setTimeout(()=>{const x=document.getElementById('ndcf-aux-in');if(x)x.focus();},60);
     return;
   }
   const total_reg = Math.round(d.total_reg);
@@ -7368,12 +7736,16 @@ function showNDCFPreview(d){
   const ttc       = Math.round(d.ttc);
   const cl=d.client;
   const isFWTclient = cl.isFWT===true || (cl.aux&&cl.aux.startsWith('18'));
+  const _o=d._orig||d;
+  const head=`<div style="margin-bottom:6px;"><div style="font-size:12px;font-weight:700;color:var(--green);">✓ ${_ndcfEsc(cl.compta)}</div>
+    <div style="font-size:9px;color:var(--txt2);">CODE_AUX: <b style="color:var(--amber);">${_ndcfEsc(cl.aux||'—')}</b> &nbsp;|&nbsp; ${_ndcfEsc(d.agence)}${d.facture?' &nbsp;|&nbsp; Fact. <b>'+_ndcfEsc(d.facture)+'</b>':''} &nbsp;|&nbsp; ${fmtAmt(d.total_reg||d.ttc)} DA</div>
+    ${_o._saisi?'<div style="color:var(--red);font-size:10px;font-weight:700;margin-top:3px;">⚠ Ligne du fichier commercial déjà saisie — risque de doublon</div>':''}</div>`;
 
   if(isFWTclient){
     // ── FWT (181xxx) : 2 lignes seulement ──
     // D 181xxx  total_reg
     // C 46741111 total_reg
-    prev.innerHTML=`
+    prev.innerHTML=head+`
       <div style="font-size:10px;font-family:var(--font-mono);line-height:1.9;">
         <div><span style="color:var(--sky-deep);font-weight:700;">D ${cl.aux}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--green);font-weight:700;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
         <div><span style="color:var(--sky);">C 46741111&nbsp;</span><span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
@@ -7386,7 +7758,7 @@ function showNDCFPreview(d){
     // ── Agence externe (411) : 4 lignes ──
     const ctrl = frais+tva+ttc;
     const ok = ctrl===total_reg;
-    prev.innerHTML=`
+    prev.innerHTML=head+`
       <div style="font-size:10px;font-family:var(--font-mono);line-height:1.9;">
         <div><span style="color:var(--sky-deep);font-weight:700;">D 411/${cl.aux}</span>&nbsp;&nbsp;<span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--green);font-weight:700;">${total_reg.toLocaleString('fr-DZ')} DA</span></div>
         <div><span style="color:var(--sky);">C 706012&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:var(--txt);">${cl.compta}</span>&nbsp;&nbsp;<span style="color:var(--amber);">${frais.toLocaleString('fr-DZ')} DA</span></div>
@@ -7442,12 +7814,27 @@ function validerNDCF(){
   const pieceVal=document.getElementById('ndcf-piece').value||String(NDCF_PIECES.length+1).padStart(6,'0');
   const cl=d.client;
   const isFWTclient = res._data.isFWTclient || cl.isFWT===true || (cl.aux&&cl.aux.startsWith('18'));
+  // v73 — (principe EBV) CODE AUXILIAIRE manquant : demander avant d'imputer (411 uniquement)
+  if(!isFWTclient && (!cl.aux||cl.aux==='???'||cl.aux==='#N/A')){
+    const saisi=prompt('⚠ CODE AUXILIAIRE manquant pour :\n'+cl.compta+'\n\nSaisissez le code (ex: 41100XXX)\nou Annuler pour continuer sans code :');
+    if(saisi===null){ if(!confirm('Continuer SANS code auxiliaire ?')) return; }
+    else if(saisi.trim()){ cl.aux=saisi.trim(); }
+  }
+  // v73 — (principe EBV) contrôle de DOUBLON : même client + même montant (+ même facture si connue)
+  const _fac=(d.facture||facVal||'').trim();
+  const _dup=NDCF_PIECES.some(q=>q.compta===cl.compta&&Math.abs(q.total_reg-total_reg)<0.5&&(!q.facture||!_fac||q.facture===_fac));
+  if(_dup){
+    showToast('⚠ DOUBLON — '+cl.compta+' déjà saisi !','warn');
+    if(!confirm('DOUBLON : '+cl.compta+' ('+total_reg.toLocaleString('fr-DZ')+' DA) déjà saisi en NDC-F.\nAjouter quand même ?')) return;
+  }
+  const _row=d._orig||d;
   NDCF_PIECES.push({
     ref, date:dateVal, piece:pieceVal, agence:d.agence,
-    compta:cl.compta, aux:cl.aux,
+    compta:cl.compta, aux:cl.aux, facture:_fac,
     total_reg, frais, tva, ttc,
-    isFWT: isFWTclient
+    isFWT: isFWTclient, _rowRef:_row
   });
+  _row._saisi=true;
   ndcfLastNum=refNum;
   // PAS d'incrémentation auto — date et pièce restent
   // Reset champs saisie
@@ -7460,6 +7847,7 @@ function validerNDCF(){
   hideNDCFFacSuggest();
   // Rafraîchir liste
   renderNDCFPieces();
+  try{ndcfVerifRefresh();}catch(e){}
   // Curseur revient sur N° facture
   setTimeout(()=>{if(facField)facField.focus();else document.getElementById('ndcf-num').focus();},80);
 }
@@ -7524,8 +7912,11 @@ function renderNDCFPieces(){
 }
 
 function delNDCFPiece(i){
+  const _p=NDCF_PIECES[i];
+  if(_p&&_p._rowRef) _p._rowRef._saisi=false; // v73 — la ligne redevient disponible
   NDCF_PIECES.splice(i,1);
   renderNDCFPieces();
+  try{ndcfVerifRefresh();}catch(e){}
 }
 
 function exportNDCF(){
@@ -8233,51 +8624,19 @@ function addNDCFClient(){
 function rebuildNDCFIdx(){
   Object.keys(NDCF_IDX).forEach(k=>delete NDCF_IDX[k]);
   NDCF_CLIENTS.forEach(c=>{ NDCF_IDX[ndcfNorm(c.ndc)]=c; });
+  try{ if(typeof ndcfVerifRefresh==='function'&&NDCF_DATA&&NDCF_DATA.length) ndcfVerifRefresh(); }catch(e){}
 }
 
-// 🔧 FIX — Associer un client NDC-F manquant directement depuis le blocage de saisie
-// (au lieu d'obliger l'utilisateur à quitter l'écran, ouvrir le panneau "GESTION CLIENTS
-// NDC-F", ajouter la correspondance, puis revenir et tout re-saisir).
-function associerNDCFClientInline(agenceNDC){
-  const compta=prompt('Client comptabilité pour "'+agenceNDC+'" :\n(nom exact tel qu\'en base 411, ou laisser vide pour annuler)','');
-  if(!compta||!compta.trim())return;
-  // Tenter de retrouver un compte 411 existant dans DB pour récupérer son code auxiliaire
-  const matchDB = DB.find(c=>c.type==='411' && c.label.toUpperCase()===compta.trim().toUpperCase());
-  const auxRaw = matchDB ? matchDB.code : (prompt('Code auxiliaire :\n• Client 411 → ex: 41100123\n• Caution 165 → ex: 1650123\n• Unité FWT (181142…181148) → laisser vide\n• Inter-unité 18*** → laisser vide','')||'');
-  NDCF_CLIENTS.push({ndc:agenceNDC.trim(),compta:compta.trim(),aux:auxRaw.trim()});
-  rebuildNDCFIdx();
-  showToast('✓ "'+agenceNDC+'" associé à "'+compta.trim()+'"','success');
-  // Mettre à jour la liste de suggestions courante avec le nouveau mapping et relancer le preview
-  const idxSug = ndcfSugList.findIndex(s=>s.agence===agenceNDC);
-  if(idxSug>=0){
-    ndcfSugList[idxSug].client = NDCF_IDX[ndcfNorm(agenceNDC)];
-    if(ndcfSugList[idxSug]._orig) ndcfSugList[idxSug]._orig.client = ndcfSugList[idxSug].client; // 🔧 FIX — propage aussi à NDCF_DATA pour les avoirs
-    showNDCFPreview(ndcfSugList[idxSug]);
-  }
-  if(document.getElementById('ndcf-clients-zone')?.style.display==='block') renderNDCFClients();
-}
 
-// 🔧 FIX — Confirmer en 1 clic la suggestion de matching flou (ex: "SARL ZEMZEM TOURISME
-// ET VOYAGE" → suggestion "ZEMZEM" déjà en base) sans ressaisir le nom/code manuellement.
-function confirmerNDCFSuggestion(agenceNDC, comptaLabel, aux){
-  NDCF_CLIENTS.push({ndc:agenceNDC.trim(), compta:comptaLabel.trim(), aux:(aux||'').trim()});
-  rebuildNDCFIdx();
-  showToast('✓ "'+agenceNDC+'" associé à "'+comptaLabel+'"','success');
-  const idxSug = ndcfSugList.findIndex(s=>s.agence===agenceNDC);
-  if(idxSug>=0){
-    ndcfSugList[idxSug].client = NDCF_IDX[ndcfNorm(agenceNDC)];
-    if(ndcfSugList[idxSug]._orig) ndcfSugList[idxSug]._orig.client = ndcfSugList[idxSug].client; // 🔧 FIX — propage aussi à NDCF_DATA pour les avoirs
-    showNDCFPreview(ndcfSugList[idxSug]);
-  }
-  if(document.getElementById('ndcf-clients-zone')?.style.display==='block') renderNDCFClients();
-}
 
 
 function razNDCF(){
   if(!NDCF_PIECES.length) return;
   if(!confirm('Effacer toutes les écritures NDC-F ?')) return;
   NDCF_PIECES=[];
+  NDCF_DATA.forEach(d=>{d._saisi=false;});
   renderNDCFPieces();
+  try{ndcfVerifRefresh();}catch(e){}
   const rp=document.getElementById('ndcf-right-panel');
   if(rp)rp.style.display='none';
   document.getElementById('ndcf-pieces-zone').style.display='none';
@@ -8334,6 +8693,7 @@ function filtreRV(){
   const mNorm = mRaw.replace(/\s/g,'').replace(',','.'); // "1 234,56" → "1234.56"
 
   const filtered = RV.filter(r=>{
+    if(_rvHideUsed&&r._used) return false;
     const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
     let amtOk = true;
     if(mNorm){
@@ -8360,10 +8720,10 @@ function filtreRV(){
     if(empty) empty.style.display = 'none';
     tbody.innerHTML = filtered.map((r,i)=>{
       const idx=RV.indexOf(r);
-      return `<tr class="rv-row" onclick="selectRVLine(${r.credit}, this, ${idx<0?'undefined':idx})">
+      return `<tr class="rv-row${r._used?' rv-used':''}" onclick="selectRVLine(${r.credit}, this, ${idx<0?'undefined':idx})">
         <td style="color:var(--txt3);font-size:10px;white-space:nowrap;">${r.dateOp}</td>
         <td style="color:var(--txt2);">${_rvHL(r.libelle, q)}</td>
-        <td class="tcc" style="white-space:nowrap;">${FM(r.credit)}</td>
+        <td class="tcc" style="white-space:nowrap;">${FM(r.credit)}${r._used?'<span class="rv-used-tag">✔ IMPUTÉ</span>':''}</td>
         <td><button class="rv-use-btn" onclick="event.stopPropagation();selectRVLine(${r.credit}, this.closest('tr'), ${idx<0?'undefined':idx})">↗ Utiliser</button></td>
       </tr>`;}).join('');
   }
@@ -8416,6 +8776,7 @@ function filtreRVInline(){
   const mRaw   = (document.getElementById('rv-m-inline')||{value:''}).value.trim();
   const mNorm= mRaw.replace(/\s/g,'').replace(',','.');
   const filtered= RV.filter(r=>{
+    if(_rvHideUsed&&r._used) return false;
     const libOk = !q || _rvNorm(r.libelle).includes(_rvNorm(q));
     let amtOk = true;
     if(mNorm){
@@ -8437,10 +8798,10 @@ function filtreRVInline(){
     if(empty) empty.style.display='none';
     tbody.innerHTML=filtered.map(r=>{
       const idx=RV.indexOf(r);
-      return `<tr class="rv-row" onclick="selectRVLine(${r.credit}, this, ${idx<0?'undefined':idx})" title="${r.libelle}">
+      return `<tr class="rv-row${r._used?' rv-used':''}" onclick="selectRVLine(${r.credit}, this, ${idx<0?'undefined':idx})" title="${r.libelle}">
         <td style="color:var(--txt3);font-size:9px;white-space:nowrap;">${r.dateOp}</td>
         <td style="color:var(--txt2);max-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${_rvHL(r.libelle,q)}</td>
-        <td class="tcc" style="white-space:nowrap;font-size:11px;">${FM(r.credit)}</td>
+        <td class="tcc" style="white-space:nowrap;font-size:11px;">${FM(r.credit)}${r._used?'<span class="rv-used-tag">✔ IMPUTÉ</span>':''}</td>
       </tr>`;}).join('');
   }
   if(cnt) cnt.textContent = filtered.length+'/'+RV.length;
@@ -8713,6 +9074,8 @@ function hideRVSuggest(field){
 // ── selectRVLine : injecter montant + suggérer client identifié ──────────
 // idx = index dans RV[] (entier), évite tout pb d'échappement HTML
 function selectRVLine(mt, rowEl, idx){
+  if(idx!==undefined&&RV[idx]&&RV[idx]._used){ MSG('err','⛔ Cette opération du relevé est déjà imputée — double imputation évitée.'); return; }
+  _rvPendIdx=(idx!==undefined)?idx:null;
   // Marquer la ligne sélectionnée
   document.querySelectorAll('.rv-row').forEach(r=>r.classList.remove('selected'));
   if(rowEl) rowEl.closest('tr')?.classList.add('selected');
@@ -8961,7 +9324,7 @@ function importIATAClients(inp){
       setTimeout(()=>{
         // S'assurer que le panel est visible
         const tabPanel = document.getElementById('tab-clients-panel');
-        if(tabPanel){
+        if(tabPanel&&!ebvImportsActive()){
           tabPanel.style.display = 'flex';
           console.log('   ✅ tab-clients-panel.display = flex');
         }else{
@@ -9139,12 +9502,13 @@ function renderNDCFFacSug(){
   const box=document.getElementById('ndcf-fac-suggest');
   box.innerHTML=ndcfFacSugList.map((d,i)=>{
     const hi=i===ndcfFacSugIdx?'background:var(--sky-pale);':'background:var(--surface);';
-    const clientLabel=d.client?d.client.compta:`<span style="color:#f87171">${d.agence}</span>`;
+    const clientLabel=d._saisi?'<span style="color:#6b7280">✔ SAISI</span>':d.client?`<span style="color:var(--green);font-size:9px;font-weight:700;">✓ ${d.client.compta}</span>`:`<span style="color:#f87171">⚠️ ${d.agence}</span>`;
     return `<div id="ndfac${i}" onmousedown="selectNDCFFac(${i})"
       style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <span style="color:var(--amber);font-weight:700;min-width:80px;">${d.facture}</span>
       <span style="color:var(--txt2);flex:1;font-size:11px;">${d.agence}</span>
       <span style="color:var(--green);font-weight:700;">${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
+      ${clientLabel}
     </div>`;
   }).join('');
 }
@@ -9157,6 +9521,7 @@ function hideNDCFFacSuggest(){
 
 function selectNDCFFac(i){
   const d=ndcfFacSugList[i];if(!d)return;
+  if(d._saisi){ showToast('⚠ Facture '+d.facture+' déjà saisie','warn'); return; } // v73 — anti double saisie
   document.getElementById('ndcf-fac-num').value=d.facture;
   hideNDCFFacSuggest();
   // Générer les écritures (même logique que montant)
@@ -17433,6 +17798,7 @@ function statAnalyze(){
     // ── UI ────────────────────────────────────────────────────────
     sKPIs(totalCA,totalOps);
     comAnalyze();
+    if(!STAT._dashOpened&&STAT.view==='rank'){ STAT._dashOpened=true; STAT.view='dash'; } // v77 — ouverture sur le tableau de bord (1 fois / session)
     statSetView(STAT.view);
     document.getElementById('stat-toolbar').style.display='flex';
     document.getElementById('stat-xport-btn').disabled=false;
@@ -17685,6 +18051,7 @@ function statMCFAdd(i){
   if(!c) return;
   if(!STAT.selectedClients) STAT.selectedClients=[];
   if(!STAT.selectedClients.includes(c.code)){
+    if(STAT.selectedClients.length===0) STAT.view='cliperf'; // v72 : 1er client filtré → vue Évol. & Rang
     STAT.selectedClients.push(c.code);
     if(!STAT._selectedClientsLabels) STAT._selectedClientsLabels={};
     STAT._selectedClientsLabels[c.code]=c.label;
@@ -17709,6 +18076,7 @@ function statMCFClear(){
   if(STAT.raw && STAT.raw.length) statAnalyze();
 }
 function statMCFRenderChips(){
+  try{statUpdateCliPerfTab();}catch(e){}
   const wrap = document.getElementById('stat-mcf-chips');
   const actions = document.getElementById('stat-mcf-actions');
   const count = document.getElementById('stat-mcf-count');
@@ -18414,7 +18782,759 @@ function sInsights(c){
 
 
 /* ══ VUES ════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════
+   v75 — STAT : ÉVOLUTION COMPAGNIES & COMMISSIONS  (+ comparaison même période N-x)
+   ══════════════════════════════════════════════════════════════════════ */
+function _ecPerKey(y,m,g){
+  if(g==='annee') return String(y);
+  if(g==='sem')   return y+'-S'+(m<=6?1:2);
+  if(g==='trim')  return y+'-T'+Math.ceil(m/3);
+  return y+'-'+String(m).padStart(2,'0');
+}
+function _ecPerLabel(k,g){
+  if(g==='annee') return k;
+  const p=k.split('-');
+  if(g==='sem'||g==='trim') return p[1]+' '+p[0];
+  return SMOIS[+p[1]-1]+' '+p[0].slice(2);
+}
+// même période, N-x années plus tôt  (2026-03 → 2025-03 ; 2026-T2 → 2025-T2 ; 2026 → 2025)
+function _ecShift(k,nx){ return (parseInt(k.slice(0,4),10)-nx)+k.slice(4); }
+function _ecBase(r,sym,skipClient){
+  const cen=(sym==='BA'||sym==='TO');
+  if(!cen){
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+  }
+  if(!sCompMatch(sym)) return false;
+  if(STAT.ndc!=='all'){
+    if(STAT.ndc==='ndc'&&sym!=='NDC_FAC') return false;
+    if(STAT.ndc==='ebv'&&sym!=='NDC_EBV') return false;
+    if(STAT.ndc==='std'&&(sym==='NDC_FAC'||sym==='NDC_EBV')) return false;
+  }
+  if(STAT.redMode!=='all'){
+    const isRed=_isRedRow(r);
+    if(STAT.redMode==='excl'&&isRed)  return false;
+    if(STAT.redMode==='only'&&!isRed) return false;
+  }
+  if(!skipClient&&STAT.selectedClients&&STAT.selectedClients.length>0){
+    if(!STAT.selectedClients.includes(r.aux||r.compte)) return false;
+  }
+  return true;
+}
+function _ecEvo(v,p,lab){
+  if(!(p>0)) return '';
+  const e=(v-p)/p*100, col=e>=0?'#059669':'#dc2626';
+  return `<div class="ec-evo" style="color:${col}">${e>=0?'▲':'▼'} ${Math.abs(e).toFixed(1)}%<span style="color:#9ca3af;font-weight:600"> ${lab||''}</span></div>`;
+}
+function _ecEvoTxt(v,p){
+  if(!(p>0)) return {txt:'—',col:'9ca3af'};
+  const e=(v-p)/p*100;
+  return {txt:(e>=0?'▲ +':'▼ ')+e.toFixed(1).replace('.',',')+'%',col:e>=0?'059669':'dc2626'};
+}
+// Modèle de données (TOUTES les années — l'année affichée ne filtre que l'affichage, pour que préc. et N-x existent toujours)
+function ecModel(g,nx){
+  g=g||STAT.ecGran||'trim'; nx=nx||STAT.ecNx||1;
+  const caMap=new Map(), comMap=new Map(), keySet=new Set(), years=new Set();
+  (STAT.raw||[]).forEach(r=>{
+    let y=r.year,m=r.month;
+    if(!m&&r.folio>=1&&r.folio<=12){m=r.folio;y=y||STAT.year;}
+    if(!y||!m) return;
+    years.add(y);
+    const sym=sNDCSym(r)||(r.journal?'AUT':null); if(!sym) return;
+    if(!_ecBase(r,sym)) return;
+    const k=_ecPerKey(y,m,g); keySet.add(k);
+    let mm=caMap.get(sym); if(!mm){mm=new Map();caMap.set(sym,mm);}
+    mm.set(k,(mm.get(k)||0)+r.debit);
+  });
+  (STAT.comRaw||[]).forEach(r=>{
+    if(!r.year||!r.month||!r.sym) return;
+    years.add(r.year);
+    if(!sCompMatch(r.sym)) return;
+    const k=_ecPerKey(r.year,r.month,g); keySet.add(k);
+    let mm=comMap.get(r.sym); if(!mm){mm=new Map();comMap.set(r.sym,mm);}
+    mm.set(k,(mm.get(k)||0)+r.credit);
+  });
+  const keys=[...keySet].sort();
+  const colTot=map=>keys.map(k=>{let s=0;map.forEach(mm=>{s+=mm.get(k)||0;});return s;});
+  return {g,nx,keys,caMap,comMap,caTot:colTot(caMap),comTot:colTot(comMap),years:[...years].sort()};
+}
+function _ecVisible(M,yf){ return (!yf||yf==='all')?M.keys:M.keys.filter(k=>k.startsWith(String(yf))); }
+// Tableau par compagnie (CA ou commission) : valeur / évol. vs période précédente / évol. vs même période N-x
+function ecTableHTML(M,map,tots,visKeys,title,color){
+  const g=M.g, nx=M.nx, idx=new Map(M.keys.map((k,i)=>[k,i]));
+  const pk=k=>{const i=idx.get(k);return i>0?M.keys[i-1]:null;};
+  const rows=[...map.entries()].map(([sym,mm])=>({sym,mm,tot:visKeys.reduce((a,k)=>a+(mm.get(k)||0),0)})).sort((a,b)=>b.tot-a.tot);
+  const totVis=visKeys.map(k=>tots[idx.get(k)]);
+  const grand=totVis.reduce((a,b)=>a+b,0);
+  let h=`<div style="font-size:11px;font-weight:800;color:${color};margin:14px 0 6px">${title}</div>
+    <div class="ec-wrap"><table class="stat-tbl ec-tbl"><thead><tr><th>COMPAGNIE</th>${visKeys.map(k=>`<th class="r">${_ecPerLabel(k,g)}</th>`).join('')}<th class="r">TOTAL</th><th class="r">PART</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    h+=`<tr><td style="font-weight:800;color:${SCOL[r.sym]||'#374151'}">${r.sym}</td>`;
+    visKeys.forEach(k=>{
+      const v=r.mm.get(k)||0, p=pk(k)?(r.mm.get(pk(k))||0):0, q=r.mm.get(_ecShift(k,nx))||0;
+      h+=`<td class="r m">${v?SFM(v):'<span style="color:#cbd5e1">—</span>'}${v?_ecEvo(v,p,'préc.')+_ecEvo(v,q,'N-'+nx):''}</td>`;
+    });
+    h+=`<td class="r m" style="font-weight:800">${SFM(r.tot)}</td><td class="r m">${grand>0?(r.tot/grand*100).toFixed(1)+'%':'—'}</td></tr>`;
+  });
+  const lt=s=>s.replace(/color:#059669/g,'color:#6ee7b7').replace(/color:#dc2626/g,'color:#fca5a5');
+  h+=`</tbody><tfoot><tr><td>TOTAL</td>${visKeys.map((k,i)=>{
+    const v=totVis[i], p=pk(k)?tots[idx.get(pk(k))]:0, qi=idx.get(_ecShift(k,nx)), q=qi!=null?tots[qi]:0;
+    return `<td class="r">${SFM(v)}${lt(_ecEvo(v,p,'préc.')+_ecEvo(v,q,'N-'+nx))}</td>`;}).join('')}<td class="r">${SFM(grand)}</td><td class="r">100%</td></tr></tfoot></table></div>`;
+  return h;
+}
+function ecSummaryHTML(M,visKeys){
+  const g=M.g,nx=M.nx,idx=new Map(M.keys.map((k,i)=>[k,i]));
+  const val=(arr,k)=>{const i=idx.get(k);return i!=null?arr[i]:0;};
+  const pk=k=>{const i=idx.get(k);return i>0?M.keys[i-1]:null;};
+  const line=(lab,arr)=>`<tr><td style="font-weight:800">${lab}</td>${visKeys.map(k=>{const v=val(arr,k),p=pk(k)?val(arr,pk(k)):0,q=val(arr,_ecShift(k,nx));return `<td class="r m">${SFM(v)}${_ecEvo(v,p,'préc.')}${_ecEvo(v,q,'N-'+nx)}</td>`;}).join('')}</tr>`;
+  return `<div class="ec-wrap"><table class="stat-tbl ec-tbl"><thead><tr><th>INDICATEUR</th>${visKeys.map(k=>`<th class="r">${_ecPerLabel(k,g)}</th>`).join('')}</tr></thead><tbody>
+    ${line('CA',M.caTot)}${line('Commission',M.comTot)}
+    <tr><td style="font-weight:800">Taux com./CA</td>${visKeys.map(k=>{const c=val(M.caTot,k),m=val(M.comTot,k),q=_ecShift(k,nx),cq=val(M.caTot,q),mq=val(M.comTot,q);
+      return `<td class="r m">${c>0?(m/c*100).toFixed(2)+'%':'—'}${c>0&&cq>0?`<div class="ec-evo" style="color:#9ca3af">N-${nx} : ${(mq/cq*100).toFixed(2)}%</div>`:''}</td>`;}).join('')}</tr>
+    </tbody></table></div>`;
+}
+function sEvolCie(c){
+  const g=STAT.ecGran||'trim', metric=STAT.ecMetric||'both', yf=STAT.ecYear||'all', nx=STAT.ecNx||1;
+  const M=ecModel(g,nx), keys=_ecVisible(M,yf);
+  const btn=(lbl,cur,val,fn)=>`<button class="stat-topmode-btn${cur===val?' on':''}" onclick="${fn}">${lbl}</button>`;
+  const rr="sEvolCie(document.getElementById('stat-content'))";
+  const ctrl=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+    <span style="font-size:9px;font-weight:800;color:var(--txt3)">PÉRIODICITÉ</span>
+    ${btn('📅 Mensuel',g,'mois',"STAT.ecGran='mois';"+rr)}${btn('📊 Trimestriel',g,'trim',"STAT.ecGran='trim';"+rr)}${btn('📆 Semestriel',g,'sem',"STAT.ecGran='sem';"+rr)}${btn('🗓 Annuel',g,'annee',"STAT.ecGran='annee';"+rr)}
+    <span style="font-size:9px;font-weight:800;color:var(--txt3);margin-left:10px">DONNÉES</span>
+    ${btn('✈️ CA',metric,'ca',"STAT.ecMetric='ca';"+rr)}${btn('💼 Commissions',metric,'com',"STAT.ecMetric='com';"+rr)}${btn('✈️+💼 Les deux',metric,'both',"STAT.ecMetric='both';"+rr)}
+    <span style="font-size:9px;font-weight:800;color:var(--txt3);margin-left:10px">ANNÉE</span>
+    <select onchange="STAT.ecYear=this.value;${rr}" style="font-size:10px;padding:3px 6px;border:1px solid var(--bo);border-radius:5px;background:var(--bg2)">
+      <option value="all"${yf==='all'?' selected':''}>Toutes</option>${M.years.map(y=>`<option value="${y}"${String(y)===String(yf)?' selected':''}>${y}</option>`).join('')}
+    </select>
+    <span style="font-size:9px;font-weight:800;color:var(--txt3);margin-left:10px" title="Comparaison à la MÊME période, x années plus tôt">VS MÊME PÉRIODE</span>
+    ${[1,2,3,4].map(n=>btn('N-'+n,nx,n,'STAT.ecNx='+n+';'+rr)).join('')}
+    <button class="stat-topmode-btn" style="margin-left:auto" onclick="printEvolCie()">🖨️ Imprimer</button></div>`;
+  if(!keys.length){
+    c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">${ctrl}<div class="stat-empty"><div class="big">📈</div><div class="msg">Aucune donnée pour cette sélection</div></div></div>`;
+    return;
+  }
+  const idx=new Map(M.keys.map((k,i)=>[k,i]));
+  const totCA=keys.reduce((a,k)=>a+M.caTot[idx.get(k)],0), totCom=keys.reduce((a,k)=>a+M.comTot[idx.get(k)],0);
+  const gl={mois:'mensuelle',trim:'trimestrielle',sem:'semestrielle',annee:'annuelle'}[g];
+  let html=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">${ctrl}
+    <div class="stat-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px">
+      <div class="stat-kpi kb"><div class="kl">✈️ CA total</div><div class="kv">${SFM(totCA)}</div></div>
+      <div class="stat-kpi kg"><div class="kl">💼 Commissions</div><div class="kv">${SFM(totCom)}</div></div>
+      <div class="stat-kpi ka"><div class="kl">📊 Taux com./CA</div><div class="kv">${totCA>0?(totCom/totCA*100).toFixed(2)+'%':'—'}</div></div>
+      <div class="stat-kpi kp"><div class="kl">🗂 Périodes</div><div class="kv">${keys.length}</div></div>
+    </div>
+    ${STAT.selectedClients&&STAT.selectedClients.length?'<div class="stat-drill-hint" style="color:#1d4ed8;margin-bottom:6px">🎯 Filtre client actif : le CA est filtré, les commissions (feuille SUP COM) ne le sont pas.</div>':''}
+    <div style="font-size:11px;font-weight:800;color:var(--txt2);margin:6px 0">Synthèse par période <span style="font-weight:600;color:var(--txt3)">· chaque valeur : évol. vs période précédente et vs même période N-${nx}</span></div>
+    ${ecSummaryHTML(M,keys)}`;
+  if(metric!=='com') html+=`<div style="overflow-x:auto;margin-top:10px">${_ecBars(keys.map(k=>k),keys.map(k=>M.caTot[idx.get(k)]),g,'#0d9488','CA par période (DA)')}</div>`;
+  if(metric!=='ca')  html+=`<div style="overflow-x:auto;margin-top:6px">${_ecBars(keys.map(k=>k),keys.map(k=>M.comTot[idx.get(k)]),g,'#d97706','Commissions par période (DA)')}</div>`;
+  if(metric!=='com') html+=ecTableHTML(M,M.caMap,M.caTot,keys,'✈️ CA PAR COMPAGNIE — évolution '+gl,'#0d9488');
+  if(metric!=='ca')  html+=ecTableHTML(M,M.comMap,M.comTot,keys,'💼 COMMISSIONS PAR COMPAGNIE — évolution '+gl,'#d97706');
+  c.innerHTML=html+'</div>';
+}
+function _ecBars(keys,vals,g,color,title){
+  if(!keys.length) return '';
+  const W=820,H=200,PL=56,PR=12,PT=22,PB=34,iw=W-PL-PR,ih=H-PT-PB;
+  const mx=Math.max(...vals,1), n=keys.length, bw=Math.max(4,Math.min(40,iw/n-4));
+  const step=iw/n, lbl=Math.ceil(n/14)||1;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;display:block"><text x="${PL}" y="13" font-size="10" font-weight="800" fill="${color}">${title}</text>`;
+  for(let i=0;i<=4;i++){
+    const y=PT+ih-ih*i/4, v=mx*i/4;
+    const t=v>=1e9?(v/1e9).toFixed(1)+'G':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':Math.round(v);
+    s+=`<line x1="${PL}" x2="${W-PR}" y1="${y}" y2="${y}" stroke="#e5e7eb" stroke-width="${i?0.6:1.2}"/><text x="${PL-4}" y="${y+3}" font-size="8" text-anchor="end" fill="#9ca3af">${t}</text>`;
+  }
+  vals.forEach((v,i)=>{
+    const h=v/mx*ih, x=PL+i*step+(step-bw)/2;
+    s+=`<rect x="${x}" y="${PT+ih-h}" width="${bw}" height="${h}" rx="2" fill="${color}" opacity=".85"><title>${_ecPerLabel(keys[i],g)} : ${SFM(v)}</title></rect>`;
+    if(i%lbl===0) s+=`<text x="${x+bw/2}" y="${H-18}" font-size="8" text-anchor="middle" fill="#6b7280">${_ecPerLabel(keys[i],g)}</text>`;
+  });
+  return s+'</svg>';
+}
+/* ── Impression générique (fenêtre dédiée) ── */
+function _statPrintWin(title,bodyHTML,landscape){
+  const css=`body{font-family:Arial,sans-serif;color:#111;margin:14px;font-size:9px}h1{font-size:15px;margin:0 0 2px;color:#05101f}.sub{font-size:9px;color:#6b7280;margin-bottom:10px}
+  table{border-collapse:collapse;width:100%;margin:4px 0 12px}th{background:#05101f;color:#fff;padding:4px 5px;font-size:8px;text-align:left;letter-spacing:.3px}th.r,td.r{text-align:right}
+  td{padding:3px 5px;border-bottom:1px solid #e5e7eb;vertical-align:top}tfoot td{background:#05101f;color:#fff;font-weight:800}.ec-evo{font-size:7px;font-weight:800;line-height:1.15}
+  .ec-wrap{overflow:visible}div[style*="font-size:11px;font-weight:800"]{font-size:11px!important}svg{max-width:100%}tr{page-break-inside:avoid}
+  @page{size:A4 ${landscape?'landscape':'portrait'};margin:10mm}`;
+  const w=window.open('','Print','width=1200,height=800');
+  if(!w){alert('⚠️ Autorisez les fenêtres pop-up pour imprimer');return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>${css}</style></head><body>${bodyHTML}<div style="margin-top:10px;font-size:7px;color:#9ca3af">FWT Comptabilité · ${title} · ${new Date().toLocaleString('fr-FR')}</div></body></html>`);
+  w.document.close(); setTimeout(()=>w.print(),500);
+}
+function printEvolCie(){
+  if(!STAT.raw||!STAT.raw.length){alert('❌ Aucune donnée');return;}
+  const g=STAT.ecGran||'trim', metric=STAT.ecMetric||'both', yf=STAT.ecYear||'all', nx=STAT.ecNx||1;
+  const M=ecModel(g,nx), keys=_ecVisible(M,yf);
+  if(!keys.length){alert('❌ Aucune donnée pour cette sélection');return;}
+  const gl={mois:'mensuelle',trim:'trimestrielle',sem:'semestrielle',annee:'annuelle'}[g];
+  let h=`<h1>📈 Évolution Compagnies & Commissions — ${gl}</h1><div class="sub">Année : ${yf==='all'?'toutes':yf} · comparaison vs période précédente et vs même période N-${nx} · ${typeof sPeriodLabel==='function'?sPeriodLabel():''}</div>`+ecSummaryHTML(M,keys);
+  if(metric!=='com') h+=ecTableHTML(M,M.caMap,M.caTot,keys,'✈️ CA PAR COMPAGNIE','#0d9488');
+  if(metric!=='ca')  h+=ecTableHTML(M,M.comMap,M.comTot,keys,'💼 COMMISSIONS PAR COMPAGNIE','#d97706');
+  _statPrintWin('Évolution Compagnies & Commissions',h,true);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v75 — STAT : CLIENT FILTRÉ → ÉVOLUTION CA + CLASSEMENT + TAUX DE COUVERTURE DES VENTES
+   (par quinzaine / mois / année — année en cours : taux de réalisation vs N-1)
+   ══════════════════════════════════════════════════════════════════════ */
+function statUpdateCliPerfTab(){
+  const b=document.getElementById('stat-tab-cliperf'); if(!b) return;
+  const on=!!(STAT.selectedClients&&STAT.selectedClients.length);
+  b.style.display=on?'':'none';
+  if(!on&&STAT.view==='cliperf') STAT.view='rank';
+}
+// Agrégat unique (tous clients) + couverture compagnies pour les clients demandés
+function _cpAgg(codes){
+  const G={quinz:new Map(),mois:new Map(),annee:new Map()}, years=new Set(), lastM=new Map();
+  const want=new Set(codes), cov={}, names={};
+  codes.forEach(c=>{cov[c]={all:new Map(),quinz:new Map(),mois:new Map(),annee:new Map()};});
+  (STAT.raw||[]).forEach(r=>{
+    let y=r.year,m=r.month;
+    if(!m&&r.folio>=1&&r.folio<=12){m=r.folio;y=y||STAT.year;}
+    if(!y||!m) return;
+    const sym=sNDCSym(r)||(r.journal?'AUT':null); if(!sym) return;
+    if(!_ecBase(r,sym,true)) return;
+    years.add(y); lastM.set(y,Math.max(lastM.get(y)||0,m));
+    const aux=r.aux||r.compte, mm=String(m).padStart(2,'0');
+    const ks=[['mois',y+'-'+mm],['annee',String(y)]];
+    if(r.date) ks.push(['quinz',y+'-'+mm+'-Q'+_dateQ(r.date)]);
+    ks.forEach(([g,k])=>{let p=G[g].get(k);if(!p){p=new Map();G[g].set(k,p);}p.set(aux,(p.get(aux)||0)+r.debit);});
+    if(want.has(aux)){
+      const cv=cov[aux];
+      cv.all.set(sym,(cv.all.get(sym)||0)+r.debit);
+      ks.forEach(([g,k])=>{let p=cv[g].get(k);if(!p){p=new Map();cv[g].set(k,p);}p.set(sym,(p.get(sym)||0)+r.debit);});
+      if(!names[aux]) names[aux]=sResolveName(r.aux,r.compte,r.libelle);
+    }
+  });
+  return {G,cov,years:[...years].sort(),lastM,names};
+}
+function cpModel(code,agg){
+  agg=agg||_cpAgg([code]);
+  const {G,cov,lastM}=agg, cv=cov[code]||{all:new Map(),quinz:new Map(),mois:new Map(),annee:new Map()};
+  const compList=[...cv.all.entries()].filter(e=>e[1]>0).map(e=>e[0]).sort();
+  const nComp=compList.length;
+  const calY=new Date().getFullYear();
+  const rk=(g,k)=>{
+    const p=G[g].get(k); if(!p) return {v:0,rank:null,n:0,tot:0};
+    const v=p.get(code)||0; let n=0,gt=0,tot=0;
+    p.forEach(x=>{ if(x>0){n++;tot+=x;if(x>v)gt++;} });
+    return {v,rank:v>0?gt+1:null,n,tot};
+  };
+  const covOf=(g,k)=>{
+    const m=cv[g].get(k), present=m?[...m.entries()].filter(e=>e[1]>0).map(e=>e[0]):[];
+    return {n:present.length,total:nComp,missing:compList.filter(s=>!present.includes(s))};
+  };
+  const shiftY=k=>(parseInt(k.slice(0,4),10)-1)+k.slice(4);
+  const build=g=>{
+    const all=[...G[g].keys()].sort();
+    return all.map((k,i)=>{
+      const cur=rk(g,k), prev=i>0?rk(g,all[i-1]):null, n1=G[g].has(shiftY(k))?rk(g,shiftY(k)):null;
+      const row={k,...cur,pv:prev?prev.v:null,pr:prev?prev.rank:null,n1v:n1?n1.v:null,n1r:n1?n1.rank:null,cov:covOf(g,k),
+        vsN1:(n1&&n1.v>0)?(cur.v-n1.v)/n1.v*100:null};
+      if(g==='annee'){
+        const y=+k, lm=lastM.get(y)||12;
+        row.isCur=(y===calY&&lm<12); row.lastM=lm;
+        row.real=(n1&&n1.v>0)?cur.v/n1.v*100:null;           // taux de réalisation vs N-1 (année pleine)
+        if(row.isCur&&n1){                                       // année en cours : comparaison à périodes égales (jan→dernier mois)
+          let ytd=0; for(let m=1;m<=lm;m++){ ytd+=(G.mois.get((y-1)+'-'+String(m).padStart(2,'0'))||new Map()).get(code)||0; }
+          row.ytdN1=ytd; row.vsN1=ytd>0?(cur.v-ytd)/ytd*100:null;
+        }
+      }
+      return row;
+    });
+  };
+  return {code,name:(STAT._selectedClientsLabels&&STAT._selectedClientsLabels[code])||agg.names[code]||code,
+    years:agg.years,nComp,compList,rowsQ:build('quinz'),rowsM:build('mois'),rowsY:build('annee'),calY};
+}
+const _CP_LBL={
+  quinz:k=>{const p=k.split('-');return SMOIS[+p[1]-1]+' '+p[0]+' · '+(p[2]==='Q1'?'1/15':'2/15');},
+  mois :k=>{const p=k.split('-');return SMOIS[+p[1]-1]+' '+p[0];},
+  annee:k=>k
+};
+function _cpCovCell(c){
+  if(!c.total) return '<span style="color:#cbd5e1">—</span>';
+  const pc=c.n/c.total*100, col=c.n===c.total?'#059669':pc>=50?'#d97706':'#dc2626';
+  return `<span title="${c.missing.length?'Non couvert : '+c.missing.join(', '):'Toutes les compagnies couvertes'}" style="font-weight:800;color:${col}">${c.n}/${c.total}</span> <span style="color:#9ca3af">(${pc.toFixed(0)}%)</span>`;
+}
+function _cpTableHTML(M,g,o){
+  o=o||{};
+  let rows=M[g==='quinz'?'rowsQ':g==='mois'?'rowsM':'rowsY'];
+  if(o.year&&o.year!=='all'&&g!=='annee') rows=rows.filter(r=>r.k.startsWith(o.year));
+  rows=o.asc?rows.slice():rows.slice().reverse();
+  const mx=Math.max(...rows.map(r=>r.v),1);
+  const A=g==='annee';
+  let h=`<table class="stat-tbl ec-tbl" style="width:100%"><thead><tr><th>PÉRIODE</th><th class="r">CA (DA)</th><th class="r">ÉVOL. VS PRÉC.</th><th class="r">Δ (DA)</th><th class="r">${A?'VS N-1 (MÊME PÉRIODE)':'VS N-1'}</th>${A?'<th class="r">TAUX RÉALISATION VS N-1</th>':''}<th class="r">RANG</th><th class="r">MVT RANG</th><th class="r">COUVERTURE VENTES</th><th class="r">PART</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const evo=(r.pv>0)?_ecEvo(r.v,r.pv,''):'<span style="color:#cbd5e1">—</span>';
+    const d=(r.pv!=null)?r.v-r.pv:null;
+    const vn1=r.vsN1==null?'<span style="color:#cbd5e1">—</span>':`<span style="font-weight:800;color:${r.vsN1>=0?'#059669':'#dc2626'}">${r.vsN1>=0?'▲ +':'▼ '}${r.vsN1.toFixed(1)}%</span>`;
+    let mv='<span style="color:#cbd5e1">—</span>';
+    if(r.rank&&r.pr){const dd=r.pr-r.rank;mv=dd>0?`<span style="color:#059669;font-weight:800">▲ +${dd}</span>`:dd<0?`<span style="color:#dc2626;font-weight:800">▼ ${dd}</span>`:'<span style="color:#6b7280">＝</span>';}
+    let real='';
+    if(A){
+      if(r.real==null) real='<td class="r"><span style="color:#cbd5e1">—</span></td>';
+      else{
+        const col=r.real>=100?'#059669':r.real>=80?'#d97706':'#dc2626';
+        real=`<td class="r"><b style="color:${col}">${r.real.toFixed(1)}%</b>${r.isCur?`<div style="font-size:7px;color:#6b7280">⏳ année en cours (jan→${SMOIS[r.lastM-1]}) · reste ${Math.max(0,100-r.real).toFixed(1)} pts</div>`:''}</td>`;
+      }
+    }
+    h+=`<tr${r.rank&&r.rank<=3?' class="top3"':''}><td style="font-weight:700">${_CP_LBL[g](r.k)}${r.isCur?' <span style="font-size:7px;background:#fef3c7;color:#92400e;border-radius:3px;padding:0 4px">EN COURS</span>':''}</td>
+      <td class="r m">${o.noBar?'':`<span style="display:inline-block;height:6px;width:${Math.round(r.v/mx*60)}px;background:#14b8a6;border-radius:3px;margin-right:5px;vertical-align:middle"></span>`}<b>${SFM(r.v)}</b></td>
+      <td class="r">${evo}</td><td class="r m">${d==null?'—':(d>=0?'+':'')+SFM(d)}</td><td class="r">${vn1}</td>${real}
+      <td class="r m" style="font-weight:800">${r.rank?'#'+r.rank+' <span style="color:#9ca3af;font-weight:500">/ '+r.n+'</span>':'—'}</td>
+      <td class="r">${mv}</td><td class="r m">${_cpCovCell(r.cov)}</td><td class="r m">${r.tot>0?(r.v/r.tot*100).toFixed(2)+'%':'—'}</td></tr>`;
+  });
+  if(!rows.length) h+=`<tr><td colspan="${A?10:9}" style="text-align:center;color:#9ca3af;padding:14px">Aucune donnée</td></tr>`;
+  return h+'</tbody></table>';
+}
+function _cpYearDefault(M){
+  const ys=M.years;
+  return String(ys.includes(STAT.year)?STAT.year:(ys[ys.length-1]||'all'));
+}
+function sCliPerf(c){
+  const sel=STAT.selectedClients||[];
+  if(!sel.length){
+    c.innerHTML=`<div class="stat-empty"><div class="big">🎯</div><div class="msg">Sélectionnez un client</div><div class="sub">Utilisez le filtre « Clients » de la barre latérale</div></div>`;
+    return;
+  }
+  if(!STAT.cpClient||!sel.includes(STAT.cpClient)) STAT.cpClient=sel[0];
+  const code=STAT.cpClient, M=cpModel(code);
+  if(!STAT.cpYear||(STAT.cpYear!=='all'&&!M.years.includes(+STAT.cpYear))) STAT.cpYear=_cpYearDefault(M);
+  const rr="sCliPerf(document.getElementById('stat-content'))";
+  const chips=sel.length>1?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">${sel.map(s=>`<button class="stat-topmode-btn${s===code?' on':''}" data-c="${String(s).replace(/"/g,'&quot;')}" onclick="STAT.cpClient=this.dataset.c;${rr}">${((STAT._selectedClientsLabels&&STAT._selectedClientsLabels[s])||s)}</button>`).join('')}</div>`:'';
+  const last=M.rowsY[M.rowsY.length-1];
+  const kp=last?`<div class="stat-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:6px">
+    <div class="stat-kpi kb"><div class="kl">CA ${last.k}${last.isCur?' (en cours)':''}</div><div class="kv">${SFM(last.v)}</div></div>
+    <div class="stat-kpi kg"><div class="kl">Rang ${last.k}</div><div class="kv">${last.rank?'#'+last.rank+' / '+last.n:'—'}</div></div>
+    <div class="stat-kpi ka"><div class="kl">Réalisation vs ${+last.k-1}</div><div class="kv" style="font-size:14px">${last.real!=null?last.real.toFixed(1)+'%':'—'}</div></div>
+    <div class="stat-kpi kp"><div class="kl">Couverture ${last.k}</div><div class="kv" style="font-size:14px">${last.cov.total?last.cov.n+'/'+last.cov.total:'—'}</div></div></div>`:'';
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:13px;font-weight:800;color:var(--txt)">🎯 ${M.name} <span style="font-size:9px;color:var(--txt3);font-weight:600">· évolution du CA, classement général et couverture des ventes (${M.nComp} compagnie${M.nComp>1?'s':''} : ${M.compList.join(', ')||'—'})</span></div>
+      <button class="stat-topmode-btn" style="margin-left:auto" onclick="printCliPerf()">🖨️ Imprimer</button></div>
+    ${chips}
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><span style="font-size:9px;font-weight:800;color:var(--txt3)">ANNÉE (quinzaine & mois)</span>
+      <select onchange="STAT.cpYear=this.value;${rr}" style="font-size:10px;padding:3px 6px;border:1px solid var(--bo);border-radius:5px;background:var(--bg2)">
+        <option value="all"${STAT.cpYear==='all'?' selected':''}>Toutes</option>${M.years.map(y=>`<option value="${y}"${String(y)===STAT.cpYear?' selected':''}>${y}</option>`).join('')}
+      </select>
+      <span style="font-size:9px;color:var(--txt3)">Couverture = compagnies avec ventes sur la période / compagnies du client (ex : 5/6)</span></div>
+    ${kp}
+    <div style="font-size:11px;font-weight:800;color:#0d9488;margin:16px 0 6px">🔢 PAR QUINZAINE</div><div class="ec-wrap">${_cpTableHTML(M,'quinz',{year:STAT.cpYear})}</div>
+    <div style="font-size:11px;font-weight:800;color:#0d9488;margin:16px 0 6px">📅 PAR MOIS</div><div class="ec-wrap">${_cpTableHTML(M,'mois',{year:STAT.cpYear})}</div>
+    <div style="font-size:11px;font-weight:800;color:#0d9488;margin:16px 0 6px">🗓 PAR ANNÉE <span style="font-weight:600;color:var(--txt3)">· taux de réalisation = CA N / CA N-1 (année en cours : comparée à la même période N-1)</span></div><div class="ec-wrap">${_cpTableHTML(M,'annee',{})}</div>
+  </div>`;
+}
+function printCliPerf(){
+  const code=STAT.cpClient||(STAT.selectedClients||[])[0];
+  if(!code){alert('❌ Sélectionnez un client');return;}
+  const M=cpModel(code), y=(STAT.cpYear&&STAT.cpYear!=='all')?STAT.cpYear:_cpYearDefault(M);
+  const h=`<h1>🎯 ${M.name} — Évolution, classement & couverture des ventes</h1><div class="sub">Compagnies du client : ${M.compList.join(', ')||'—'} (${M.nComp}) · ${typeof sPeriodLabel==='function'?sPeriodLabel():''}</div>
+    <div style="font-size:11px;font-weight:800;margin:8px 0 2px">PAR ANNÉE</div>${_cpTableHTML(M,'annee',{asc:true,noBar:true})}
+    <div style="font-size:11px;font-weight:800;margin:8px 0 2px">PAR MOIS — ${y}</div>${_cpTableHTML(M,'mois',{year:y,asc:true,noBar:true})}
+    <div style="font-size:11px;font-weight:800;margin:8px 0 2px">PAR QUINZAINE — ${y}</div>${_cpTableHTML(M,'quinz',{year:y,asc:true,noBar:true})}`;
+  _statPrintWin('Évolution & Rang Client — '+M.name,h,true);
+}
+// Section HTML pour la fiche client imprimable
+function _cpFicheHTML(code){
+  try{
+    const M=cpModel(code); if(!M.rowsY.length) return '';
+    const y=String(M.rowsY[M.rowsY.length-1].k);
+    return `<div class="sect"><div class="sect-title">🎯 ÉVOLUTION · CLASSEMENT · COUVERTURE DES VENTES (${M.nComp} compagnie${M.nComp>1?'s':''} : ${M.compList.join(', ')||'—'})</div>
+      <div style="font-size:7pt;color:#374151;margin:2px 0">PAR ANNÉE — taux de réalisation vs N-1 (année en cours comparée à la même période N-1)</div>${_cpTableHTML(M,'annee',{asc:true,noBar:true})}
+      <div style="font-size:7pt;color:#374151;margin:6px 0 2px">PAR MOIS — ${y}</div>${_cpTableHTML(M,'mois',{year:y,asc:true,noBar:true})}
+      <div style="font-size:7pt;color:#374151;margin:6px 0 2px">PAR QUINZAINE — ${y}</div>${_cpTableHTML(M,'quinz',{year:y,asc:true,noBar:true})}</div>`;
+  }catch(e){ console.error('_cpFicheHTML',e); return ''; }
+}
+// Section Word (fiche client) — helpers _fw* de la fiche
+function _cpWordSection(code,name,bp){
+  try{
+    const M=cpModel(code); if(!M.rowsY.length) return;
+    const fmt=v=>new Intl.NumberFormat('fr-FR').format(Math.round(v));
+    const covTxt=c=>c.total?`${c.n}/${c.total} (${(c.n/c.total*100).toFixed(0)}%)`:'—';
+    const covBg=c=>!c.total?null:c.n===c.total?'d1fae5':c.n/c.total>=.5?'fef3c7':'fee2e2';
+    const evoCell=(v,p,w)=>{const e=_ecEvoTxt(v,p);return _fwTc(e.txt,null,true,e.col,w,14,'right');};
+    const rankTxt=r=>r.rank?`#${r.rank}/${r.n}`:'—';
+    const mvTxt=r=>{ if(!(r.rank&&r.pr)) return {t:'—',c:'6b7280'}; const d=r.pr-r.rank; return d>0?{t:'▲ +'+d,c:'059669'}:d<0?{t:'▼ '+d,c:'dc2626'}:{t:'＝',c:'6b7280'}; };
+    const y=String(M.rowsY[M.rowsY.length-1].k);
+    bp.push(_fwHeading('8.3 Évolution du CA, classement et couverture des ventes',2));
+    bp.push(_fwPara(`${name} travaille avec ${M.nComp} compagnie${M.nComp>1?'s':''} (${M.compList.join(', ')||'—'}). Le taux de couverture des ventes indique, pour chaque période, combien de ces compagnies ont effectivement donné lieu à des ventes (ex : 5/6). Le rang est celui du client parmi l'ensemble des clients de la période.`,'374151',false,16));
+    // ── Par année ──
+    bp.push(_fwPara('PAR ANNÉE — taux de réalisation vs N-1','1e40af',true,16));
+    const hdrY=_fwTr(_fwTc('ANNÉE','1e40af',true,'ffffff',1000,14,'left'),_fwTc('CA (DA)','1e40af',true,'ffffff',1650,14,'right'),_fwTc('ÉVOL. PRÉC.','1e40af',true,'ffffff',1050,14,'right'),_fwTc('VS N-1 (MÊME PÉR.)','1e40af',true,'ffffff',1250,14,'right'),_fwTc('RÉALISATION','1e40af',true,'ffffff',1150,14,'right'),_fwTc('RANG','1e40af',true,'ffffff',1000,14,'right'),_fwTc('COUVERTURE','1e40af',true,'ffffff',1350,14,'right'),_fwTc('PART','1e40af',true,'ffffff',900,14,'right'));
+    const rowsY=M.rowsY.map(r=>{
+      const ev=_ecEvoTxt(r.v,r.pv), vs=r.vsN1==null?{txt:'—',col:'9ca3af'}:{txt:(r.vsN1>=0?'▲ +':'▼ ')+r.vsN1.toFixed(1).replace('.',',')+'%',col:r.vsN1>=0?'059669':'dc2626'};
+      const rc=r.real==null?'9ca3af':r.real>=100?'059669':r.real>=80?'92400e':'dc2626';
+      return _fwTr(_fwTc(r.k+(r.isCur?' ⏳':''),null,true,'111827',1000,14,'left'),_fwTc(fmt(r.v),null,true,'1e40af',1650,14,'right'),
+        _fwTc(ev.txt,null,true,ev.col,1050,14,'right'),_fwTc(vs.txt,null,true,vs.col,1250,14,'right'),
+        _fwTc(r.real==null?'—':r.real.toFixed(1).replace('.',',')+'%',null,true,rc,1150,14,'right'),
+        _fwTc(rankTxt(r),null,true,'111827',1000,14,'right'),_fwTc(covTxt(r.cov),covBg(r.cov),true,'111827',1350,14,'right'),
+        _fwTc(r.tot>0?(r.v/r.tot*100).toFixed(2).replace('.',',')+'%':'—',null,false,'6b7280',900,14,'right'));
+    });
+    bp.push(_fwTable([hdrY].concat(rowsY),9350));
+    const lastY=M.rowsY[M.rowsY.length-1];
+    if(lastY.isCur&&lastY.real!=null) bp.push(_fwPara(`L'année ${lastY.k} est en cours (données jusqu'à ${SMOIS[lastY.lastM-1]}) : le CA réalisé représente ${lastY.real.toFixed(1).replace('.',',')}% du CA de ${+lastY.k-1}${lastY.vsN1!=null?`, et ${lastY.vsN1>=0?'progresse':'recule'} de ${Math.abs(lastY.vsN1).toFixed(1).replace('.',',')}% à périodes égales (jan→${SMOIS[lastY.lastM-1]})`:''}.`,'374151',false,16));
+    // ── Par mois / par quinzaine (dernière année) ──
+    const mkTbl=(rows,labFn)=>{
+      const hdr=_fwTr(_fwTc('PÉRIODE','1e40af',true,'ffffff',1700,14,'left'),_fwTc('CA (DA)','1e40af',true,'ffffff',1650,14,'right'),_fwTc('ÉVOL. PRÉC.','1e40af',true,'ffffff',1100,14,'right'),_fwTc('VS N-1','1e40af',true,'ffffff',1100,14,'right'),_fwTc('RANG','1e40af',true,'ffffff',1000,14,'right'),_fwTc('MVT','1e40af',true,'ffffff',700,14,'right'),_fwTc('COUVERTURE','1e40af',true,'ffffff',1400,14,'right'),_fwTc('PART','1e40af',true,'ffffff',700,14,'right'));
+      return _fwTable([hdr].concat(rows.map(r=>{
+        const ev=_ecEvoTxt(r.v,r.pv), vs=r.vsN1==null?{txt:'—',col:'9ca3af'}:{txt:(r.vsN1>=0?'▲ +':'▼ ')+r.vsN1.toFixed(1).replace('.',',')+'%',col:r.vsN1>=0?'059669':'dc2626'}, mv=mvTxt(r);
+        return _fwTr(_fwTc(labFn(r.k),null,true,'111827',1700,14,'left'),_fwTc(fmt(r.v),null,true,'1e40af',1650,14,'right'),_fwTc(ev.txt,null,true,ev.col,1100,14,'right'),_fwTc(vs.txt,null,true,vs.col,1100,14,'right'),
+          _fwTc(rankTxt(r),null,true,'111827',1000,14,'right'),_fwTc(mv.t,null,true,mv.c,700,14,'right'),_fwTc(covTxt(r.cov),covBg(r.cov),true,'111827',1400,14,'right'),
+          _fwTc(r.tot>0?(r.v/r.tot*100).toFixed(1).replace('.',',')+'%':'—',null,false,'6b7280',700,14,'right'));
+      })),9350);
+    };
+    const rowsM=M.rowsM.filter(r=>r.k.startsWith(y)), rowsQ=M.rowsQ.filter(r=>r.k.startsWith(y));
+    if(rowsM.length){ bp.push(_fwPara('PAR MOIS — '+y,'1e40af',true,16)); bp.push(mkTbl(rowsM,_CP_LBL.mois)); }
+    if(rowsQ.length){ bp.push(_fwPara('PAR QUINZAINE — '+y,'1e40af',true,16)); bp.push(mkTbl(rowsQ,k=>_CP_LBL.quinz(k).replace(' · ',' — '))); }
+  }catch(e){ console.error('_cpWordSection',e); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v76 — Fiches COMPARATIVES multi-clients : évolution / rang / réalisation / couverture
+   ══════════════════════════════════════════════════════════════════════ */
+function _cpMultiData(codes){
+  const agg=_cpAgg(codes);
+  const list=codes.map(code=>{
+    const M=cpModel(code,agg);
+    return {code,name:M.name,M,nComp:M.nComp};
+  }).filter(c=>c.M.rowsY.length);
+  if(!list.length) return null;
+  const Y=Math.max(...list.map(c=>+c.M.rowsY[c.M.rowsY.length-1].k));
+  const mk=agg.G.mois.size?[...agg.G.mois.keys()].sort().pop():null;
+  list.forEach(c=>{
+    c.y=c.M.rowsY.find(r=>+r.k===Y)||null;
+    c.m=mk?c.M.rowsM.find(r=>r.k===mk)||null:null;
+  });
+  list.sort((a,b)=>((b.y&&b.y.v)||0)-((a.y&&a.y.v)||0));
+  return {list,Y,mk};
+}
+function _cpMultiHTML(codes){
+  try{
+    const D=_cpMultiData(codes); if(!D) return '';
+    const FN=v=>new Intl.NumberFormat('fr-FR').format(Math.round(v));
+    const pc=(x,pre)=>x==null?'<span class="na">—</span>':`<span class="${x>=0?'up':'dn'}">${x>=0?'▲ +':'▼ '}${x.toFixed(1)}%</span>`;
+    const cov=c=>c&&c.total?`<b>${c.n}/${c.total}</b> (${(c.n/c.total*100).toFixed(0)}%)`:'<span class="na">—</span>';
+    const evo=r=>r&&r.pv>0?(r.v-r.pv)/r.pv*100:null;
+    const rk=r=>r&&r.rank?`#${r.rank}/${r.n}`:'<span class="na">—</span>';
+    const mvt=r=>{ if(!(r&&r.rank&&r.pr)) return '<span class="na">—</span>'; const d=r.pr-r.rank; return d>0?`<span class="up">▲ +${d}</span>`:d<0?`<span class="dn">▼ ${d}</span>`:'＝'; };
+    const rowsY=D.list.map((c,i)=>{const r=c.y; return `<tr><td class="c">${i+1}</td><td class="name">${c.name}${r&&r.isCur?' <span class="na">⏳ en cours</span>':''}</td>
+      <td class="r ca">${r?FN(r.v)+' DA':'—'}</td><td class="r">${pc(evo(r))}</td><td class="r">${pc(r?r.vsN1:null)}</td>
+      <td class="r">${r&&r.real!=null?`<b class="${r.real>=100?'up':r.real>=80?'':'dn'}">${r.real.toFixed(1)}%</b>`:'<span class="na">—</span>'}</td>
+      <td class="r">${rk(r)}</td><td class="r">${cov(r&&r.cov)}</td></tr>`;}).join('');
+    const mLbl=D.mk?_CP_LBL.mois(D.mk):'';
+    const rowsM=D.list.map((c,i)=>{const r=c.m; return `<tr><td class="c">${i+1}</td><td class="name">${c.name}</td>
+      <td class="r ca">${r?FN(r.v)+' DA':'—'}</td><td class="r">${pc(evo(r))}</td><td class="r">${pc(r?r.vsN1:null)}</td>
+      <td class="r">${rk(r)}</td><td class="r">${mvt(r)}</td><td class="r">${cov(r&&r.cov)}</td></tr>`;}).join('');
+    return `<div class="h2" style="margin:12px 0 4px">🎯 ÉVOLUTION · CLASSEMENT · COUVERTURE DES VENTES — ANNÉE ${D.Y}</div>
+      <table><thead><tr><th>#</th><th class="lft">CLIENT</th><th>CA ${D.Y}</th><th>ÉVOL. PRÉC.</th><th>VS N-1 (MÊME PÉR.)</th><th>RÉALISATION VS N-1</th><th>RANG</th><th>COUVERTURE</th></tr></thead><tbody>${rowsY}</tbody></table>
+      <div style="font-size:6pt;color:#6b7280;margin:2px 0">Couverture = compagnies avec ventes / compagnies du client · Réalisation = CA N / CA N-1 (année en cours comparée à la même période N-1)</div>
+      <div class="h2" style="margin:12px 0 4px">📅 DERNIER MOIS — ${mLbl}</div>
+      <table><thead><tr><th>#</th><th class="lft">CLIENT</th><th>CA</th><th>ÉVOL. PRÉC.</th><th>VS N-1</th><th>RANG</th><th>MVT</th><th>COUVERTURE</th></tr></thead><tbody>${rowsM}</tbody></table>`;
+  }catch(e){ console.error('_cpMultiHTML',e); return ''; }
+}
+function _cpMultiWord(codes,bp){
+  try{
+    const D=_cpMultiData(codes); if(!D) return;
+    const fmt=v=>new Intl.NumberFormat('fr-FR').format(Math.round(v))+' DA';
+    const ev=(v,p)=>_ecEvoTxt(v,p);
+    const pct=x=>x==null?{txt:'—',col:'9ca3af'}:{txt:(x>=0?'▲ +':'▼ ')+x.toFixed(1).replace('.',',')+'%',col:x>=0?'059669':'dc2626'};
+    const covT=c=>c&&c.total?`${c.n}/${c.total} (${(c.n/c.total*100).toFixed(0)}%)`:'—';
+    const covB=c=>!(c&&c.total)?null:c.n===c.total?'d1fae5':c.n/c.total>=.5?'fef3c7':'fee2e2';
+    const rk=r=>r&&r.rank?`#${r.rank}/${r.n}`:'—';
+    bp.push(_fwHeading('ÉVOLUTION, CLASSEMENT ET COUVERTURE DES VENTES — '+D.Y,2));
+    bp.push(_fwPara('La couverture indique combien des compagnies propres à chaque client ont donné lieu à des ventes sur la période (ex : 5/6). Le taux de réalisation rapporte le CA de l\'année au CA de l\'année précédente ; pour l\'année en cours, la comparaison « vs N-1 » est faite à périodes égales.','374151',false,15));
+    const H=(t,w,a)=>_fwTc(t,'05101f',true,'ffffff',w,13,a||'right');
+    const rowsY=[_fwTr(H('#',450,'center'),H('CLIENT',2300,'left'),H('CA '+D.Y,1500),H('ÉVOL. PRÉC.',950),H('VS N-1',950),H('RÉALIS.',950),H('RANG',900),H('COUVERT.',1350))]
+      .concat(D.list.map((c,i)=>{
+        const r=c.y, e=r?ev(r.v,r.pv):{txt:'—',col:'9ca3af'}, v=pct(r?r.vsN1:null);
+        const rc=!r||r.real==null?'9ca3af':r.real>=100?'059669':r.real>=80?'92400e':'dc2626';
+        return _fwTr(_fwTc(String(i+1),null,false,'111827',450,13,'center'),_fwTc(c.name+(r&&r.isCur?' ⏳':''),null,true,'111827',2300,13,'left'),
+          _fwTc(r?fmt(r.v):'—',null,true,'0369a1',1500,13,'right'),_fwTc(e.txt,null,true,e.col,950,13,'right'),_fwTc(v.txt,null,true,v.col,950,13,'right'),
+          _fwTc(r&&r.real!=null?r.real.toFixed(1).replace('.',',')+'%':'—',null,true,rc,950,13,'right'),_fwTc(rk(r),null,true,'111827',900,13,'right'),
+          _fwTc(covT(r&&r.cov),covB(r&&r.cov),true,'111827',1350,13,'right'));
+      }));
+    bp.push(_fwTable(rowsY,9350));
+    if(D.mk){
+      bp.push(_fwPara('DERNIER MOIS — '+_CP_LBL.mois(D.mk),'1e40af',true,16));
+      const rowsM=[_fwTr(H('#',450,'center'),H('CLIENT',2300,'left'),H('CA',1500),H('ÉVOL. PRÉC.',950),H('VS N-1',950),H('RANG',900),H('MVT',700),H('COUVERT.',1600))]
+        .concat(D.list.map((c,i)=>{
+          const r=c.m, e=r?ev(r.v,r.pv):{txt:'—',col:'9ca3af'}, v=pct(r?r.vsN1:null);
+          let mt={t:'—',c:'6b7280'}; if(r&&r.rank&&r.pr){const d=r.pr-r.rank;mt=d>0?{t:'▲ +'+d,c:'059669'}:d<0?{t:'▼ '+d,c:'dc2626'}:{t:'＝',c:'6b7280'};}
+          return _fwTr(_fwTc(String(i+1),null,false,'111827',450,13,'center'),_fwTc(c.name,null,true,'111827',2300,13,'left'),
+            _fwTc(r?fmt(r.v):'—',null,true,'0369a1',1500,13,'right'),_fwTc(e.txt,null,true,e.col,950,13,'right'),_fwTc(v.txt,null,true,v.col,950,13,'right'),
+            _fwTc(rk(r),null,true,'111827',900,13,'right'),_fwTc(mt.t,null,true,mt.c,700,13,'right'),_fwTc(covT(r&&r.cov),covB(r&&r.cov),true,'111827',1600,13,'right'));
+        }));
+      bp.push(_fwTable(rowsM,9350));
+    }
+  }catch(e){ console.error('_cpMultiWord',e); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v77 — STAT : IMPRESSION UNIVERSELLE · TABLEAU DE BORD · ALERTES CLIENTS À RISQUE
+   ══════════════════════════════════════════════════════════════════════ */
+// Imprime exactement ce qui est affiché dans la vue courante (tableaux, graphiques SVG/canvas), en clair et sans défilement
+function _statPrintScreen(title){
+  const root=document.getElementById('stat-content');
+  if(!root||!root.innerHTML.trim()){alert('❌ Rien à imprimer');return;}
+  const clone=root.cloneNode(true);
+  const lc=root.querySelectorAll('canvas'), cc=clone.querySelectorAll('canvas');
+  lc.forEach((cv,i)=>{ try{ const im=document.createElement('img'); im.src=cv.toDataURL('image/png'); im.style.maxWidth='100%'; if(cc[i]) cc[i].replaceWith(im); }catch(e){} });
+  clone.querySelectorAll('button,select,input,textarea,.no-print').forEach(e=>e.remove());
+  const css=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+  const over=`html,body{height:auto!important;overflow:visible!important;background:#fff!important;color:#111}
+    body{padding:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    #stat-content{height:auto!important;display:block!important;overflow:visible!important;position:static!important;width:auto!important}
+    #stat-content>div{height:auto!important}
+    #stat-content,#stat-content *{max-height:none!important}
+    #stat-content div,#stat-content table,#stat-content section{overflow:visible!important}
+    #stat-content table thead th{position:static!important}
+    #stat-content .ec-tbl td:first-child,#stat-content .ec-tbl th:first-child{position:static!important}
+    #stat-content tr{page-break-inside:avoid}
+    .pr-h{font-family:Arial,sans-serif;font-size:15px;font-weight:900;color:#05101f;margin:0 0 2px}.pr-s{font-family:Arial,sans-serif;font-size:9px;color:#6b7280;margin-bottom:8px}
+    @page{size:A4 landscape;margin:8mm}`;
+  const w=window.open('','Print','width=1200,height=800');
+  if(!w){alert('⚠️ Autorisez les fenêtres pop-up pour imprimer');return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>${css}</style><style>${over}</style></head><body>
+    <div class="pr-h">${title}</div><div class="pr-s">${typeof sPeriodLabel==='function'?sPeriodLabel():''} · imprimé le ${new Date().toLocaleString('fr-FR')}</div>
+    <div id="stat-content">${clone.innerHTML}</div></body></html>`);
+  w.document.close(); setTimeout(()=>w.print(),600);
+}
+function printParFolio(){ _statPrintScreen('📅 Statistiques par folio'); }
+function printEvolution(){ _statPrintScreen('📈 Évolution du chiffre d\'affaires'); }
+function printEvolClient(){ if(typeof printCliEvol==='function') printCliEvol(); else _statPrintScreen('👤 Évolution client'); }
+function printComparaison(){ _statPrintScreen('🔄 Comparaison de périodes'); }
+function printDash(){ _statPrintScreen('🏠 Tableau de bord'); }
+function printAlertes(){ _statPrintScreen('🚨 Alertes clients à risque'); }
+
+/* ── Agrégat commun (tableau de bord + alertes) : année Y la plus récente vs Y-1, à périodes égales (jan→mois M) ── */
+function _pfAgg(){
+  let Y=0,M=0,refD=null; const rows=[];
+  (STAT.raw||[]).forEach(r=>{
+    let y=r.year,m=r.month;
+    if(!m&&r.folio>=1&&r.folio<=12){m=r.folio;y=y||STAT.year;}
+    if(!y||!m) return;
+    const sym=sNDCSym(r)||(r.journal?'AUT':null); if(!sym) return;
+    if(!_ecBase(r,sym,true)) return;
+    rows.push([r,y,m,sym]);
+    if(y>Y||(y===Y&&m>M)){Y=y;M=m;}
+    if(r.date&&(!refD||r.date>refD)) refD=r.date;
+  });
+  if(!Y) return {Y:0};
+  const P=Y-1, cl=new Map(), cieY=new Map(), cieP=new Map(), monY=Array(12).fill(0), monP=Array(12).fill(0);
+  const add=(mp,k,v)=>mp.set(k,(mp.get(k)||0)+v);
+  rows.forEach(([r,y,m,sym])=>{
+    const aux=r.aux||r.compte;
+    let c=cl.get(aux);
+    if(!c){c={aux,r0:r,ytdY:0,ytdP:0,fullP:0,monY:0,monP:0,symY:new Map(),symP:new Map(),last:null};cl.set(aux,c);}
+    if(r.date&&r.debit>0&&(!c.last||r.date>c.last)) c.last=r.date;
+    if(y===Y){
+      monY[m-1]+=r.debit;
+      if(m<=M){ c.ytdY+=r.debit; add(c.symY,sym,r.debit); add(cieY,sym,r.debit); if(m===M) c.monY+=r.debit; }
+    }else if(y===P){
+      monP[m-1]+=r.debit; c.fullP+=r.debit;
+      if(m<=M){ c.ytdP+=r.debit; add(c.symP,sym,r.debit); add(cieP,sym,r.debit); if(m===M) c.monP+=r.debit; }
+    }
+  });
+  const comY=new Map(), comP=new Map(); let comMonY=0, comMonP=0;
+  (STAT.comRaw||[]).forEach(r=>{
+    if(!r.year||!r.month||!r.sym||!sCompMatch(r.sym)||r.month>M) return;
+    if(r.year===Y){ add(comY,r.sym,r.credit); if(r.month===M) comMonY+=r.credit; }
+    else if(r.year===P){ add(comP,r.sym,r.credit); if(r.month===M) comMonP+=r.credit; }
+  });
+  return {Y,M,P,refD,cl,cieY,cieP,comY,comP,comMonY,comMonP,monY,monP};
+}
+function _pfEvo(v,p){
+  if(!(p>0)) return '<span style="color:#9ca3af">—</span>';
+  const e=(v-p)/p*100;
+  return `<span style="font-weight:800;color:${e>=0?'#059669':'#dc2626'}">${e>=0?'▲ +':'▼ '}${e.toFixed(1)}%</span>`;
+}
+
+/* ── ALERTES CLIENTS À RISQUE ── */
+function alModel(){
+  const A=_pfAgg(); if(!A.Y) return null;
+  const th={rank:Math.max(1,+STAT.alRank||10),ca:Math.max(1,+STAT.alCa||30),inact:Math.max(1,+STAT.alInact||4),top:Math.max(10,+STAT.alTop||150)};
+  const arr=[...A.cl.values()];
+  const rk=key=>{const s=arr.filter(c=>c[key]>0).sort((a,b)=>b[key]-a[key]);const m=new Map();s.forEach((c,i)=>m.set(c.aux,i+1));return {m,n:s.length};};
+  const rY=rk('ytdY'), rP=rk('ytdP');
+  const cand=arr.filter(c=>c.fullP>0).sort((a,b)=>b.fullP-a.fullP).slice(0,th.top);
+  const idxQ=d=>d.getFullYear()*24+d.getMonth()*2+(d.getDate()<=15?0:1);
+  const out=[], cnt={inact:0,couv:0,rank:0,ca:0};
+  cand.forEach(c=>{
+    const al=[]; let score=0;
+    const rp=rP.m.get(c.aux)||null, ry=rY.m.get(c.aux)||null;
+    let nq=null;
+    if(A.refD&&c.last){ nq=idxQ(A.refD)-idxQ(c.last); if(nq>=th.inact){ al.push({t:'inact',txt:`Sans vente depuis ${nq} quinzaines`}); score+=3; cnt.inact++; } }
+    const posP=[...c.symP.entries()].filter(e=>e[1]>0).map(e=>e[0]);
+    const posY=new Set([...c.symY.entries()].filter(e=>e[1]>0).map(e=>e[0]));
+    const lost=posP.filter(s=>!posY.has(s));
+    if(c.ytdY>0&&lost.length){ al.push({t:'couv',txt:`Couverture ${posP.length}→${posY.size} : perdu ${lost.join(', ')}`}); score+=Math.min(lost.length,3); cnt.couv++; }
+    if(rp){
+      if(ry===null){ al.push({t:'rank',txt:`Sorti du classement (était #${rp})`}); score+=3; cnt.rank++; }
+      else if(ry-rp>=th.rank){ al.push({t:'rank',txt:`Rang #${rp} → #${ry} (−${ry-rp} places)`}); score+=(ry-rp>=2*th.rank)?3:2; cnt.rank++; }
+    }
+    let ev=null;
+    if(c.ytdP>0){ ev=(c.ytdY-c.ytdP)/c.ytdP*100; if(ev<=-th.ca){ al.push({t:'ca',txt:`CA ${ev.toFixed(0)}% vs ${A.P}`}); score+=ev<=-50?2:1; cnt.ca++; } }
+    if(al.length) out.push({c,al,score,rp,ry,ev,nq,posP:posP.length,posY:posY.size});
+  });
+  out.sort((a,b)=>b.score-a.score||b.c.fullP-a.c.fullP);
+  return {A,th,rows:out,cnt,nCand:cand.length};
+}
+function sAlertes(c){
+  const R=alModel();
+  if(!R){ c.innerHTML=`<div class="stat-empty"><div class="big">🚨</div><div class="msg">Aucune donnée à analyser</div></div>`; return; }
+  const {A,th}=R, f=STAT.alFilter||'all';
+  const rr="sAlertes(document.getElementById('stat-content'))";
+  const inp=(lbl,key,val,suf)=>`<label style="font-size:9px;font-weight:800;color:var(--txt3);display:flex;align-items:center;gap:4px">${lbl}<input type="number" min="1" value="${val}" onchange="STAT.${key}=this.value;${rr}" style="width:54px;font-size:10px;padding:2px 4px;border:1px solid var(--bo);border-radius:4px;background:var(--bg2)">${suf}</label>`;
+  const fb=(lbl,v)=>`<button class="stat-topmode-btn${f===v?' on':''}" onclick="STAT.alFilter='${v}';${rr}">${lbl}</button>`;
+  const rows=R.rows.filter(x=>f==='all'||x.al.some(a=>a.t===f));
+  const badge={inact:['#7f1d1d','#fee2e2','💤'],couv:['#92400e','#fef3c7','🧩'],rank:['#1e3a8a','#dbeafe','📉'],ca:['#7c2d12','#ffedd5','💸']};
+  const lvl=s=>s>=6?['CRITIQUE','#dc2626']:s>=3?['ÉLEVÉ','#ea580c']:['À SURVEILLER','#ca8a04'];
+  const fmtD=d=>d?d.toLocaleDateString('fr-FR'):'—';
+  let h=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:13px;font-weight:800">🚨 Alertes clients à risque <span style="font-size:9px;color:var(--txt3);font-weight:600">· ${A.Y} (jan→${SMOIS[A.M-1]}) comparé à ${A.P} sur la même période</span></div>
+      <button class="stat-topmode-btn" style="margin-left:auto" onclick="printAlertes()">🖨️ Imprimer</button></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+      ${inp('Chute de rang ≥','alRank',th.rank,'places')}${inp('Baisse CA ≥','alCa',th.ca,'%')}${inp('Inactif ≥','alInact',th.inact,'quinzaines')}${inp('Top clients N-1 :','alTop',th.top,'')}</div>
+    <div style="font-size:9px;color:var(--txt3);margin-bottom:6px">Seuils : rang −${th.rank} places · CA −${th.ca}% · ${th.inact} quinzaines sans vente · périmètre : ${R.nCand} meilleurs clients ${A.P}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      ${fb('Toutes ('+R.rows.length+')','all')}${fb('💤 Inactivité ('+R.cnt.inact+')','inact')}${fb('🧩 Couverture ('+R.cnt.couv+')','couv')}${fb('📉 Rang ('+R.cnt.rank+')','rank')}${fb('💸 Baisse CA ('+R.cnt.ca+')','ca')}</div>
+    <div class="ec-wrap"><table class="stat-tbl ec-tbl"><thead><tr><th>CLIENT</th><th class="r">NIVEAU</th><th class="r">CA ${A.P} (même pér.)</th><th class="r">CA ${A.Y}</th><th class="r">ÉVOL.</th><th class="r">RANG ${A.P}→${A.Y}</th><th class="r">COUV.</th><th class="r">DERNIÈRE VENTE</th><th>ALERTES</th></tr></thead><tbody>`;
+  rows.forEach(x=>{
+    const [lv,col]=lvl(x.score), name=sResolveName(x.c.r0.aux,x.c.r0.compte,x.c.r0.libelle);
+    h+=`<tr><td style="font-weight:700">${name}</td><td class="r"><span style="background:${col}22;color:${col};border-radius:4px;padding:1px 6px;font-size:8px;font-weight:800">${lv}</span></td>
+      <td class="r m">${SFM(x.c.ytdP)}</td><td class="r m"><b>${SFM(x.c.ytdY)}</b></td><td class="r">${_pfEvo(x.c.ytdY,x.c.ytdP)}</td>
+      <td class="r m">${x.rp?'#'+x.rp:'—'} → <b>${x.ry?'#'+x.ry:'—'}</b></td><td class="r m">${x.posP}→${x.posY}</td>
+      <td class="r m">${fmtD(x.c.last)}${x.nq!=null?`<div class="ec-evo" style="color:#9ca3af">${x.nq} qz</div>`:''}</td>
+      <td>${x.al.map(a=>{const b=badge[a.t];return `<span style="display:inline-block;background:${b[1]};color:${b[0]};border-radius:4px;padding:1px 6px;font-size:8px;font-weight:700;margin:1px 2px 1px 0">${b[2]} ${a.txt}</span>`;}).join('')}</td></tr>`;
+  });
+  if(!rows.length) h+=`<tr><td colspan="9" style="text-align:center;padding:18px;color:#059669;font-weight:700">✅ Aucun client à risque avec ces seuils</td></tr>`;
+  c.innerHTML=h+'</tbody></table></div></div>';
+}
+
+/* ── TABLEAU DE BORD ── */
+function _dashChart(A){
+  const W=640,H=190,PL=48,PR=10,PT=22,PB=26,iw=W-PL-PR,ih=H-PT-PB;
+  const mx=Math.max(...A.monY,...A.monP,1), step=iw/12, bw=Math.min(18,step/2-2);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px"><text x="${PL}" y="13" font-size="10" font-weight="800" fill="#374151">CA mensuel ${A.Y} <tspan fill="#0d9488">■</tspan> vs ${A.P} <tspan fill="#cbd5e1">■</tspan></text>`;
+  for(let i=0;i<=4;i++){const y=PT+ih-ih*i/4,v=mx*i/4;const t=v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':Math.round(v);s+=`<line x1="${PL}" x2="${W-PR}" y1="${y}" y2="${y}" stroke="#e5e7eb" stroke-width=".6"/><text x="${PL-4}" y="${y+3}" font-size="8" text-anchor="end" fill="#9ca3af">${t}</text>`;}
+  for(let m=0;m<12;m++){
+    const x=PL+m*step+step/2, hp=A.monP[m]/mx*ih, hy=A.monY[m]/mx*ih;
+    s+=`<rect x="${x-bw-1}" y="${PT+ih-hp}" width="${bw}" height="${hp}" fill="#cbd5e1" rx="1"><title>${SMOIS[m]} ${A.P} : ${SFM(A.monP[m])}</title></rect>`;
+    if(m<A.M) s+=`<rect x="${x+1}" y="${PT+ih-hy}" width="${bw}" height="${hy}" fill="#0d9488" rx="1"><title>${SMOIS[m]} ${A.Y} : ${SFM(A.monY[m])}</title></rect>`;
+    s+=`<text x="${x}" y="${H-10}" font-size="8" text-anchor="middle" fill="${m===A.M-1?'#0d9488':'#6b7280'}" font-weight="${m===A.M-1?800:400}">${SMOIS[m]}</text>`;
+  }
+  return s+'</svg>';
+}
+function sDash(c){
+  const A=_pfAgg();
+  if(!A.Y){ c.innerHTML=`<div class="stat-empty"><div class="big">🏠</div><div class="msg">Chargez et analysez des données pour voir le tableau de bord</div></div>`; return; }
+  const sum=m=>[...m.values()].reduce((a,b)=>a+b,0);
+  const caY=sum(A.cieY), caP=sum(A.cieP), comY=sum(A.comY), comP=sum(A.comP);
+  const monY=A.monY[A.M-1], monP=A.monP[A.M-1];
+  const actY=[...A.cl.values()].filter(x=>x.ytdY>0).length, actP=[...A.cl.values()].filter(x=>x.ytdP>0).length;
+  const kp=(cls,lbl,val,sub)=>`<div class="stat-kpi ${cls}"><div class="kl">${lbl}</div><div class="kv" style="font-size:15px">${val}</div><div style="font-size:9px;margin-top:2px">${sub||''}</div></div>`;
+  const cl=[...A.cl.values()].map(x=>({x,d:x.ytdY-x.ytdP}));
+  const top=(arr)=>arr.slice(0,5).map(({x,d})=>`<tr><td style="font-weight:700">${sResolveName(x.r0.aux,x.r0.compte,x.r0.libelle)}</td><td class="r m">${SFM(x.ytdY)}</td><td class="r m" style="font-weight:800;color:${d>=0?'#059669':'#dc2626'}">${d>=0?'+':''}${SFM(d)}</td><td class="r">${_pfEvo(x.ytdY,x.ytdP)}</td></tr>`).join('')||'<tr><td colspan="4" style="color:#9ca3af;text-align:center">—</td></tr>';
+  const up=cl.filter(o=>o.d>0).sort((a,b)=>b.d-a.d), dn=cl.filter(o=>o.d<0).sort((a,b)=>a.d-b.d);
+  const syms=[...new Set([...A.cieY.keys(),...A.cieP.keys(),...A.comY.keys(),...A.comP.keys()])].sort((a,b)=>(A.cieY.get(b)||0)-(A.cieY.get(a)||0));
+  const R=alModel(), nAl=R?R.rows.length:0, nCrit=R?R.rows.filter(x=>x.score>=6).length:0;
+  const tbl=(t,body,colr)=>`<div><div style="font-size:11px;font-weight:800;color:${colr};margin:10px 0 4px">${t}</div><div class="ec-wrap"><table class="stat-tbl ec-tbl"><thead><tr><th>CLIENT</th><th class="r">CA ${A.Y}</th><th class="r">Δ vs ${A.P}</th><th class="r">ÉVOL.</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:13px;font-weight:800">🏠 Tableau de bord <span style="font-size:9px;color:var(--txt3);font-weight:600">· situation à ${SMOIS[A.M-1]} ${A.Y} · cumul jan→${SMOIS[A.M-1]} comparé à ${A.P} (même période)</span></div>
+      <button class="stat-topmode-btn" style="margin-left:auto" onclick="printDash()">🖨️ Imprimer</button></div>
+    <div class="stat-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:6px">
+      ${kp('kb','CA '+SMOIS[A.M-1]+' '+A.Y,SFM(monY),'vs '+A.P+' : '+_pfEvo(monY,monP))}
+      ${kp('kb','CA cumul '+A.Y,SFM(caY),'vs '+A.P+' : '+_pfEvo(caY,caP))}
+      ${kp('kg','Commission cumul',SFM(comY),'vs '+A.P+' : '+_pfEvo(comY,comP))}
+      ${kp('ka','Taux com./CA',caY>0?(comY/caY*100).toFixed(2)+'%':'—','N-1 : '+(caP>0?(comP/caP*100).toFixed(2)+'%':'—'))}</div>
+    <div class="stat-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:8px">
+      ${kp('kp','Commission '+SMOIS[A.M-1],SFM(A.comMonY),'vs '+A.P+' : '+_pfEvo(A.comMonY,A.comMonP))}
+      ${kp('kp','Clients actifs (cumul)',actY,'N-1 : '+actP+' · '+(actY>=actP?'▲ +':'▼ ')+(actY-actP))}
+      ${kp('ka','Compagnies actives',[...A.cieY.values()].filter(v=>v>0).length,'N-1 : '+[...A.cieP.values()].filter(v=>v>0).length)}
+      <div class="stat-kpi" style="cursor:pointer;border:1.5px solid ${nCrit?'#dc2626':'var(--bo)'}" onclick="statSetView('alertes')"><div class="kl">🚨 Clients à risque</div><div class="kv" style="font-size:15px;color:${nCrit?'#dc2626':'inherit'}">${nAl}</div><div style="font-size:9px;margin-top:2px">${nCrit} critique${nCrit>1?'s':''} · cliquer pour le détail</div></div></div>
+    <div style="overflow-x:auto;margin:6px 0">${_dashChart(A)}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">${tbl('📈 TOP 5 — PLUS FORTES HAUSSES (cumul)',top(up),'#059669')}${tbl('📉 TOP 5 — PLUS FORTES BAISSES (cumul)',top(dn),'#dc2626')}</div>
+    <div style="font-size:11px;font-weight:800;color:#0d9488;margin:14px 0 4px">✈️ COMPAGNIES — cumul jan→${SMOIS[A.M-1]}</div>
+    <div class="ec-wrap"><table class="stat-tbl ec-tbl"><thead><tr><th>COMPAGNIE</th><th class="r">CA ${A.Y}</th><th class="r">VS ${A.P}</th><th class="r">PART</th><th class="r">COMMISSION ${A.Y}</th><th class="r">VS ${A.P}</th></tr></thead><tbody>
+    ${syms.map(s=>`<tr><td style="font-weight:800;color:${SCOL[s]||'#374151'}">${s}</td><td class="r m">${SFM(A.cieY.get(s)||0)}</td><td class="r">${_pfEvo(A.cieY.get(s)||0,A.cieP.get(s)||0)}</td><td class="r m">${caY>0?((A.cieY.get(s)||0)/caY*100).toFixed(1)+'%':'—'}</td><td class="r m">${SFM(A.comY.get(s)||0)}</td><td class="r">${_pfEvo(A.comY.get(s)||0,A.comP.get(s)||0)}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v80 — EBV : ONGLET « IMPORTS » (tous les imports de fichiers et bases de données au même endroit)
+   ══════════════════════════════════════════════════════════════════════ */
+// Hauteur de l'onglet IMPORTS = espace disponible à l'écran → la barre de défilement apparaît dès que le contenu dépasse
+function ebvFitImports(){
+  const el=document.getElementById('tab-import'); if(!el||el.style.display==='none') return;
+  const top=el.getBoundingClientRect().top;
+  el.style.maxHeight=Math.max(240,window.innerHeight-top-14)+'px';
+}
+window.addEventListener('resize',()=>{ try{ ebvFitImports(); }catch(e){} });
+function ebvGoImports(){
+  const b=document.getElementById('main-tab-import');
+  if(b) switchMainTab('import',b);
+}
+function ebvImportsActive(){
+  const b=document.getElementById('main-tab-import');
+  return !!(b&&b.classList.contains('active'));
+}
+function ebvImportsRefresh(){
+  const box=document.getElementById('ebv-imp-status'); if(!box) return;
+  const nFac=(typeof FAC_DB!=='undefined'&&FAC_DB)?Object.keys(FAC_DB).length:0;
+  const nFacCl=(typeof FAC_DB!=='undefined'&&FAC_DB)?Object.values(FAC_DB).reduce((s,a)=>s+(Array.isArray(a)?a.length:0),0):0;
+  const nCorr=(typeof CORR!=='undefined'&&CORR)?Object.keys(CORR).length:0;
+  const nCom=(typeof NDCF_DATA!=='undefined'&&NDCF_DATA)?NDCF_DATA.length:0;
+  const nComOk=(typeof NDCF_DATA!=='undefined'&&NDCF_DATA)?NDCF_DATA.filter(d=>d.client).length:0;
+  const nCl=(typeof NDCF_CLIENTS!=='undefined'&&NDCF_CLIENTS)?NDCF_CLIENTS.length:0;
+  const card=(ico,lbl,val,sub,ok)=>`<div style="flex:1;min-width:120px;background:${ok?'rgba(22,163,74,.08)':'rgba(217,119,6,.08)'};border:1.5px solid ${ok?'rgba(22,163,74,.35)':'rgba(217,119,6,.35)'};border-radius:8px;padding:7px 9px;">
+    <div style="font-size:8px;font-weight:800;letter-spacing:.8px;color:var(--txt3)">${ico} ${lbl}</div>
+    <div style="font-size:14px;font-weight:800;color:${ok?'#15803d':'#b45309'};margin-top:2px">${ok?'✅':'⚠'} ${val}</div>
+    <div style="font-size:9px;color:var(--txt3)">${sub}</div></div>`;
+  box.innerHTML=card('📋','PLANNING',nFac+' compagnie'+(nFac>1?'s':''),nFacCl+' clients',nFac>0)
+    +card('👥','BASE CLIENTS (IATA)',nCorr,'clients chargés',nCorr>0)
+    +card('📎','FICHIER COMMERCIAL',nCom,nCom?nComOk+'/'+nCom+' reconnus CLNDC':'non chargé',nCom>0&&nComOk===nCom)
+    +card('🗂','BASE CLNDC',nCl,'clients NDC-F',nCl>0);
+  // miroir du statut du fichier commercial dans l'onglet NDC-F
+  const src=document.getElementById('ndcf-load-st'), mini=document.getElementById('ndcf-load-mini');
+  if(src&&mini){ mini.textContent=src.textContent; mini.style.color=src.style.color||'var(--txt3)'; }
+}
+(function(){
+  const _orig=window.switchMainTab;
+  if(typeof _orig==='function'){
+    window.switchMainTab=function(name,el){ const r=_orig.apply(this,arguments); if(name==='import'){ ebvImportsRefresh(); ebvFitImports(); setTimeout(ebvFitImports,60); } return r; };
+  }
+  // rafraîchissement léger du récapitulatif tant que l'onglet IMPORTS est ouvert + synchro statut NDC-F
+  setInterval(()=>{ try{ if(ebvImportsActive()) ebvImportsRefresh(); else { const s=document.getElementById('ndcf-load-st'),m=document.getElementById('ndcf-load-mini'); if(s&&m){m.textContent=s.textContent;m.style.color=s.style.color||'var(--txt3)';} } }catch(e){} },1200);
+})();
+
+/* ── v72 — En-têtes de tableaux FIXES au défilement (toutes les vues STAT) ── */
+function statFixStickyHeaders(){
+  const root=document.getElementById('stat-content'); if(!root) return;
+  root.querySelectorAll('table').forEach(tb=>{
+    const th=tb.querySelector('thead'); if(!th) return;
+    let top=0;
+    th.querySelectorAll('tr').forEach(tr=>{ tr.querySelectorAll('th').forEach(x=>{x.style.top=top+'px';}); top+=tr.offsetHeight; });
+    let a=tb.parentElement;
+    while(a&&a!==root){ const cs=getComputedStyle(a); if(cs.overflowX!=='visible'||cs.overflowY!=='visible') break; a=a.parentElement; }
+    if(!a||a===root||a.dataset.v72) return;
+    if(a.scrollHeight>a.clientHeight+2) return;
+    const cs=getComputedStyle(a);
+    if(cs.overflowX==='hidden'&&cs.overflowY==='hidden') return;
+    a.style.maxHeight='calc(100vh - 260px)'; a.style.overflow='auto'; a.dataset.v72='1';
+  });
+}
+(function(){
+  function init(){
+    const r=document.getElementById('stat-content'); if(!r) return;
+    let t=null;
+    new MutationObserver(()=>{clearTimeout(t);t=setTimeout(statFixStickyHeaders,60);}).observe(r,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+
 function statSetView(v){
+  if(v==='cliperf'&&!(STAT.selectedClients&&STAT.selectedClients.length)) v='rank';
   // ── v37 : bouton COMMISSION — toggle (1 clic ON, 2ème clic OFF) ──
   if(v==='commission'){
     if(STAT.view==='commission'&&STAT.commissionMode){
@@ -18467,6 +19587,10 @@ function statSetView(v){
   else if(v==='quinz')   sQuinzaine(c);
   else if(v==='mv')      sMeilleursVendeurs(c);
   else if(v==='anciennete') sAnciennete(c);
+  else if(v==='evolcie') sEvolCie(c);
+  else if(v==='cliperf') sCliPerf(c);
+  else if(v==='dash') sDash(c);
+  else if(v==='alertes') sAlertes(c);
 }
 /* ── Vue Quinzaine en mode COMMISSION ── */
 function sQuinzaineCommission(c){
@@ -25246,6 +26370,52 @@ ${rows.join('')}</w:tbl>`;
     }
 
     // ════════════════════════════════════════════
+    // SECTION 6.2 (v75) : ÉVOLUTION COMPAGNIES & COMMISSIONS — mensuelle / trimestrielle / semestrielle / annuelle + même période N-x
+    // ════════════════════════════════════════════
+    if(SECT.comp){
+      try{
+        const _nx=STAT.ecNx||1;
+        const Ma=ecModel('annee',_nx);
+        if(Ma.keys.length){
+          bodyParts.push(heading('6.2 ÉVOLUTION DES COMPAGNIES ET DES COMMISSIONS',1));
+          bodyParts.push(separator());
+          bodyParts.push(para(`Cette section suit le chiffre d'affaires et les commissions par compagnie selon quatre périodicités (annuelle, semestrielle, trimestrielle, mensuelle). Chaque période est comparée à la période précédente et à la MÊME période N-${_nx} (ex : T2 ${new Date().getFullYear()} vs T2 ${new Date().getFullYear()-_nx}), afin de neutraliser la saisonnalité.`));
+          const _ev=(v,p)=>_ecEvoTxt(v,p);
+          const synth=(M,take,title)=>{
+            const keys=M.keys.slice(-take), idx=new Map(M.keys.map((k,i)=>[k,i]));
+            const val=(arr,k)=>{const i=idx.get(k);return i!=null?arr[i]:0;};
+            const rows=[tableRow(tc('PÉRIODE','1e40af',true,'ffffff',1300,16),tc('CA (DA)','1e40af',true,'ffffff',1700,16,'right'),tc('VS PRÉC.','1e40af',true,'ffffff',1100,16,'right'),tc('VS N-'+_nx,'1e40af',true,'ffffff',1100,16,'right'),tc('COMMISSION (DA)','1e40af',true,'ffffff',1700,16,'right'),tc('VS N-'+_nx,'1e40af',true,'ffffff',1100,16,'right'),tc('TAUX','1e40af',true,'ffffff',1020,16,'right'))];
+            keys.slice().reverse().forEach(k=>{
+              const i=idx.get(k), ca=val(M.caTot,k), cm=val(M.comTot,k), pk=i>0?M.keys[i-1]:null, sk=_ecShift(k,_nx);
+              const e1=_ev(ca,pk?val(M.caTot,pk):0), e2=_ev(ca,val(M.caTot,sk)), e3=_ev(cm,val(M.comTot,sk));
+              rows.push(tableRow(tc(_ecPerLabel(k,M.g),'ffffff',true,'374151',1300,16),tc(fmtDAFull(ca),'ffffff',true,'1e40af',1700,16,'right'),tc(e1.txt,'ffffff',true,e1.col,1100,16,'right'),tc(e2.txt,'ffffff',true,e2.col,1100,16,'right'),tc(fmtDAFull(cm),'ffffff',true,'065f46',1700,16,'right'),tc(e3.txt,'ffffff',true,e3.col,1100,16,'right'),tc(ca>0?(cm/ca*100).toFixed(2)+'%':'—','ffffff',false,'6b7280',1020,16,'right')));
+            });
+            bodyParts.push(para(title,0,'1e40af',true));
+            bodyParts.push(tableWrap(rows,9020));
+          };
+          const compYears=(map,title)=>{
+            const keys=Ma.keys.slice(-5); if(!keys.length||!map.size) return;
+            const w=Math.floor((9020-1520-1000)/keys.length), idx=new Map(Ma.keys.map((k,i)=>[k,i]));
+            const rows=[tableRow(tc('COMPAGNIE','1e40af',true,'ffffff',1520,16),...keys.map(k=>tc(k,'1e40af',true,'ffffff',w,16,'right')),tc('VS PRÉC.','1e40af',true,'ffffff',1000,16,'right'))];
+            [...map.entries()].map(([s,mm])=>({s,mm,tot:keys.reduce((a,k)=>a+(mm.get(k)||0),0)})).sort((a,b)=>b.tot-a.tot).forEach(r=>{
+              const lk=keys[keys.length-1], pk=idx.get(lk)>0?Ma.keys[idx.get(lk)-1]:null, e=_ev(r.mm.get(lk)||0,pk?(r.mm.get(pk)||0):0);
+              rows.push(tableRow(tc(r.s,'ffffff',true,'374151',1520,16),...keys.map(k=>tc(r.mm.get(k)?fmtDAFull(r.mm.get(k)):'—','ffffff',false,'111827',w,15,'right')),tc(e.txt,'ffffff',true,e.col,1000,16,'right')));
+            });
+            bodyParts.push(para(title,0,'1e40af',true));
+            bodyParts.push(tableWrap(rows,9020));
+          };
+          synth(Ma,8,'ÉVOLUTION ANNUELLE — CA ET COMMISSIONS');
+          compYears(Ma.caMap,'CA PAR COMPAGNIE — '+Ma.keys.slice(-5).join(' · '));
+          compYears(Ma.comMap,'COMMISSIONS PAR COMPAGNIE — '+Ma.keys.slice(-5).join(' · '));
+          synth(ecModel('sem',_nx),6,'ÉVOLUTION SEMESTRIELLE (6 derniers semestres)');
+          synth(ecModel('trim',_nx),8,'ÉVOLUTION TRIMESTRIELLE (8 derniers trimestres)');
+          synth(ecModel('mois',_nx),12,'ÉVOLUTION MENSUELLE (12 derniers mois)');
+          bodyParts.push(pageBreak());
+        }
+      }catch(e){ console.error('Word 6.2 évol cie',e); }
+    }
+
+    // ════════════════════════════════════════════
     // SECTION 6.1 : COMMISSION RETENUE — NOTRE VRAI PRODUIT (SUP COM)
     // ════════════════════════════════════════════
     if(SECT.commission && STAT.comAgg&&STAT.comAgg.length){
@@ -27546,12 +28716,19 @@ function printCurrentSegment(){
     'pareto': printPareto,
     'stats': printStatistiques,
     'segment': printSegmentation,
-    'insights': printInsights
+    'insights': printInsights,
+    'evolcie': printEvolCie,
+    'cliperf': printCliPerf,
+    'dash': printDash,
+    'alertes': printAlertes,
+    'mv': printMeilleursVendeurs,
+    'quinz': printQuinzaine,
+    'commission': printCommission
   };
   
   const fn = printMap[view];
   if(fn) fn();
-  else alert('❌ Impression non disponible pour ce segment');
+  else _statPrintScreen('Statistiques — '+view);
 }
 
 // ══ Classement ══
@@ -29360,6 +30537,7 @@ td.r{text-align:right}td.ca{font-weight:800;color:#0369a1}
     <table><thead><tr><th>ANNÉE</th><th>RANG</th><th>CA</th><th></th></tr></thead><tbody>${rankRows}</tbody></table>
     ${bestRank?`<div style="font-size:7pt;color:#6b7280;margin-top:4px">Meilleur rang jamais atteint : <b class="gold">#${bestRank.rank}</b> en ${bestRank.year}${curRank?` · Rang actuel (${latestYear}) : #${curRank.rank}`:''}</div>`:''}
   </div>
+  ${_cpFicheHTML(code)}
   <div class="sect">
     <div class="sect-title">🎯 SEGMENTATION (période actuellement affichée à l'écran)</div>
     ${seg?`<div class="seg-badge">${seg.label}</div>
@@ -29514,6 +30692,7 @@ td.ca{font-weight:800;color:#0369a1}
 </tr></thead><tbody>${rows}
 <tr class="total"><td colspan="3">TOTAL</td><td class="r">${FM(totCAAll)}</td><td class="r">100%</td><td class="r">${FN(clients.reduce((s,c)=>s+c.totOps,0))}</td><td colspan="3"></td></tr>
 </tbody></table>
+${_cpMultiHTML(codes)}
 <div style="font-size:6pt;color:#9ca3af;text-align:right;margin-top:6px">FWT Comptabilité · Fiche Comparative · ${new Date().toLocaleString('fr-FR')}</div>
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
@@ -30910,6 +32089,7 @@ async function _wordFicheClientSingle(code){
     }else{
       bp.push(_fwPara('Aucune compagnie avec historique daté exploitable pour ce client.','9ca3af',false,15));
     }
+    _cpWordSection(code,name,bp); // v75 — 8.3 évolution / rang / couverture
     bp.push(_fwPageBreak());
 
     // ═══════════════════════════════════════════
@@ -31048,6 +32228,7 @@ async function _wordFicheClientMulti(codes){
       .concat(clients.map(c=>_fwTr(_fwTc(c.name,null,false,'111827',6350,14,'left'),_fwTc(c.qBest==='Q1'?'Q1 (1-15)':'Q2 (16-fin)',null,true,'0369a1',3000,14,'center'))));
     bp.push(_fwTable(qRowsX,9350));
 
+    _cpMultiWord(codes,bp); // v76 — évolution / rang / couverture
     bp.push(_fwSpacer(200));
     bp.push(_fwPara('FWT Comptabilité · Fiche Comparative Clients (Word) · '+new Date().toLocaleString('fr-FR'),'9ca3af',false,13));
 
@@ -32062,10 +33243,6 @@ ${alertYTD}
   setTimeout(()=>URL.revokeObjectURL(url),3000);
  }catch(e){ alert('⚠️ Erreur : '+(e&&e.message?e.message:e)); }
 }
-function printParFolio(){alert('📅 À implémenter');printClassement();}
-function printEvolution(){alert('📈 À implémenter');printClassement();}
-function printEvolClient(){alert('👤 À implémenter');printClassement();}
-function printComparaison(){alert('🔄 À implémenter');printClassement();}
 
 // ══ Insights ══
 function printInsights(){
@@ -33084,25 +34261,41 @@ function fluxCreateEcriture() {
 
       <!-- Tabs -->
       <div class="stat-tabbar">
-        <button class="stat-vtab on" data-view="rank"    onclick="statSetView('rank')">📋 Classement</button>
-        <button class="stat-vtab"    data-view="chart"   onclick="statSetView('chart')">📊 Graphique</button>
-        <button class="stat-vtab"    data-view="top"     onclick="statSetView('top')">🏆 Top Vendeurs</button>
-        <button class="stat-vtab"    data-view="mv"      onclick="statSetView('mv')">🏅 Meilleurs Vendeurs</button>
-        <button class="stat-vtab"    data-view="clievol" onclick="statSetView('clievol')">👤 Évol. Client</button>
-        <button class="stat-vtab"    data-view="comp"    onclick="statSetView('comp')">✈️ Compagnies</button>
-        <button class="stat-vtab"    data-view="commission" onclick="statSetView('commission')" title="1 clic = vue commission · 2ème clic = désactiver mode commission">💼 Commissions</button>
-        <button class="stat-vtab"    data-view="tl"      onclick="statSetView('tl')">📅 Par Folio</button>
-        <button class="stat-vtab"    data-view="quinz"   onclick="statSetView('quinz')">🔢 Quinzaine</button>
-        <button class="stat-vtab"    data-view="evol"    onclick="statSetView('evol')">📈 Évolution</button>
-        <button class="stat-vtab"    data-view="heat"    onclick="statSetView('heat')">🔥 Heatmap</button>
-        <button class="stat-vtab"    data-view="compare" onclick="statSetView('compare')" id="stat-tab-compare" style="display:none;">🔄 Comparaison</button>
-        <button class="stat-vtab"    data-view="pareto"  onclick="statSetView('pareto')">📐 Pareto 80/20</button>
-        <button class="stat-vtab"    data-view="stats"   onclick="statSetView('stats')">🧮 Stats Desc.</button>
-        <button class="stat-vtab"    data-view="segment" onclick="statSetView('segment')">🎯 Segments</button>
-        <button class="stat-vtab"    data-view="anciennete" onclick="statSetView('anciennete')">📅 Ancienneté Client</button>
-        <button class="stat-vtab"    data-view="insights" onclick="statSetView('insights')">💡 Insights</button>
-        <button class="stat-xport-btn" id="stat-xport-btn" disabled onclick="statExport()">⬇ Export Excel</button>
-        <button class="stat-xport-btn" id="stat-word-btn" disabled onclick="sOpenReportSectionModal()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 3px 10px rgba(37,99,235,.28);">📄 Rapport Word</button>
+        <div class="stat-tabgrp"><span class="stat-tabgrp-l">Synthèse</span>
+          <button class="stat-vtab" data-view="dash"    onclick="statSetView('dash')" title="Situation du mois, cumul vs N-1, hausses/baisses, alertes">🏠 Tableau de bord</button>
+          <button class="stat-vtab on" data-view="rank"    onclick="statSetView('rank')">📋 Classement</button>
+          <button class="stat-vtab"    data-view="chart"   onclick="statSetView('chart')">📊 Graphique</button>
+          <button class="stat-vtab"    data-view="top"     onclick="statSetView('top')">🏆 Top Vendeurs</button>
+          <button class="stat-vtab"    data-view="mv"      onclick="statSetView('mv')">🏅 Meilleurs Vendeurs</button>
+          <button class="stat-vtab"    data-view="alertes" onclick="statSetView('alertes')" title="Chute de rang, perte de couverture, inactivité, baisse de CA">🚨 Alertes clients</button>
+        </div>
+        <div class="stat-tabgrp"><span class="stat-tabgrp-l">Clients</span>
+          <button class="stat-vtab"    data-view="clievol" onclick="statSetView('clievol')">👤 Évol. Client</button>
+          <button class="stat-vtab"    data-view="cliperf" id="stat-tab-cliperf" onclick="statSetView('cliperf')" style="display:none;" title="Évolution du CA et classement du client filtré, par quinzaine / mois / année">🎯 Évol. &amp; Rang Client</button>
+          <button class="stat-vtab"    data-view="segment" onclick="statSetView('segment')">🎯 Segments</button>
+          <button class="stat-vtab"    data-view="anciennete" onclick="statSetView('anciennete')">📅 Ancienneté Client</button>
+          <button class="stat-vtab"    data-view="pareto"  onclick="statSetView('pareto')">📐 Pareto 80/20</button>
+        </div>
+        <div class="stat-tabgrp"><span class="stat-tabgrp-l">Compagnies &amp; commissions</span>
+          <button class="stat-vtab"    data-view="comp"    onclick="statSetView('comp')">✈️ Compagnies</button>
+          <button class="stat-vtab"    data-view="commission" onclick="statSetView('commission')" title="1 clic = vue commission · 2ème clic = désactiver mode commission">💼 Commissions</button>
+          <button class="stat-vtab"    data-view="evolcie" onclick="statSetView('evolcie')" title="Évolution mensuelle / trimestrielle / semestrielle / annuelle des compagnies et des commissions">📈 Évol. Cie &amp; Com.</button>
+        </div>
+        <div class="stat-tabgrp"><span class="stat-tabgrp-l">Périodes</span>
+          <button class="stat-vtab"    data-view="tl"      onclick="statSetView('tl')">📅 Par Folio</button>
+          <button class="stat-vtab"    data-view="quinz"   onclick="statSetView('quinz')">🔢 Quinzaine</button>
+          <button class="stat-vtab"    data-view="evol"    onclick="statSetView('evol')">📈 Évolution</button>
+          <button class="stat-vtab"    data-view="heat"    onclick="statSetView('heat')">🔥 Heatmap</button>
+          <button class="stat-vtab"    data-view="compare" onclick="statSetView('compare')" id="stat-tab-compare" style="display:none;">🔄 Comparaison</button>
+        </div>
+        <div class="stat-tabgrp"><span class="stat-tabgrp-l">Analyse</span>
+          <button class="stat-vtab"    data-view="stats"   onclick="statSetView('stats')">🧮 Stats Desc.</button>
+          <button class="stat-vtab"    data-view="insights" onclick="statSetView('insights')">💡 Insights</button>
+        </div>
+        <div class="stat-tabxp">
+          <button class="stat-xport-btn" id="stat-xport-btn" disabled onclick="statExport()">⬇ Export Excel</button>
+          <button class="stat-xport-btn" id="stat-word-btn" disabled onclick="sOpenReportSectionModal()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 3px 10px rgba(37,99,235,.28);">📄 Rapport Word</button>
+        </div>
       </div>
       <!-- v37 : Barre mode Commission + badge GLOBAL -->
       <div class="stat-mode-bar" id="stat-mode-bar" style="display:none">
@@ -33735,5 +34928,22 @@ if (wrap && canvas) {
   onmouseleave="this.style.opacity='.7';this.style.transform='scale(1)'">
   <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15"><path d="M1 1h6v2H3v4H1V1zm12 0h6v6h-2V3h-4V1zM1 13h2v4h4v2H1v-6zm16 4h-4v2h6v-6h-2v4z"/></svg>
 </button>
+<!-- v72b — Recherche base RAP (JBR) -->
+<div id="sbas-ov" style="display:none;position:fixed;inset:0;background:rgba(5,16,31,.65);z-index:100000;align-items:flex-start;justify-content:center;padding-top:6vh;" onmousedown="if(event.target===this)sbasClose()">
+  <div style="background:var(--surface,#fff);color:var(--txt,#111);width:min(900px,94vw);max-height:84vh;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+    <div style="padding:10px 14px;background:linear-gradient(120deg,#05101f,#042c53);color:#fff;display:flex;align-items:center;gap:10px;">
+      <b style="font-size:13px;">🔎 Recherche base RAP (BAS_RAP)</b><span id="sbas-cnt" style="font-size:10px;opacity:.75;flex:1;"></span>
+      <button onclick="sbasClose()" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:9px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--bo);">
+      <input id="sbas-q" placeholder="Nom client, code auxiliaire (411…), libellé relevé, RIB…" oninput="_sbasHi=0;sbasRender()" onkeydown="sbasKey(event)" autocomplete="off" style="flex:1;min-width:240px;padding:8px 10px;border:1.5px solid var(--bo);border-radius:6px;background:var(--bg2);color:var(--txt);font-size:12px;outline:none;">
+      <button id="sbas-t-all" onclick="sbasSetType('all')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">Tous</button>
+      <button id="sbas-t-411" onclick="sbasSetType('411')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">411</button>
+      <button id="sbas-t-165" onclick="sbasSetType('165')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">1650</button>
+    </div>
+    <div id="sbas-res" style="overflow:auto;flex:1;"></div>
+    <div style="padding:5px 12px;font-size:9px;color:var(--txt3);border-top:1px solid var(--bo);">↑↓ naviguer · ENTRÉE choisir (le client est injecté dans la saisie) · ÉCHAP fermer</div>
+  </div>
+</div>
 </body>
 </html>
