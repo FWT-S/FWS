@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><script>window.__V0_SANDBOX_ID__="sb-1m2f3vnaduol";;(function o1(e){let t=Symbol.for("__next_dev_bridge_runtime_observer__"),r=window[t],n=e||{},i=n.messageType||"next-dev-bridge:runtime",a=n.readyMessageType||"next-dev-bridge:runtime-ready",s=n.resetMessageType||"next-dev-bridge:runtime-reset",o=n.targetOrigin||"*",u=!1!==n.dedupe,l=!1!==n.isAppDirectory,c="string"==typeof n.sourceMapEndpoint&&n.sourceMapEndpoint?n.sourceMapEndpoint:"/__nextjs_original-stack-frames",d="string"==typeof n.sourceMapFrameRoot&&n.sourceMapFrameRoot?n.sourceMapFrameRoot.replace(/\/+$/,""):"";if(r)return void g(a,{existing:!0,href:window.location.href,windowId:r.windowId});let p=1,h=`${Date.now()}-${Math.random().toString(36).slice(2)}`,f={errors:[]},m=new Set;function g(e,t){window.parent!==window&&window.parent.postMessage({type:e,...t},o)}async function v(e){var t;let r=["reported-error"===(t=e).source?"error":t.source,t.name,t.message,t.stack].join("\n");if(u&&m.has(r))return;m.add(r);let n={...e,id:p++,at:new Date().toISOString()};f.errors=[...f.errors,n],g(i,{event:{type:"runtime:error",error:n,errors:f.errors},state:f,href:window.location.href,windowId:h}),S(n).then(e=>{f.errors.some(e=>e.id===n.id)&&(n.mapped=e,f.errors=f.errors.map(e=>e.id===n.id?n:e),g(i,{event:{type:"runtime:error",error:n,errors:f.errors},state:f,href:window.location.href,windowId:h}))}).catch(()=>{})}function y(){0===f.errors.length?m.clear():(f.errors=[],m.clear(),g(i,{event:{type:"runtime:cleared",errors:[]},state:f,href:window.location.href,windowId:h}))}function b(e){var t,r,n,i,a;let s,o,u,l;v((s=$((t=e).error,t.message||"Uncaught error"),o=t.filename||void 0,u=T(t.lineno),l=T(t.colno),{source:"error",name:s.name,message:s.message,stack:s.stack||(r=s.message,n=o,i=u,a=l,n&&i&&a?`${r}
-    at <anonymous> (${n}:${i}:${a})`:""),filename:o,line:u,column:l}))}function _(e){let t;v({source:"unhandledrejection",name:(t=$(e.reason,"Unhandled promise rejection")).name,message:t.message,stack:t.stack})}let x=window.reportError,w=null;function E(e){let t=e.data;t&&"object"==typeof t&&t.type===s&&y()}function $(e,t){return e instanceof Error?{name:e.name||"Error",message:e.message||t,stack:e.stack||""}:e&&"object"==typeof e?{name:"string"==typeof e.name?e.name:"Error",message:"string"==typeof e.message?e.message:function(e){try{return JSON.stringify(e)}catch{return""}}(e)||t,stack:"string"==typeof e.stack?e.stack:""}:{name:"Error",message:"string"==typeof e?e:null==e?t:String(e),stack:""}}async function S(e){var t,r;let n=(t=String(e.stack).split("\n").map(P).filter(Boolean),r=e.filename,t.map(e=>({...e,file:function(e,t){var r,n;if("string"!=typeof e||0===e.length)return;let i=I(e);if(i)return O(i);if(r=e,/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(r))return e;if(t&&R(t)===R(e)){let e=I(t);return e?O(e):t}let a=e.startsWith("_next/")?`/${e}`:e;return a.startsWith("/_next/")?O(a):!(n=a).includes("/")&&n.endsWith(".js")&&(n.startsWith("_")||n.includes("._.")||n.startsWith("node_modules_")||n.startsWith("turbopack-"))?O(`/_next/static/chunks/${a}`):e}(e.file,r)})));return{message:e.message,stack:e.stack,frames:n,mappedFrames:n.length>0?await k(n):[]}}async function k(e){try{let t=function(e){try{return new URL(e,window.location.href).origin!==window.location.origin}catch{return!1}}(c),r={body:JSON.stringify({frames:e,isServer:!1,isEdgeServer:!1,isAppDirectory:l,sourceOrigin:window.location.origin}),cache:"no-store",credentials:t?"omit":"same-origin",method:"POST",mode:t?"cors":"same-origin"};t||(r.headers={"content-type":"application/json"});let n=await fetch(c,{...r});if(!n.ok||204===n.status){let t=await n.text().catch(()=>"");return e.map(()=>({status:"rejected",reason:t||"No original stack frame response from Next dev server."}))}let i=await n.json();if(!Array.isArray(i))return e.map(()=>({status:"rejected",reason:"Invalid original stack frame response from Next dev server."}));return e.map((e,t)=>i[t]||{status:"rejected",reason:"No original stack frame response for frame."})}catch(t){return e.map(()=>({status:"rejected",reason:t instanceof Error?t.message:String(t)}))}}function O(e){return d?`${d}/${e.replace(/^\/_next\/static\/?/,"")}`:e}function I(e){if(e.startsWith("/_next/"))return e;if(e.startsWith("_next/"))return`/${e}`;try{let t=new URL(e);return t.pathname.startsWith("/_next/")?t.pathname:""}catch{return""}}function R(e){return e.split("?")[0].split(/[\\/]/).pop()||e}function P(e){let t=e.trim();if(!t.startsWith("at "))return null;let r=t.slice(3),n="<anonymous>",i=r,a=r.indexOf("("),s=r.endsWith(")")?r.length-1:-1;-1!==a&&-1!==s&&s>a&&(n=r.slice(0,a).trim()||"<anonymous>",i=r.slice(a+1,s));let o=/^(.*):(\d+):(\d+)$/.exec(i);return o?{file:o[1],methodName:n,arguments:[],line1:Number(o[2]),column1:Number(o[3])}:null}function T(e){return"number"==typeof e&&Number.isFinite(e)&&e>0?e:void 0}"function"==typeof x&&(w=function(e){let t;return v({source:"reported-error",name:(t=$(e,"Reported runtime error")).name,message:t.message,stack:t.stack}),x.call(window,e)},window.reportError=w),window.addEventListener("error",b),window.addEventListener("unhandledrejection",_),window.addEventListener("message",E),window[t]={windowId:h,getSnapshot:()=>({errors:f.errors.slice()}),reset:y,stop:function(){window.removeEventListener("error",b),window.removeEventListener("unhandledrejection",_),window.removeEventListener("message",E),w&&window.reportError===w&&(window.reportError=x),delete window[t]}},g(a,{existing:!1,href:window.location.href,windowId:h})})({"messageType":"next-dev-bridge:event","sourceMapFrameRoot":"file:///vercel/share/v0-project/.next/dev/static"});</script><script async src="/v0-runtime-dist.js"></script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FWT — Comptabilité ✈ v75</title>
+<title>FWT — Comptabilité ✈ v91</title>
 <!-- © boua.kar — Mars 2026 — Tous droits réservés -->
 <meta name="author" content="boua.kar">
 <meta name="copyright" content="© boua.kar — Mars 2026">
@@ -1035,6 +1034,17 @@ select option { background:var(--surface); color: var(--txt); }
   transition: background .1s;
 }
 .mt-sug-item:hover { background: var(--sky-pale); }
+/* v87 — suggestions montant : 2 lignes (montant + client identifié / date + libellé relevé) */
+#mt-suggest, #mt-suggest-tot { max-height: 340px; min-width: 420px; }
+.mt-sug-item.mt-sug-2l { flex-direction: column; align-items: stretch; gap: 3px; }
+.mt-sug-l1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mt-sug-l2 { font-size: 10px; color: var(--mu2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt-sug-amt { font-weight: 700; color: var(--green); min-width: 110px; font-family: var(--font-mono); }
+.mt-sug-cli { background: #ede9fe; color: #6d28d9; border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: 800; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mt-sug-aux { color: #7c3aed; font-size: 10px; font-family: var(--font-mono); }
+.mt-sug-meth { background: #f5f3ff; color: #6d28d9; border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 800; }
+.mt-sug-nocli { background: #fff7ed; color: #92400e; border-radius: 4px; padding: 1px 6px; font-size: 10px; }
+.mt-sug-dup { background: #fef3c7; color: #92400e; border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 800; }
 
 /* SCROLLBAR */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -2249,6 +2259,8 @@ html.dark-mode .stat-tbl tbody tr.top3{background:linear-gradient(90deg,rgba(212
 .stat-vtab[data-view="compare"]:hover:not(.on){background:rgba(124,58,237,.08);}
 /* ── Nouvelles vues analytiques avancées ──────────────────────────── */
 .stat-vtab[data-view="pareto"]   { border-color:rgba(20,184,166,.35);color:#0d9488; }
+.stat-vtab[data-view="red"]{ border-color:rgba(220,38,38,.4);color:#b91c1c; }
+.stat-vtab[data-view="red"].on{ background:linear-gradient(135deg,#ef4444,#b91c1c);border-color:transparent;color:#fff; }
 .stat-vtab[data-view="pareto"].on{ background:linear-gradient(135deg,#14b8a6,#0d9488);border-color:transparent;color:#fff; }
 .stat-vtab[data-view="commission"]   { border-color:rgba(5,150,105,.35);color:#047857; }
 .stat-vtab[data-view="commission"].on{ background:linear-gradient(135deg,#10b981,#047857);border-color:transparent;color:#fff; }
@@ -2278,6 +2290,7 @@ html.dark-mode .stat-tbl tbody tr.top3{background:linear-gradient(90deg,rgba(212
 .stat-mv-comp-btn:hover:not(.on){border-color:#e11d48;color:#e11d48;background:rgba(225,29,72,.06);}
 .stat-mv-comp-btn.on{background:#e11d48;border-color:#e11d48;color:#fff;}
 .stat-mv-tbl{width:100%;border-collapse:collapse;font-size:10.5px;}
+.stat-mv-tbl thead th{position:sticky;top:0;z-index:8;background-color:var(--bg2,#fff);box-shadow:0 1.5px 0 var(--bo);}   /* v91 — en-tête figé */
 .stat-mv-tbl th{text-align:left;padding:6px 8px;font-size:8.5px;font-weight:800;color:var(--txt4);letter-spacing:.5px;border-bottom:1.5px solid var(--bo);white-space:nowrap;}
 .stat-mv-tbl td{padding:6px 8px;border-bottom:1px solid var(--bo);vertical-align:middle;}
 .stat-mv-tbl tr:hover td{background:var(--sky-pale);}
@@ -2513,6 +2526,51 @@ html.dark-mode .sd-redbdg{background:rgba(220,38,38,.15);border-color:rgba(220,3
 #tab-import::-webkit-scrollbar-track{background:rgba(2,132,199,.10);border-radius:6px;}
 #tab-import::-webkit-scrollbar-thumb{background:var(--sky,#0284c7);border-radius:6px;border:2px solid transparent;background-clip:content-box;}
 #tab-import::-webkit-scrollbar-thumb:hover{background:var(--sky-deep,#0369a1);background-clip:content-box;}
+
+/* ═══ v83 — NDC-F : affichage optimisé ═══ */
+/* panneau de gauche : la zone principale défile (le bas — bouton VALIDER, pièces, export — n'est plus coupé) */
+.left-panel{min-height:0;}
+.left-panel>.section:first-child{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:var(--sky,#0284c7) rgba(2,132,199,.12);}
+.left-panel>.section:first-child::-webkit-scrollbar{width:10px;}
+.left-panel>.section:first-child::-webkit-scrollbar-track{background:rgba(2,132,199,.08);border-radius:6px;}
+.left-panel>.section:first-child::-webkit-scrollbar-thumb{background:var(--sky,#0284c7);border-radius:6px;border:2px solid transparent;background-clip:content-box;}
+.left-panel>.section:not(:first-child){flex:0 0 auto;}
+/* en mode NDC-F le panneau de saisie est élargi */
+.main.ndcf-wide #ebv-piece-ctr{display:none !important;}
+/* v84 : les écritures NDC-F sont dans le journal de droite (comme EBV) */
+#ndcf-right-panel,#ndcf-pieces-zone{display:none !important;}
+#search-ndcf{min-width:0;}
+#search-ndcf *{box-sizing:border-box;}
+#search-ndcf input{max-width:100%;}
+#search-ndcf>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;}
+#ndcf-result,#ndcf-verif{overflow:hidden;overflow-wrap:anywhere;}
+#ndcf-verif div[style*="grid-template-columns:1.4fr 1fr auto"]{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto !important;}
+#ndcf-verif div[style*="grid-template-columns:1.4fr 1fr auto"]>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* lignes d'écriture : compte | libellé | montant */
+.ndcf-ln{display:grid !important;grid-template-columns:minmax(15ch,max-content) minmax(0,1fr) max-content;column-gap:9px;align-items:baseline;}
+.ndcf-ln>span:nth-child(1){white-space:nowrap;}
+.ndcf-ln>span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.ndcf-ln>span:nth-child(3){text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+/* listes déroulantes (montant / facture) : jamais coupées */
+.ndcf-drop{position:fixed !important;z-index:2000 !important;overflow-y:auto;box-shadow:0 12px 30px rgba(5,16,31,.28) !important;}
+.ndcf-drop>div{flex-wrap:wrap !important;gap:2px 10px !important;}
+.ndcf-drop>div>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 120px !important;}
+.ndcf-drop>div>span:nth-child(n+3){flex:0 1 auto;}
+/* bouton VALIDER toujours visible en bas du panneau */
+#ndcf-btn-val{position:sticky;bottom:4px;z-index:6;background:linear-gradient(rgba(14,165,233,.14),rgba(14,165,233,.14)),var(--surface) !important;box-shadow:0 -10px 10px -6px var(--surface);}
+#ndcf-pieces-list{max-height:34vh;overflow-y:auto;padding-right:4px;}
+/* volet droit des écritures : ne recouvre plus l'en-tête (stats, export) */
+#ndcf-right-panel{top:52px !important;height:calc(100vh - 52px) !important;max-width:46vw;}
+
+/* ═══ v85 — Onglet IMPORTS : page indépendante (plein écran), ne se superpose plus à la Saisie ═══ */
+.main.ebv-imp{grid-template-columns:1fr;}
+.main.ebv-imp .right-panel{display:none !important;}
+.main.ebv-imp .left-panel{grid-column:1 / -1;border-right:none;}
+.main.ebv-imp .left-panel>.section:not(:first-child){display:none !important;}
+.main.ebv-imp .left-panel>.section:first-child{padding:12px 22px 22px;}
+.main.ebv-imp #tab-import{max-height:none !important;overflow:visible !important;padding-right:0;scrollbar-gutter:auto;}
+#tab-import .imp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:12px;align-items:start;}
+#tab-import .imp-grid>div{margin-bottom:0 !important;min-width:0;}
 </style>
 </head>
 <body>
@@ -2975,13 +3033,13 @@ document.addEventListener('keydown',function(e){
      MODULE JBR — JOURNAL BANQUE
 ══════════════════════════════════════════ -->
 <div id="module-jbr">
-  <div style="position:fixed;top:9px;left:9px;z-index:500;display:flex;gap:5px;">
-    <button class="btn-retour" onclick="retourChoix()" style="position:static;">⬅ MODULES</button>
-    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
-  </div>
 
 <!-- TOPBAR -->
 <div id="top">
+  <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+    <button class="btn-retour" onclick="retourChoix()" style="position:static;">⬅ MODULES</button>
+    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
+  </div>
   <div class="logo">
     <div class="lico">📑</div>
     <span class="htit">JBR·FWT</span>
@@ -3412,10 +3470,6 @@ document.addEventListener('keydown',function(e){
      MODULE FAC — FACTURES
 ══════════════════════════════════════════ -->
 <div id="module-fac">
-  <div style="position:fixed;top:9px;left:9px;z-index:500;display:flex;gap:5px;">
-    <button class="btn-retour" onclick="retourChoix()" style="position:static;">⬅ MODULES</button>
-    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
-  </div>
   <div id="ndcf-right-panel" style="display:none;position:fixed;right:0;top:0;width:380px;height:100vh;
     background:var(--surface);border-left:1px solid var(--bo2);overflow-y:auto;z-index:200;padding:14px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--bo2);">
@@ -3438,9 +3492,15 @@ document.addEventListener('keydown',function(e){
 <div id="app">
 
 <div class="header">
-  <div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+    <button class="btn-retour" onclick="retourChoix()" style="position:static;">⬅ MODULES</button>
+    <button onclick="deconnexion()" title="Retour écran mot de passe" style="padding:5px 9px;background:var(--bg2);border:1px solid var(--bo2);border-radius:7px;color:var(--txt3);font-family:var(--font-ui);font-size:10px;cursor:pointer;backdrop-filter:blur(10px);">🔒</button>
+    </div>
+    <div>
     <div class="header-title">🗂 Saisie Comptable — FWT</div>
     <div class="header-sub" id="period-label">Aucune base chargée</div>
+  </div>
   </div>
   <div class="header-right">
     <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
@@ -3506,6 +3566,7 @@ document.addEventListener('keydown',function(e){
       <div style="font-size:12px;font-weight:800;color:var(--sky);margin-bottom:2px;">📥 IMPORTS — fichiers &amp; bases de données</div>
       <div style="font-size:9px;color:var(--txt3);margin-bottom:8px;">Tous les chargements du module EBV au même endroit. Le récapitulatif se met à jour après chaque import.</div>
       <div id="ebv-imp-status" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;"></div>
+      <div class="imp-grid">
       <div style="background:var(--surface);border:1.5px solid var(--bo);border-left:4px solid var(--sky);border-radius:9px;padding:11px 13px;margin-bottom:11px;">
         <div style="font-size:11px;font-weight:800;color:var(--sky);letter-spacing:.4px;">📋 1 · PLANNING DE RÉCEPTION (base compagnies)</div>
         <div style="font-size:9px;color:var(--txt3);margin:2px 0 8px;">Planning Excel .xlsx / .xls → clients par compagnie, ou base intégrée</div>
@@ -3581,6 +3642,7 @@ document.addEventListener('keydown',function(e){
 
 
       </div>
+      </div>
     </div>
   </div>
 
@@ -3592,6 +3654,7 @@ document.addEventListener('keydown',function(e){
       <button class="tab" id="tab-ndcf-btn" onclick="switchSearch('ndcf',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">✈ NDC-F</button>
       <button class="tab" id="tab-ancien-btn" onclick="switchSearch('ancien',this)" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.4);color:var(--sky);font-weight:700;">📝 ANCIEN</button>
       <button class="tab" id="tab-redressement-btn" onclick="switchSearch('redressement',this)" style="background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.35);color:var(--red);font-weight:700;">⚖ REDRESSEMENT</button>
+      <button class="tab" id="tab-bases-btn" onclick="edbOpen()" title="Consulter / rechercher dans les bases de la saisie (F3)" style="flex:0 0 auto;margin-left:auto;background:#0c447c;border-color:#0c447c;color:#fff;font-weight:700;">🔎 Bases <span style="opacity:.7;font-weight:600">F3</span></button>
     </div>
     <div id="search-iata">
       <div class="input-group">
@@ -3603,12 +3666,6 @@ document.addEventListener('keydown',function(e){
 
 <!-- PANNEAU NDC-F -->
 <div id="search-ndcf" style="display:none">
-  <div id="ndcf-import-zone-mini" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(14,165,233,.07);border:1.5px solid var(--bo-sky);border-radius:9px;padding:8px 12px;margin-bottom:10px;">
-    <span style="font-size:10px;color:var(--sky);font-weight:700;">📎 FICHIER COMMERCIAL NDC-F</span>
-    <span id="ndcf-load-mini" style="font-size:9px;color:var(--txt3);">Non chargé</span>
-    <button onclick="ebvGoImports()" style="margin-left:auto;padding:4px 11px;background:rgba(14,165,233,.15);border:1.5px solid var(--bo-sky);border-radius:6px;color:var(--sky);font-family:var(--font-ui);font-size:9px;font-weight:700;cursor:pointer;">📥 Importer / gérer → onglet IMPORTS</button>
-  </div>
-
   <div id="ndcf-verif" style="display:none;background:rgba(14,165,233,.05);border:1.5px solid var(--bo-sky);border-radius:9px;padding:9px 12px;margin-bottom:10px;"></div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px;">
@@ -3639,7 +3696,7 @@ document.addEventListener('keydown',function(e){
     <div style="position:relative;margin-top:4px;">
       <input id="ndcf-fac-num" placeholder="Ex: 12, 045..." oninput="onNDCFFac(this.value)" onkeydown="ndcfFacMK(event)"
         style="width:100%;background:var(--bg2);border:1.5px solid rgba(217,119,6,.25);border-radius:6px;padding:7px;color:var(--amber);font-family:var(--font-mono);font-size:13px;font-weight:700;" autocomplete="off">
-      <div id="ndcf-fac-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid rgba(217,119,6,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
+      <div id="ndcf-fac-suggest" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid rgba(217,119,6,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
     </div>
   </div>
 
@@ -3648,7 +3705,7 @@ document.addEventListener('keydown',function(e){
     <div style="position:relative;margin-top:4px;">
       <input id="ndcf-mt" placeholder="0" oninput="onNDCFMt(this.value)" onkeydown="ndcfMK(event)"
         style="width:100%;background:var(--bg2);border:1.5px solid var(--bo-sky);border-radius:6px;padding:8px;color:var(--green-f);font-family:var(--font-mono);font-size:14px;font-weight:700;">
-      <div id="ndcf-suggest" style="display:none;position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:8px;z-index:400;max-height:220px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
+      <div id="ndcf-suggest" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:8px;z-index:400;max-height:220px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.9);"></div>
     </div>
   </div>
 
@@ -3694,7 +3751,7 @@ document.addEventListener('keydown',function(e){
     <div class="ac-wrap">
       <input type="text" id="ancien-client" placeholder="Nom ou code client..." autocomplete="off"
         oninput="onAncienClientChange()" onkeydown="onAncienClientKey(event)" style="width:100%;">
-      <div id="ancien-ac-list" style="position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(2,132,199,.15);display:none;"></div>
+      <div id="ancien-ac-list" style="position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid var(--bo-sky);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(2,132,199,.15);display:none;"></div>
     </div>
     <div id="ancien-client-info" style="margin-top:6px;padding:7px;background:rgba(14,165,233,.07);border-radius:6px;font-size:10px;color:var(--sky);display:none;border-left:3px solid var(--sky);"></div>
   </div>
@@ -3722,7 +3779,7 @@ document.addEventListener('keydown',function(e){
     <div class="ac-wrap">
       <input type="text" id="redr-client" placeholder="Nom client ou code IATA (4 chiffres)..." autocomplete="off"
         oninput="onRedrClientChange()" onkeydown="onRedrClientKey(event)" style="width:100%;">
-      <div id="redr-ac-list" style="position:absolute;top:calc(100%+3px);left:0;right:0;background:var(--surface);border:1.5px solid rgba(220,38,38,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(220,38,38,.12);display:none;"></div>
+      <div id="redr-ac-list" style="position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:1.5px solid rgba(220,38,38,.25);border-radius:8px;z-index:401;max-height:200px;overflow-y:auto;box-shadow:0 12px 30px rgba(220,38,38,.12);display:none;"></div>
     </div>
     <div id="redr-client-info" style="margin-top:6px;padding:7px;background:rgba(220,38,38,.06);border-radius:6px;font-size:10px;color:var(--red);display:none;border-left:3px solid var(--red);"></div>
   </div>
@@ -4094,7 +4151,7 @@ const BASE=[
 {code:"41100373",label:"AMAZONE ALGERIE SARL",type:"411"},{code:"41100374",label:"RYTEL TRAVEL EURL",type:"411"},
 {code:"41100375",label:"EURO WORLD TRAVELS AND TOURS SERVICE SARL",type:"411"},
 {code:"41100376",label:"LOUJAINE TOURS",type:"411"},{code:"41100377",label:"MUKUNDA TRAVEL",type:"411"},
-{code:"41100379",label:"ORANGE VOYAGE",type:"411"},{code:"41100380",label:"LE RELAIS VOYAGES",type:"411"},
+{code:"41100379",label:"ORANGE VOYAGE",type:"411"},{code:"411ND012",label:"LE RELAIS VOYAGES",type:"411"},
 {code:"41100381",label:"BABOUCHE TRAVEL",type:"411"},{code:"41100400",label:"TRAVEL GULF AGENCY",type:"411"},
 {code:"41100402",label:"CHOUROUK VOYAGES",type:"411"},{code:"41100405",label:"OLYMPIC VOYAGES",type:"411"},
 {code:"41100408",label:"DBK VOYAGES",type:"411"},{code:"41100410",label:"SENSAWI VOYAGES",type:"411"},
@@ -5618,6 +5675,45 @@ function DC(code){
 }
 
 
+// ══ v87 — SUGGESTIONS MONTANT : CLIENT IDENTIFIÉ À CÔTÉ DE CHAQUE OPÉRATION DU RELEVÉ ══
+// Réutilise le moteur V2 existant (v2IdentifierClient : EXACT/ACCOUNT/FUZZY/TOKEN) — lecture seule,
+// aucun effet de bord sur SEL. Résultat mis en cache par libellé (invalidé si BAS_RAP est rechargée).
+const _mtCliCache=new Map();
+let _mtCliSig='';
+function _mtEsc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function _mtSugClient(lib){
+  if(!lib||typeof _V2_LOADED==='undefined'||!_V2_LOADED) return null;
+  const sig=(typeof _V2_BAS_DATA!=='undefined'&&_V2_BAS_DATA?_V2_BAS_DATA.length:0)+'|'+(typeof _V2_CLIENTS_DATA!=='undefined'&&_V2_CLIENTS_DATA?_V2_CLIENTS_DATA.length:0);
+  if(sig!==_mtCliSig){_mtCliCache.clear();_mtCliSig=sig;}
+  if(_mtCliCache.has(lib)) return _mtCliCache.get(lib);
+  let out=null;
+  try{
+    const r=v2IdentifierClient(lib);
+    if(r&&r.client) out={client:String(r.client),aux:String(r.auxiliaire||'').trim(),meth:r.methode||'V2'};
+  }catch(e){}
+  _mtCliCache.set(lib,out);
+  return out;
+}
+function _mtSugRow(x,i,prefix,fn,selected,list){
+  const c=x.cli;
+  let cli='';
+  if(c){
+    const ic={'EXACT':'🎯','ACCOUNT':'🔢','FUZZY':'≈','TOKEN':'🏷'}[c.meth]||'🔐';
+    cli=`<span class="mt-sug-cli" title="Client identifié depuis le libellé du relevé">👤 ${_mtEsc(c.client)}</span>`
+       +(c.aux?`<span class="mt-sug-aux">${_mtEsc(c.aux)}</span>`:'')
+       +`<span class="mt-sug-meth">${ic} ${_mtEsc(c.meth)}</span>`;
+  } else if(typeof _V2_LOADED!=='undefined'&&_V2_LOADED){
+    cli='<span class="mt-sug-nocli">⚠ client non identifié</span>';
+  }
+  const n=list.filter(y=>y.mt===x.mt).length;
+  const dup=n>1?`<span class="mt-sug-dup" title="${n} opérations du relevé ont ce même montant — choisissez selon le client/la date">×${n} même montant</span>`:'';
+  const l2=(x.date?_mtEsc(x.date)+' — ':'')+_mtEsc(x.lib);
+  return `<div class="mt-sug-item mt-sug-2l" id="${prefix}${i}" onmousedown="${fn}(${i})"${selected?' style="background:#1e3a5f;"':''}>
+      <div class="mt-sug-l1"><span class="mt-sug-amt">${FM(x.mt)}</span>${dup}${cli}</div>
+      <div class="mt-sug-l2" title="${_mtEsc(x.lib)}">${l2}</div>
+    </div>`;
+}
+
 // ══ SUGGESTION MONTANT POUR TOTAL VENTILÉ ═══════════════════
 let mtSugTotList=[];
 let mtSugTotIdx=-1;
@@ -5626,17 +5722,18 @@ function showMtSuggestTot(digits){
   if(!rvL||!RV.length){hideMtSuggestTot();return;}
   const box=document.getElementById('mt-suggest-tot');
   if(!box)return;
-  const seen=new Set();
+  // v87 — plus de dédoublonnage par montant : deux opérations de même montant (clients différents)
+  // sont proposées séparément, avec date + client identifié pour choisir la bonne.
   mtSugTotList=[];
   RV.forEach((r,ri)=>{
     const mt=String(Math.abs(r.credit));
-    if(!r._used&&mt.startsWith(digits)&&!seen.has(mt)){
-      seen.add(mt);
-      mtSugTotList.push({mt:parseFloat(mt), lib:r.libelle||r.lib_orig||'', idx:ri});
+    if(!r._used&&mt.startsWith(digits)){
+      mtSugTotList.push({mt:parseFloat(mt), lib:(r.libelle||r.lib_orig||'').trim(), date:r.date||'', idx:ri});
     }
   });
-  mtSugTotList.sort((a,b)=>a.mt-b.mt);
-  mtSugTotList=mtSugTotList.slice(0,10);
+  mtSugTotList.sort((a,b)=>a.mt-b.mt||(a.date||'').localeCompare(b.date||'')||a.lib.localeCompare(b.lib));
+  mtSugTotList=mtSugTotList.slice(0,30);
+  mtSugTotList.forEach(x=>{x.cli=_mtSugClient(x.lib);});
   if(!mtSugTotList.length){hideMtSuggestTot();return;}
   mtSugTotIdx=-1;
   renderMtSugTot();
@@ -5646,13 +5743,7 @@ function showMtSuggestTot(digits){
 function renderMtSugTot(){
   const box=document.getElementById('mt-suggest-tot');
   if(!box)return;
-  box.innerHTML=mtSugTotList.map((x,i)=>{
-    const hi=i===mtSugTotIdx?' style="background:#1e3a5f;"':'';
-    return `<div class="mt-sug-item" id="mstot${i}" onmousedown="selectMtTotIdx(${i})"${hi}>
-      <span style="font-weight:700;color:var(--green);min-width:110px;display:inline-block;">${FM(x.mt)}</span>
-      <span style="color:var(--mu2);font-size:10px;">${x.lib}</span>
-    </div>`;
-  }).join('');
+  box.innerHTML=mtSugTotList.map((x,i)=>_mtSugRow(x,i,'mstot','selectMtTotIdx',i===mtSugTotIdx,mtSugTotList)).join('');
 }
 
 function hideMtSuggestTot(){
@@ -5743,6 +5834,7 @@ function showMtSuggest(digits){
   });
   mtSugList.sort((a,b)=>a.mt-b.mt||(a.date||'').localeCompare(b.date||'')||a.lib.localeCompare(b.lib));
   mtSugList=mtSugList.slice(0,30);
+  mtSugList.forEach(x=>{x.cli=_mtSugClient(x.lib);});   // v87 — client identifié affiché à côté
   if(!mtSugList.length){hideMtSuggest();return;}
   mtSugIdx=-1;
   renderMtSug();
@@ -5752,13 +5844,7 @@ function showMtSuggest(digits){
 function renderMtSug(){
   const box=document.getElementById('mt-suggest');
   if(!box)return;
-  box.innerHTML=mtSugList.map((x,i)=>{
-    const hi=i===mtSugIdx?' style="background:#1e3a5f;"':'';
-    return `<div class="mt-sug-item" id="msi${i}" onmousedown="selectMtIdx(${i})"${hi}>
-      <span style="font-weight:700;color:var(--green);min-width:110px;display:inline-block;">${FM(x.mt)}</span>
-      <span style="color:var(--mu2);font-size:10px;">${x.date?x.date+' — ':''}${x.lib}</span>
-    </div>`;
-  }).join('');
+  box.innerHTML=mtSugList.map((x,i)=>_mtSugRow(x,i,'msi','selectMtIdx',i===mtSugIdx,mtSugList)).join('');
 }
 
 function hideMtSuggest(){
@@ -7155,6 +7241,7 @@ function buildPieces(rows, startNum){
 function renderTable(){
   const container=document.getElementById('entries-container');
   try{ebvPieceCounter();}catch(e){}
+  let _nd=false; try{ _nd=!!NDCF_MODE; }catch(e){} if(_nd){ renderNDCFJournal(); return; } // v84
   const filtered=selectedComp?entries.filter(e=>e.comp===selectedComp):entries;
   document.getElementById('clear-btn').style.display=entries.length>0?'':'none';
   if(!filtered.length){
@@ -7460,7 +7547,7 @@ function ndcfAssignAux(agence,aux){
 }
 function ndcfVerifRefresh(){
   const box=document.getElementById('ndcf-verif'); if(!box) return;
-  if(!NDCF_DATA.length){ box.style.display='none'; return; }
+  if(!NDCF_DATA.length){ box.style.display='block'; box.style.borderColor='var(--bo)'; box.innerHTML='<div style="font-size:10px;color:var(--txt3);">📎 Aucun fichier commercial chargé (à importer dans l\'onglet IMPORTS).</div>'; return; }
   NDCF_DATA.forEach(d=>{ if(!d.client){ const c=ndcfResolveClient(d.agence); if(c) d.client=c; } });
   const total=NDCF_DATA.length;
   const ok=NDCF_DATA.filter(d=>d.client).length;
@@ -7691,10 +7778,10 @@ function renderNDCFSug(){
     const mtColor=d._neg?'var(--red)':'var(--green)';
     const mtSign=d._neg?'(AVOIR) ':'';
     return `<div id="ndcs${i}" onmousedown="selectNDCF(${i})"
-      style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;">
+      style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center;">
       <span style="font-weight:700;color:${mtColor};min-width:110px;">${mtSign}${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
-      <span style="color:var(--txt2);flex:1;font-size:11px;">${d.agence}</span>
-      ${clientOk}
+      <span style="color:var(--txt2);flex:1 1 120px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">${d.agence}</span>
+      <span style="flex:1 1 100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${clientOk}</span>
     </div>`;
   }).join('');
 }
@@ -7853,6 +7940,7 @@ function validerNDCF(){
 }
 
 function renderNDCFPieces(){
+  try{ if(NDCF_MODE) renderNDCFJournal(); }catch(e){}
   const zone=document.getElementById('ndcf-pieces-zone');
   const list=document.getElementById('ndcf-pieces-list');
   // Afficher volet droit
@@ -8539,6 +8627,8 @@ function addRedrEntry(){
 const _origSwitchSearch = typeof switchSearch !== 'undefined' ? switchSearch : null;
 function switchSearch(mode, el){
   NDCF_MODE = (mode==='ndcf');
+  { const _m=document.querySelector('.main'); if(_m) _m.classList.toggle('ndcf-wide',mode==='ndcf'); }
+  if(mode!=='ndcf') ebvRestoreJournalHeader();
   // Cacher tous les panneaux
   ['iata','montant','ndcf','ancien','redressement'].forEach(m=>{
     const p=document.getElementById('search-'+m);
@@ -8566,6 +8656,7 @@ function switchSearch(mode, el){
     setTimeout(()=>{ const el=document.getElementById('redr-montant'); if(el)el.focus(); },100);
   }
   if(_origSwitchSearch && mode!=='ndcf' && mode!=='ancien' && mode!=='redressement') _origSwitchSearch(mode, el);
+  try{ renderTable(); }catch(e){} // v84 : journal EBV ou NDC-F selon le mode
 }
 
 // F1 dans NDC-F
@@ -9506,9 +9597,9 @@ function renderNDCFFacSug(){
     return `<div id="ndfac${i}" onmousedown="selectNDCFFac(${i})"
       style="padding:7px 12px;cursor:pointer;border-bottom:1px solid rgba(40,53,147,.3);${hi}display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <span style="color:var(--amber);font-weight:700;min-width:80px;">${d.facture}</span>
-      <span style="color:var(--txt2);flex:1;font-size:11px;">${d.agence}</span>
-      <span style="color:var(--green);font-weight:700;">${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
-      ${clientLabel}
+      <span style="color:var(--txt2);flex:1 1 120px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">${d.agence}</span>
+      <span style="color:var(--green);font-weight:700;white-space:nowrap;">${Math.abs(Math.round(d.total_reg)).toLocaleString('fr-DZ')} DA</span>
+      <span style="flex:1 1 100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${clientLabel}</span>
     </div>`;
   }).join('');
 }
@@ -16991,7 +17082,7 @@ const STAT={
   folios:new Set(), // mois cochés (∅ = tous)
   type:'all',  // all|411|18
   ndc:'all',   // all|ndc|std
-  redMode:'all', // all|excl|only — filtre Redressements (mot-clé RED, sans seuil de montant)
+  redMode:'excl', // all|excl|only — défaut v89 : SANS redressements (ni CA ni commission) — filtre Redressements (mot-clé RED, sans seuil de montant)
   granul:'mois', // mois|trim|sem|annee
   // ══ NOUVEAU : Période avancée ══
   periodMode: 'folio', // folio|date|range
@@ -17633,9 +17724,417 @@ function sSetNDC(v,btn){
    Une écriture est considérée "Redressement" si son LIBELLÉ ou sa RÉFÉRENCE
    contient le mot RED (insensible à la casse), quel que soit le montant
    (positif, négatif, faible ou très élevé — aucune limite n'est appliquée). */
+/* v88 — Détection élargie : RED, REDR, REDRESSEMENT/REDRESS…, ADM (Agency Debit Memo).
+   Reconnaît aussi ADM123 / RED2025 (chiffres collés) mais PAS un mot plus long (ADMIN, REDACTION). */
+const _RED_RE=/\b(?:red|redr|adm)(?=$|[^a-z])|\bredress/i;
 function _isRedRow(r){
-  return (/\bred\b/i).test(r.libelle||'')||(/\bred\b/i).test(r.ref||'');
+  return _RED_RE.test(r.libelle||'')||_RED_RE.test(r.ref||'');
 }
+/* v88 — Les redressements/ADM ne sont PAS une vente : le filtre « Redressements » s'applique
+   aussi aux lignes COMMISSION (SUP COM), sinon CA hors RED mais commission avec RED = taux réel faux. */
+function _comRawRed(){
+  const rows=STAT.comRaw||[];
+  if(STAT.redMode==='all') return rows;
+  return rows.filter(r=>{const x=_isRedRow(r);return STAT.redMode==='excl'?!x:x;});
+}
+/* v88 — Impact des redressements détectés (sur TOUTES les données chargées, hors autres filtres). */
+function sRedImpactUpdate(){
+  const el=document.getElementById('stat-red-impact'); if(!el) return;
+  const f=n=>Math.round(n).toLocaleString('fr-FR');
+  const raw=(STAT.raw||[]).filter(_isRedRow), com=(STAT.comRaw||[]).filter(_isRedRow);
+  if(!raw.length&&!com.length){ el.style.display='none'; el.innerHTML=''; return; }
+  const ca=raw.reduce((t,r)=>t+(r.debit||0),0), cm=com.reduce((t,r)=>t+(r.credit||0),0);
+  el.style.display='block';
+  el.innerHTML=`🔍 <b>Détecté dans les données chargées</b><br>CA : <b>${raw.length}</b> écriture(s) · <b>${f(ca)} DA</b><br>Commission : <b>${com.length}</b> ligne(s) · <b>${f(cm)} DA</b>`;
+}
+/* ═══════════════════════════════════════════════════════════════════════
+   v89 — REDRESSEMENTS / ADM : moteur d'analyse, vue STAT, blocs de rapports.
+   Un redressement (ADM/RED) régularise une anomalie de vente : ce n'est NI du CA NI de la
+   commission. Il est exclu des totaux (mode « SANS RED. », défaut) puis analysé ici à part.
+   • Ligne RED/ADM POSITIVE = redressement ÉMIS ; ligne NÉGATIVE = redressement ANNULÉ par la compagnie
+     (en totalité ou en partie). Montant retenu = ÉMIS − ANNULÉS (net restant à la charge de l'agence).
+   • Nombre = redressements ÉMIS (les annulations sont comptées à part).
+   • Taux = montant net / CA hors redressements (même périmètre, même période).
+   • N-1 = MÊME fenêtre (ex. Jan–Sep 2026 ↔ Jan–Sep 2025), jamais année complète vs partielle.
+   ═══════════════════════════════════════════════════════════════════════ */
+function _withRedMode(mode,fn){const o=STAT.redMode;STAT.redMode=mode;try{return fn();}finally{STAT.redMode=o;}}
+function _redEsc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function _redAgg(rows){
+  let cnt=0,cntAnn=0,emis=0,ann=0,ca=0;
+  rows.forEach(r=>{
+    if(_isRedRow(r)){
+      const d=r.debit||0;
+      if(d>0){cnt++;emis+=d;} else if(d<0){cntAnn++;ann+=-d;}
+    } else ca+=(r.debit||0);
+  });
+  const net=emis-ann;
+  return {cnt,cntAnn,emis,ann,net,vol:net,ca};
+}
+function _redBaseOK(r,centr){
+  if(!centr){
+    if(STAT.type==='411'&&!r.compte.startsWith('411')) return false;
+    if(STAT.type==='18' &&!r.compte.startsWith('18'))  return false;
+  }
+  if(STAT.ndc!=='all'){
+    const x=sNDCSym(r)||(r.journal?'AUT':null);
+    if(STAT.ndc==='ndc'&&x!=='NDC_FAC') return false;
+    if(STAT.ndc==='ebv'&&x!=='NDC_EBV') return false;
+    if(STAT.ndc==='std'&&(x==='NDC_FAC'||x==='NDC_EBV')) return false;
+  }
+  return true;
+}
+function _redWin(W){
+  if(!W) return null;
+  const a=_redAgg(W.cli), g=(W.gen===W.cli)?a:_redAgg(W.gen);
+  return {cnt:a.cnt,cntAnn:a.cntAnn,emis:a.emis,ann:a.ann,net:a.net,vol:a.net,caCli:a.ca,caGen:g.ca,
+    tCli:a.ca>0?a.net/a.ca*100:null, tGen:g.ca>0?a.net/g.ca*100:null};
+}
+/* A / B = {cli:[lignes du périmètre], gen:[lignes du portefeuille]} pour N et N-1 (B peut être null) */
+function _redBuild(A,B){
+  const cur=_redWin(A), prev=_redWin(B);
+  const symOf=r=>sNDCSym(r)||(r.journal?'AUT':'—');
+  const rc=A?A.cli.filter(_isRedRow):[], rp=B?B.cli.filter(_isRedRow):[];
+  const group=(keyFn,extra)=>{
+    const m=new Map();
+    const touch=(r,slot)=>{
+      const k=keyFn(r); let o=m.get(k);
+      if(!o){o=Object.assign({k,c:{cnt:0,cntAnn:0,emis:0,ann:0,vol:0},p:{cnt:0,cntAnn:0,emis:0,ann:0,vol:0}},extra?extra(r):{});m.set(k,o);}
+      const d=r.debit||0, t=o[slot];
+      if(d>0){t.cnt++;t.emis+=d;} else if(d<0){t.cntAnn++;t.ann+=-d;}
+      t.vol+=d;
+    };
+    rc.forEach(r=>touch(r,'c')); rp.forEach(r=>touch(r,'p'));
+    return [...m.values()].sort((a,b)=>b.c.emis-a.c.emis||b.c.vol-a.c.vol||b.p.emis-a.p.emis);
+  };
+  const byComp=group(symOf);
+  const byClient=group(r=>r.aux||r.compte,r=>({name:sResolveName(r.aux,r.compte,r.libelle)}));
+  const caByCli=new Map();
+  (A?A.gen:[]).forEach(r=>{ if(!_isRedRow(r)){const k=r.aux||r.compte; caByCli.set(k,(caByCli.get(k)||0)+(r.debit||0));} });
+  byClient.forEach(o=>{o.ca=caByCli.get(o.k)||0;o.taux=o.ca>0?o.c.vol/o.ca*100:null;});   // taux = net / CA client
+  const byMonth=[];
+  for(let m=1;m<=12;m++){
+    const ag=rs=>rs.reduce((t,r)=>{const d=r.debit||0;if(d>0)t.cnt++;else if(d<0)t.cntAnn++;t.vol+=d;return t;},{cnt:0,cntAnn:0,vol:0});
+    byMonth.push({m,c:ag(rc.filter(r=>r.month===m)),p:ag(rp.filter(r=>r.month===m))});
+  }
+  return {cur,prev,byComp,byClient,byMonth};
+}
+/* Données du volet / des rapports « écran » : respecte TOUS les filtres actifs (période, compagnie,
+   type, NDC, client…) SAUF le filtre Redressements (on veut justement voir les RED). */
+function redViewData(){
+  return _withRedMode('all',()=>{
+    if(!STAT.raw||!STAT.raw.length) return null;
+    const hasCli=!!(STAT.selectedClients&&STAT.selectedClients.length);
+    const mk=yo=>{const rc=sRawFiltered(yo);return {cli:rc,gen:hasCli?sRawFiltered(yo,true):rc};};
+    const years=[...new Set(STAT.raw.map(r=>r.year).filter(Boolean))].sort((a,b)=>a-b);
+    const maxY=years.length?years[years.length-1]:new Date().getFullYear();
+    const folioMode=STAT.periodMode==='folio';
+    if(STAT.allYears){
+      const A=mk(undefined);
+      const capM=_withRedMode('excl',()=>_ytdMonth(maxY));
+      const capMax=(folioMode&&capM<12)?capM:12;
+      const sub=(W,y,cp)=>{
+        const ok=r=>r.year===y&&(cp>=12||!r.month||r.month<=cp);
+        const cli=W.cli.filter(ok);
+        return {cli,gen:W.gen===W.cli?cli:W.gen.filter(ok)};
+      };
+      const present=new Set(A.cli.map(r=>r.year).filter(Boolean));
+      const rows=[...present].sort((a,b)=>a-b).map(y=>{
+        const cp=(y===maxY)?capMax:12;
+        return {year:y,cap:cp,cur:_redWin(sub(A,y,cp)),prev:present.has(y-1)?_redWin(sub(A,y-1,cp)):null};
+      });
+      const D=_redBuild(A,null);
+      D.mode='global';D.rows=rows;D.hasCli=hasCli;D.label='Toutes périodes';D.maxY=maxY;D.capMax=capMax;
+      return D;
+    }
+    const curY=STAT.year||maxY;
+    const folioAuto=folioMode&&!(STAT.folios&&STAT.folios.size>0);
+    const cap=folioAuto?_withRedMode('excl',()=>_ytdMonth(curY)):12;
+    const capF=W=>{
+      if(cap>=12) return W;
+      const ok=r=>!r.month||r.month<=cap;
+      const cli=W.cli.filter(ok);
+      return {cli,gen:W.gen===W.cli?cli:W.gen.filter(ok)};
+    };
+    const noPrev=(STAT.periodMode==='date');   // date unique : pas de décalage N-1 fiable
+    const A=capF(mk(undefined)), B=noPrev?null:capF(mk(curY-1));
+    const D=_redBuild(A,B);
+    D.mode='year';D.curY=curY;D.cap=cap;D.hasCli=hasCli;D.noPrev=noPrev;
+    if(cap<12){D.label='Jan–'+SMOIS[cap-1]+' '+curY;D.prevLabel='Jan–'+SMOIS[cap-1]+' '+(curY-1);}
+    else if(folioAuto){D.label='Année '+curY;D.prevLabel='Année '+(curY-1);}
+    else{D.label='Période sélectionnée ('+curY+')';D.prevLabel='Même période '+(curY-1);}
+    return D;
+  });
+}
+/* Données pour une fiche : scope = {aux:'411…'} (client) ou {syms:['TK',…]} (compagnie).
+   curY = année N (défaut : dernière année du périmètre). N-1 plafonné au même mois que N. */
+function redScopeData(scope,curY){
+  return _withRedMode('all',()=>{
+    if(!STAT.raw||!STAT.raw.length) return null;
+    const centr=!!(scope.syms&&scope.syms.length&&scope.syms.every(s=>s==='BA'||s==='TO'));
+    const symOf=r=>sNDCSym(r)||(r.journal?'AUT':null);
+    const inScope=r=>scope.aux?((r.aux||r.compte)===scope.aux):(scope.syms?scope.syms.includes(symOf(r)):true);
+    if(!curY){
+      const ys=STAT.raw.filter(r=>r.year&&inScope(r)&&_redBaseOK(r,centr)).map(r=>r.year);
+      curY=ys.length?Math.max(...ys):(STAT.year||new Date().getFullYear());
+    }
+    const capM=_withRedMode('excl',()=>_ytdMonth(curY));
+    const cap=capM<12?capM:12;
+    const mk=y=>{
+      const gen=STAT.raw.filter(r=>r.year===y&&(cap>=12||!r.month||r.month<=cap)&&(_redBaseOK(r,false)||(centr&&inScope(r)&&_redBaseOK(r,true))));
+      return {cli:gen.filter(inScope),gen};
+    };
+    const D=_redBuild(mk(curY),mk(curY-1));
+    D.mode='year';D.curY=curY;D.cap=cap;D.hasCli=true;
+    D.label=cap<12?('Jan–'+SMOIS[cap-1]+' '+curY):('Année '+curY);
+    D.prevLabel=cap<12?('Jan–'+SMOIS[cap-1]+' '+(curY-1)):('Année '+(curY-1));
+    return D;
+  });
+}
+/* ── formatage commun ── */
+const _rEvo=(c,p)=>(p>0)?((c-p)/p*100):(c>0?null:0);                 // null = « nouveau »
+const _rEvoTxt=e=>e===null?'nouveau':((e>0?'+':'')+e.toFixed(1)+' %');
+const _rPct=v=>(v==null||!isFinite(v))?'—':(v.toFixed(2)+' %');
+const _rPts=(c,p)=>(c==null||p==null)?'—':(((c-p)>=0?'+':'')+(c-p).toFixed(2)+' pt');
+const _rCol=e=>e===null?'dc2626':(e>0.05?'dc2626':(e<-0.05?'059669':'6b7280'));   // hausse de RED = défavorable
+const _rFM=v=>Math.round(v||0).toLocaleString('fr-FR')+' DA';
+/* ── Rendu HTML (volet STAT + fiches imprimables) : styles inline, autonome ── */
+function _redHtml(D,o){
+  o=o||{};
+  if(!D) return '<div style="padding:14px;color:#6b7280;font-family:Arial">Aucune donnée chargée.</div>';
+  const E=_redEsc, N=n=>Math.round(n||0).toLocaleString('fr-FR');
+  const hasRef=!!o.hasRef, refName=o.refName||'des clients filtrés';
+  const TB='width:100%;border-collapse:collapse;font-size:11px;margin:6px 0 14px;font-family:Arial,sans-serif';
+  const TH='background:#1e40af;color:#fff;padding:5px 8px;text-align:right;font-weight:700;font-size:10px';
+  const TD='padding:4px 8px;border-bottom:1px solid #e5e7eb;text-align:right';
+  const tbl=(heads,rows)=>`<div style="overflow-x:auto"><table style="${TB}"><thead><tr>${heads.map((h,i)=>`<th style="${TH}${i?'':';text-align:left'}">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td style="${TD}${i?'':';text-align:left;font-weight:600'}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const evoC=(c,p)=>{const e=_rEvo(c,p);return `<span style="color:#${_rCol(e)};font-weight:700">${_rEvoTxt(e)}</span>`;};
+  const H3=t=>`<div style="font-size:11px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.6px;margin:12px 0 2px;font-family:Arial,sans-serif">${t}</div>`;
+  const tot=x=>x?((x.cnt||0)+(x.cntAnn||0)):0;
+  let out='';
+  const cur=D.cur||{cnt:0,cntAnn:0,emis:0,ann:0,net:0,vol:0,caCli:0,caGen:0,tCli:null,tGen:null}, prev=D.prev;
+  out+=`<div style="font-size:11px;color:#92400e;background:#fff7ed;border-left:3px solid #f59e0b;padding:6px 10px;margin:4px 0 10px;border-radius:4px;font-family:Arial,sans-serif;line-height:1.5">
+    <b>Redressements / ADM</b> = anomalies de vente régularisées par la compagnie à l'émission du titre : <b>ni CA ni commission</b>.
+    Une ligne RED/ADM <b>positive</b> est un redressement <b>émis</b> ; une ligne <b>négative</b> est un redressement <b>annulé</b> par la compagnie (totalement ou partiellement).
+    <b>Montant retenu = émis − annulés</b> · Taux = montant retenu ÷ CA hors redressements · Nombre = redressements émis.
+    ${D.mode==='global'?'Période : <b>toutes périodes</b> (évolution = chaque année vs la précédente, à fenêtre identique).':
+      (prev?`Comparaison à périmètre identique : <b>${E(D.label)}</b> vs <b>${E(D.prevLabel)}</b>.`:`Période : <b>${E(D.label)}</b> — comparaison N-1 indisponible pour ce mode de période.`)}</div>`;
+  if(D.mode!=='global'&&!tot(cur)&&!tot(prev)){
+    return out+`<div style="padding:12px;color:#065f46;background:#ecfdf5;border-radius:6px;font-family:Arial,sans-serif">✅ Aucun redressement / ADM détecté sur cette période.</div>`;
+  }
+  const kpi=(lbl,val,sub,col)=>`<div style="flex:1;min-width:150px;border:1px solid #e5e7eb;border-top:3px solid #${col};border-radius:6px;padding:8px 10px;background:#fff;font-family:Arial,sans-serif"><div style="font-size:9px;color:#6b7280;text-transform:uppercase;font-weight:700;letter-spacing:.5px">${lbl}</div><div style="font-size:16px;font-weight:900;color:#111827;margin:2px 0">${val}</div><div style="font-size:10px;color:#6b7280">${sub}</div></div>`;
+  if(D.mode!=='global'){
+    const eC=_rEvo(cur.cnt,prev?prev.cnt:0), eV=_rEvo(cur.net,prev?prev.net:0);
+    out+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">`
+      +kpi('Redressements émis',N(cur.cnt),(cur.cntAnn?`dont ${N(cur.cntAnn)} annulation(s) en plus · `:'')+(prev?`N-1 : ${N(prev.cnt)} · <b style="color:#${_rCol(eC)}">${_rEvoTxt(eC)}</b>`:'N-1 : —'),'dc2626')
+      +kpi('Montant net retenu',_rFM(cur.net),`Émis ${_rFM(cur.emis)} − annulés ${_rFM(cur.ann)}`+(prev?` · N-1 : ${_rFM(prev.net)} · <b style="color:#${_rCol(eV)}">${_rEvoTxt(eV)}</b>`:''),'d97706')
+      +kpi('Taux / CA général',_rPct(cur.tGen),prev?`N-1 : ${_rPct(prev.tGen)} · ${_rPts(cur.tGen,prev.tGen)}`:'N-1 : —','7c3aed')
+      +(hasRef?kpi('Taux / CA '+E(refName),_rPct(cur.tCli),prev?`N-1 : ${_rPct(prev.tCli)} · ${_rPts(cur.tCli,prev.tCli)}`:'N-1 : —','1d4ed8'):'')
+      +`</div>`;
+    out+=H3('Synthèse');
+    const neutral=(c,p)=>{const e=_rEvo(c,p);return `<span style="font-weight:700">${_rEvoTxt(e)}</span>`;};
+    const R=[['Redressements émis (nombre)',N(cur.cnt),prev?N(prev.cnt):'—',prev?evoC(cur.cnt,prev.cnt):'—'],
+      ['Redressements annulés par la compagnie (nombre)',N(cur.cntAnn),prev?N(prev.cntAnn):'—','—'],
+      ['Montant émis',_rFM(cur.emis),prev?_rFM(prev.emis):'—',prev?evoC(cur.emis,prev.emis):'—'],
+      ['Montant annulé par la compagnie',_rFM(cur.ann),prev?_rFM(prev.ann):'—','—'],
+      ['<b>Montant net retenu (émis − annulés)</b>','<b>'+_rFM(cur.net)+'</b>',prev?_rFM(prev.net):'—',prev?evoC(cur.net,prev.net):'—'],
+      ['CA général (hors RED)',_rFM(cur.caGen),prev?_rFM(prev.caGen):'—',prev?neutral(cur.caGen,prev.caGen):'—'],
+      ['Taux de RED net / CA général',_rPct(cur.tGen),prev?_rPct(prev.tGen):'—',prev?_rPts(cur.tGen,prev.tGen):'—']];
+    if(hasRef){
+      R.push(['CA '+E(refName)+' (hors RED)',_rFM(cur.caCli),prev?_rFM(prev.caCli):'—',prev?neutral(cur.caCli,prev.caCli):'—']);
+      R.push(['Taux de RED net / CA '+E(refName),_rPct(cur.tCli),prev?_rPct(prev.tCli):'—',prev?_rPts(cur.tCli,prev.tCli):'—']);
+    }
+    out+=tbl(['Indicateur',E(D.label),prev?E(D.prevLabel):'N-1','Évolution'],R);
+  }else{
+    out+=H3('Évolution par année (fenêtres identiques)');
+    out+=tbl(['Année','Nb émis','Annulés','Montant net','CA général','Taux / CA général','Évol. nombre','Évol. montant'],
+      D.rows.map(r=>[r.year+(r.cap<12?` (Jan–${SMOIS[r.cap-1]})`:''),N(r.cur.cnt),N(r.cur.cntAnn),_rFM(r.cur.net),_rFM(r.cur.caGen),_rPct(r.cur.tGen),
+        r.prev?evoC(r.cur.cnt,r.prev.cnt):'—',r.prev?evoC(r.cur.net,r.prev.net):'—']));
+  }
+  const showPrev=(D.mode!=='global')&&!!prev;
+  if(D.byComp.length){
+    out+=H3('Par compagnie / système de vente');
+    out+=tbl(showPrev?['Compagnie','Nb émis','Montant net','Nb N-1','Montant N-1','Évol. montant']:['Compagnie','Nb émis','Montant net'],
+      D.byComp.slice(0,8).map(x=>showPrev?[E(x.k),N(x.c.cnt),_rFM(x.c.vol),N(x.p.cnt),_rFM(x.p.vol),evoC(x.c.vol,x.p.vol)]:[E(x.k),N(x.c.cnt),_rFM(x.c.vol)]));
+  }
+  if(!o.noMonths&&D.mode!=='global'&&D.byMonth.some(m=>tot(m.c)||tot(m.p))){
+    out+=H3('Par mois');
+    const ms=D.byMonth.filter(m=>(D.cap>=12||m.m<=D.cap)&&(tot(m.c)||tot(m.p)));
+    out+=tbl(showPrev?['Mois','Nb émis','Montant net','Nb N-1','Montant N-1','Évol. montant']:['Mois','Nb émis','Montant net'],
+      ms.map(m=>showPrev?[SMOIS[m.m-1],N(m.c.cnt),_rFM(m.c.vol),N(m.p.cnt),_rFM(m.p.vol),evoC(m.c.vol,m.p.vol)]:[SMOIS[m.m-1],N(m.c.cnt),_rFM(m.c.vol)]));
+  }
+  if(o.kind!=='client'&&D.byClient.filter(x=>tot(x.c)).length){
+    out+=H3('Clients concernés (top 10 par montant émis)');
+    out+=tbl(showPrev?['Client','Nb émis','Montant net','CA client','Taux / CA client','Nb N-1','Évol. nombre']:['Client','Nb émis','Montant net','CA client','Taux / CA client'],
+      D.byClient.filter(x=>tot(x.c)).slice(0,10).map(x=>showPrev?[E(x.name),N(x.c.cnt),_rFM(x.c.vol),_rFM(x.ca),_rPct(x.taux),N(x.p.cnt),evoC(x.c.cnt,x.p.cnt)]:[E(x.name),N(x.c.cnt),_rFM(x.c.vol),_rFM(x.ca),_rPct(x.taux)]));
+  }
+  return out;
+}
+/* Comparatif multi-clients / multi-compagnies (fiches comparatives) : 1 ligne par entité */
+function _redMultiRows(entities){   // entities: [{name,D}]
+  return entities.filter(e=>e.D&&e.D.cur).map(e=>{const c=e.D.cur,p=e.D.prev;return {name:e.name,c,p,label:e.D.label,prevLabel:e.D.prevLabel};});
+}
+function _redMultiHtml(entities,refName){
+  const rows=_redMultiRows(entities);
+  if(!rows.length) return '';
+  const N=n=>Math.round(n||0).toLocaleString('fr-FR');
+  const TH='background:#1e40af;color:#fff;padding:5px 8px;font-size:10px;text-align:right';
+  const TD='padding:4px 8px;border-bottom:1px solid #e5e7eb;text-align:right;font-size:11px';
+  const heads=['Entité','Nb émis','Montant net','Taux / CA '+refName,'Taux N-1','Évol. nombre','Évol. montant'];
+  const body=rows.map(r=>{
+    const eC=_rEvo(r.c.cnt,r.p?r.p.cnt:0), eV=_rEvo(r.c.vol,r.p?r.p.vol:0);
+    return `<tr><td style="${TD};text-align:left;font-weight:600">${_redEsc(r.name)}</td><td style="${TD}">${N(r.c.cnt)}</td><td style="${TD}">${_rFM(r.c.vol)}</td><td style="${TD}">${_rPct(r.c.tCli)}</td><td style="${TD}">${r.p?_rPct(r.p.tCli):'—'}</td><td style="${TD};color:#${_rCol(eC)};font-weight:700">${r.p?_rEvoTxt(eC):'—'}</td><td style="${TD};color:#${_rCol(eV)};font-weight:700">${r.p?_rEvoTxt(eV):'—'}</td></tr>`;
+  }).join('');
+  return `<div style="font-family:Arial,sans-serif;margin-top:12px"><div style="font-size:11px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.6px">Redressements / ADM — ${_redEsc(rows[0].label)}${rows[0].p?' vs '+_redEsc(rows[0].prevLabel):''}</div><div style="font-size:10px;color:#6b7280;margin:2px 0 4px">Anomalies de vente régularisées par la compagnie : hors CA et hors commission. Montant net = redressements émis − annulés par la compagnie ; taux = montant net ÷ CA hors redressements.</div><table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif"><thead><tr>${heads.map((h,i)=>`<th style="${TH}${i?'':';text-align:left'}">${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+/* Fiche imprimable (1 client / 1 compagnie) */
+function _redPrintBlock(scope,kind){
+  try{
+    const D=redScopeData(scope,null);
+    return `<div style="margin-top:10px">${_redHtml(D,{kind,hasRef:true,refName:kind==='client'?'du client':'de la compagnie',noMonths:true})}</div>`;
+  }catch(e){return '';}
+}
+function _redMultiPrintBlock(items,kind){   // items: [{name,scope}]
+  try{
+    const ents=items.map(it=>({name:it.name,D:redScopeData(it.scope,null)}));
+    return _redMultiHtml(ents,kind==='client'?'client':'compagnie');
+  }catch(e){return '';}
+}
+/* ── Volet STAT « Redressements » ── */
+function sRedView(c){
+  if(!STAT.raw||!STAT.raw.length){c.innerHTML=`<div class="stat-empty"><div class="big">⚠</div><div class="msg">Aucune donnée</div><div class="sub">Importez d'abord un grand livre.</div></div>`;return;}
+  const D=redViewData();
+  const hasCli=!!(STAT.selectedClients&&STAT.selectedClients.length);
+  const modeTxt=STAT.redMode==='excl'?'SANS RED. (défaut : les redressements sont exclus du CA et de la commission)':STAT.redMode==='only'?'RED. SEULS':'TOUT (les redressements sont actuellement comptés dans les totaux)';
+  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px 24px">
+    <div style="font-size:15px;font-weight:900;color:#b91c1c;margin-bottom:2px">⚠ REDRESSEMENTS &amp; ADM — ANOMALIES DE VENTE</div>
+    <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">Filtre Redressements de la barre latérale : <b>${_redEsc(modeTxt)}</b>. Ce volet analyse toujours les redressements, quel que soit ce filtre ; les autres filtres (période, compagnie, type, NDC, clients) s'appliquent.${hasCli?' <b style="color:#1d4ed8">Clients filtrés : les taux sont calculés aussi sur leur propre CA.</b>':''}</div>
+    ${_redHtml(D,{kind:'view',hasRef:hasCli,refName:'des clients filtrés'})}
+  </div>`;
+}
+
+/* ── Bloc Word « Redressements & ADM » : réutilisé par le rapport global (écran / filtre client),
+   les fiches client, les fiches compagnie. H = helpers du rapport appelant (largeurs exactes :
+   la somme des tcW = largeur du tableau, sinon Word rejette le fichier). ── */
+function _redWordBlock(H,D,o){
+  o=o||{};
+  const out=[], W=o.W||9020, SZ=o.sz||17;
+  const N=n=>Math.round(n||0).toLocaleString('fr-FR');
+  const cols=ps=>{const t=ps.reduce((a,b)=>a+b,0);const w=ps.map(p=>Math.floor(W*p/t));w[w.length-1]+=W-w.reduce((a,b)=>a+b,0);return w;};
+  const hdr=(arr,w)=>H.tr(...arr.map((t,i)=>H.tc(t,'1e40af',true,'ffffff',w[i],SZ,i?'right':'left')));
+  const row=(arr,w,colr,boldFirst)=>H.tr(...arr.map((t,i)=>H.tc(String(t),null,!!(i===0&&boldFirst),(colr&&colr[i])||'111827',w[i],SZ,i?'right':'left')));
+  const tot=x=>x?((x.cnt||0)+(x.cntAnn||0)):0;
+  const refName=o.refName||'des clients filtrés', hasRef=!!o.hasRef;
+  out.push(H.heading(o.num+' REDRESSEMENTS & ADM — ANOMALIES DE VENTE',1));
+  out.push(H.p("Les redressements (écritures RED / ADM) sont émis par la compagnie pour régulariser des anomalies de vente constatées lors de l'émission du titre de transport. Ils ne constituent ni du chiffre d'affaires ni de la commission : ils sont exclus des totaux du rapport (filtre « Sans redressements ») et analysés ici séparément.",'374151',false,SZ+1));
+  out.push(H.p("Lecture : une écriture RED / ADM positive est un redressement émis ; une écriture négative est un redressement annulé par la compagnie (en totalité ou en partie). Le « montant net retenu » = émis − annulés ; le « taux » = montant net ÷ CA hors redressements, sur le même périmètre et la même période ; le « nombre » = redressements émis (les annulations sont comptées à part). L'évolution N-1 est calculée à fenêtre identique (jamais une année complète face à une année partielle).",'6b7280',false,SZ));
+  if(o.kind==='global'&&STAT.redMode!=='excl'){
+    out.push(H.p(STAT.redMode==='all'?"⚠ Attention : le filtre Redressements est sur « TOUT » — les totaux de ce rapport incluent donc les redressements."
+      :"ℹ Le filtre Redressements est sur « RED. SEULS » — les totaux de ce rapport ne portent que sur les redressements.",'b45309',true,SZ));
+  }
+  if(!D||(!D.cur&&!(D.rows&&D.rows.length))){out.push(H.p('Aucune donnée disponible pour cette analyse.','6b7280',false,SZ));return out;}
+  const cur=D.cur, prev=D.prev;
+  if(D.mode!=='global'&&!tot(cur)&&!tot(prev)){
+    out.push(H.p('Aucun redressement / ADM détecté sur '+D.label+(prev?' ni sur '+D.prevLabel:'')+'.','065f46',true,SZ+1));
+    return out;
+  }
+  if(D.mode!=='global'){
+    const w=cols([36,21,21,22]);
+    const rows=[hdr(['Indicateur',D.label,prev?D.prevLabel:'N-1','Évolution'],w)];
+    const add=(lbl,c,p,fmt,mode,bold)=>{ // mode: 'evo' | 'pts' | 'none'
+      let ev=['—','6b7280'];
+      if(prev&&mode==='evo'){const e=_rEvo(c,p);ev=[_rEvoTxt(e),_rCol(e)];}
+      else if(prev&&mode==='pts'){ev=[_rPts(c,p),(c!=null&&p!=null&&c-p>0.0005)?'dc2626':((c!=null&&p!=null&&c-p<-0.0005)?'059669':'6b7280')];}
+      rows.push(row([lbl,fmt(c),prev?fmt(p):'—',ev[0]],w,[null,null,null,ev[1]],true));
+    };
+    add('Redressements émis (nombre)',cur.cnt,prev?prev.cnt:0,N,'evo');
+    add('Redressements annulés (nombre)',cur.cntAnn,prev?prev.cntAnn:0,N,'none');
+    add('Montant émis',cur.emis,prev?prev.emis:0,_rFM,'evo');
+    add('Montant annulé par la compagnie',cur.ann,prev?prev.ann:0,_rFM,'none');
+    add('MONTANT NET RETENU (émis − annulés)',cur.net,prev?prev.net:0,_rFM,'evo');
+    add('CA général (hors redressements)',cur.caGen,prev?prev.caGen:0,_rFM,'none');
+    add('Taux de RED net / CA général',cur.tGen,prev?prev.tGen:null,_rPct,'pts');
+    if(hasRef){
+      add('CA '+refName+' (hors redressements)',cur.caCli,prev?prev.caCli:0,_rFM,'none');
+      add('Taux de RED net / CA '+refName,cur.tCli,prev?prev.tCli:null,_rPct,'pts');
+    }
+    out.push(H.heading('Synthèse',2));
+    out.push(H.tbl(rows,W));
+    const parts=[`Sur ${D.label}, ${N(cur.cnt)} redressement(s)/ADM ont été émis pour ${_rFM(cur.emis)}${cur.cntAnn?`, dont ${N(cur.cntAnn)} annulation(s) par la compagnie pour ${_rFM(cur.ann)}`:''} : montant net retenu ${_rFM(cur.net)}, soit ${_rPct(cur.tGen)} du CA général${hasRef?` et ${_rPct(cur.tCli)} du CA ${refName}`:''}.`];
+    if(prev){
+      const eC=_rEvo(cur.cnt,prev.cnt), eV=_rEvo(cur.net,prev.net);
+      parts.push(`À fenêtre identique (${D.label} vs ${D.prevLabel}), le nombre de redressements émis passe de ${N(prev.cnt)} à ${N(cur.cnt)} (${_rEvoTxt(eC)}) et le montant net de ${_rFM(prev.net)} à ${_rFM(cur.net)} (${_rEvoTxt(eV)}) ; le taux sur le CA général évolue de ${_rPct(prev.tGen)} à ${_rPct(cur.tGen)} (${_rPts(cur.tGen,prev.tGen)}).`);
+      if(cur.tGen!=null&&prev.tGen!=null) parts.push(cur.tGen>prev.tGen+0.0005?"Lecture : la part d'anomalies de vente (nette des annulations) augmente — point de vigilance sur la conformité des émissions."
+        :cur.tGen<prev.tGen-0.0005?"Lecture : la part d'anomalies de vente (nette des annulations) recule — amélioration de la conformité des émissions.":"Lecture : la part d'anomalies de vente est stable.");
+    }else if(D.noPrev) parts.push("La comparaison N-1 n'est pas disponible pour le mode de période « date unique ».");
+    else parts.push("Aucune donnée N-1 sur cette fenêtre : comparaison impossible.");
+    if(cur.net<0) parts.push("Le montant net est négatif : les annulations de la période dépassent les redressements émis (annulations portant sur des redressements d'une période antérieure).");
+    parts.forEach(t=>out.push(H.b(t,'111827')));
+  }else{
+    const w=cols([14,8,8,19,19,10,11,11]);
+    const rows=[hdr(['Année','Émis','Annulés','Montant net','CA général','Taux','Évol. nb','Évol. mont.'],w)];
+    D.rows.forEach(r=>{
+      const eC=r.prev?_rEvo(r.cur.cnt,r.prev.cnt):undefined, eV=r.prev?_rEvo(r.cur.net,r.prev.net):undefined;
+      rows.push(row([r.year+(r.cap<12?' (Jan–'+SMOIS[r.cap-1]+')':''),N(r.cur.cnt),N(r.cur.cntAnn),_rFM(r.cur.net),_rFM(r.cur.caGen),_rPct(r.cur.tGen),
+        r.prev?_rEvoTxt(eC):'—',r.prev?_rEvoTxt(eV):'—'],w,[null,null,null,null,null,null,r.prev?_rCol(eC):null,r.prev?_rCol(eV):null],true));
+    });
+    out.push(H.heading('Évolution par année (fenêtres identiques)',2));
+    out.push(H.tbl(rows,W));
+  }
+  const showPrev=(D.mode!=='global')&&!!prev;
+  if(D.byComp&&D.byComp.length){
+    out.push(H.heading('Répartition par compagnie / système de vente',2));
+    const w=showPrev?cols([16,10,24,10,24,16]):cols([40,20,40]);
+    const rows=[hdr(showPrev?['Compagnie','Nb émis','Montant net','Nb N-1','Montant N-1','Évol. montant']:['Compagnie','Nb émis','Montant net'],w)];
+    D.byComp.slice(0,8).forEach(x=>{
+      const e=_rEvo(x.c.vol,x.p.vol);
+      rows.push(showPrev?row([x.k,N(x.c.cnt),_rFM(x.c.vol),N(x.p.cnt),_rFM(x.p.vol),_rEvoTxt(e)],w,[null,null,null,null,null,_rCol(e)],true)
+                        :row([x.k,N(x.c.cnt),_rFM(x.c.vol)],w,null,true));
+    });
+    out.push(H.tbl(rows,W));
+  }
+  if(o.kind!=='client'&&D.byClient&&D.byClient.filter(x=>tot(x.c)).length){
+    out.push(H.heading('Clients concernés (top 10 par montant émis)',2));
+    const w=showPrev?cols([28,8,18,18,10,8,10]):cols([36,10,22,22,10]);
+    const rows=[hdr(showPrev?['Client','Nb émis','Montant net','CA client','Taux','Nb N-1','Évol. nb']:['Client','Nb émis','Montant net','CA client','Taux'],w)];
+    D.byClient.filter(x=>tot(x.c)).slice(0,10).forEach(x=>{
+      const nm=String(x.name||x.k).slice(0,34), e=_rEvo(x.c.cnt,x.p.cnt);
+      rows.push(showPrev?row([nm,N(x.c.cnt),_rFM(x.c.vol),_rFM(x.ca),_rPct(x.taux),N(x.p.cnt),_rEvoTxt(e)],w,[null,null,null,null,null,null,_rCol(e)],true)
+                        :row([nm,N(x.c.cnt),_rFM(x.c.vol),_rFM(x.ca),_rPct(x.taux)],w,null,true));
+    });
+    out.push(H.tbl(rows,W));
+  }
+  return out;
+}
+/* Comparatif Word multi-entités (fiches comparatives clients / compagnies) */
+function _redMultiWordBlock(H,entities,o){
+  o=o||{};
+  const rows0=_redMultiRows(entities);
+  if(!rows0.length) return [];
+  const out=[], W=o.W||9350, SZ=o.sz||14;
+  const N=n=>Math.round(n||0).toLocaleString('fr-FR');
+  const ps=[26,9,19,12,12,11,11], t=ps.reduce((a,b)=>a+b,0);
+  const w=ps.map(p=>Math.floor(W*p/t)); w[w.length-1]+=W-w.reduce((a,b)=>a+b,0);
+  out.push(H.heading(o.num?(o.num+' REDRESSEMENTS & ADM'):'REDRESSEMENTS & ADM',2));
+  out.push(H.p(`Anomalies de vente régularisées par la compagnie (hors CA et hors commission). ${rows0[0].label}${rows0[0].p?' vs '+rows0[0].prevLabel+' (fenêtres identiques)':''}. Montant net = redressements émis − annulés par la compagnie ; taux = montant net ÷ CA ${o.refName||''} hors redressements.`,'6b7280',false,SZ));
+  const rows=[H.tr(...['Entité','Nb émis','Montant net','Taux','Taux N-1','Évol. nb','Évol. montant'].map((h,i)=>H.tc(h,'1e40af',true,'ffffff',w[i],SZ,i?'right':'left')))];
+  rows0.forEach(r=>{
+    const eC=_rEvo(r.c.cnt,r.p?r.p.cnt:0), eV=_rEvo(r.c.vol,r.p?r.p.vol:0);
+    const cells=[String(r.name).slice(0,30),N(r.c.cnt),_rFM(r.c.vol),_rPct(r.c.tCli),r.p?_rPct(r.p.tCli):'—',r.p?_rEvoTxt(eC):'—',r.p?_rEvoTxt(eV):'—'];
+    const colr=[null,null,null,null,null,r.p?_rCol(eC):null,r.p?_rCol(eV):null];
+    rows.push(H.tr(...cells.map((x,i)=>H.tc(x,null,i===0,colr[i]||'111827',w[i],SZ,i?'right':'left'))));
+  });
+  out.push(H.tbl(rows,W));
+  return out;
+}
+
+function _redHFw(){return {heading:_fwHeading,p:_fwPara,b:_fwBullet,tc:_fwTc,tr:_fwTr,tbl:_fwTable};}
+function _redClientName(code){
+  const r=STAT.raw.find(x=>(x.aux||x.compte)===code);
+  return (STAT._selectedClientsLabels&&STAT._selectedClientsLabels[code])||(r?sResolveName(r.aux,r.compte,r.libelle):code)||code;
+}
+function _redEntitiesClients(codes){return codes.map(cd=>({name:_redClientName(cd),D:redScopeData({aux:cd},null)}));}
+function _redEntitiesComps(comps){return comps.map(c=>{const sym=(typeof c==='string')?c:c.sym;return {name:sym,D:redScopeData({syms:[sym]},null)};});}
+
 function sSetRedMode(v,btn){
   STAT.redMode=v;
   document.querySelectorAll('.stat-red-btn').forEach(b=>b.classList.remove('on'));
@@ -17644,6 +18143,7 @@ function sSetRedMode(v,btn){
 
 /* ══ ANALYSE ═════════════════════════════════════════════════════════ */
 function statAnalyze(){
+  try{sRedImpactUpdate();}catch(e){}
   const btn=document.getElementById('stat-run-btn');
   btn.disabled=true;btn.textContent='⏳';
   setTimeout(()=>{
@@ -17891,7 +18391,7 @@ function sRenderFilterBar(){
   if(STAT.comp!=='ALL') chips.push({k:'comp',lbl:`✈️ ${sCompLabel()}`,xfilter:true});
   // NDC
   if(STAT.ndc!=='all') chips.push({k:'ndc',lbl:`🔍 ${STAT.ndc==='ndc'?'NDC Facture (706012)':STAT.ndc==='ebv'?'NDC EBV (7081111)':'Hors NDC'}`});
-  if(STAT.redMode!=='all') chips.push({k:'red',lbl:`⚖ ${STAT.redMode==='excl'?'Sans Redressements':'Redressements seuls'}`});
+  if(STAT.redMode!=='excl') chips.push({k:'red',lbl:`⚖ ${STAT.redMode==='all'?'Avec Redressements':'Redressements seuls'}`});
 
   if(!chips.length){w.classList.remove('on');w.innerHTML='';return;}
   w.classList.add('on');
@@ -17905,7 +18405,7 @@ function sClearFilterChip(k){
   else if(k==='type'){ STAT.type='all'; const sel=document.getElementById('stat-type-sel'); if(sel) sel.value='all'; }
   else if(k==='comp'){ sSetComp('ALL', document.querySelector('.stat-chip')); }
   else if(k==='ndc'){ sSetNDC('all', document.querySelector('.stat-ndc-btn')); }
-  else if(k==='red'){ sSetRedMode('all', document.querySelector('.stat-red-btn')); }
+  else if(k==='red'){ sSetRedMode('excl', document.querySelectorAll('.stat-red-btn')[1]); }
   if(STAT.agg.length) statAnalyze();
 }
 function sClearAllFilterChips(){
@@ -17913,7 +18413,7 @@ function sClearAllFilterChips(){
   STAT.type='all'; const sel=document.getElementById('stat-type-sel'); if(sel) sel.value='all';
   sSetComp('ALL', document.querySelector('.stat-chip'));
   sSetNDC('all', document.querySelector('.stat-ndc-btn'));
-  sSetRedMode('all', document.querySelector('.stat-red-btn'));
+  sSetRedMode('excl', document.querySelectorAll('.stat-red-btn')[1]);
   if(STAT.allYears){ STAT.allYears=false; const b=document.querySelector('.stat-allyears-btn'); if(b)b.classList.remove('on'); _statUpdatePeriodeLabel(); }
   if(STAT.agg.length) statAnalyze();
 }
@@ -18846,7 +19346,7 @@ function ecModel(g,nx){
     let mm=caMap.get(sym); if(!mm){mm=new Map();caMap.set(sym,mm);}
     mm.set(k,(mm.get(k)||0)+r.debit);
   });
-  (STAT.comRaw||[]).forEach(r=>{
+  _comRawRed().forEach(r=>{
     if(!r.year||!r.month||!r.sym) return;
     years.add(r.year);
     if(!sCompMatch(r.sym)) return;
@@ -19337,7 +19837,7 @@ function _pfAgg(){
     }
   });
   const comY=new Map(), comP=new Map(); let comMonY=0, comMonP=0;
-  (STAT.comRaw||[]).forEach(r=>{
+  _comRawRed().forEach(r=>{
     if(!r.year||!r.month||!r.sym||!sCompMatch(r.sym)||r.month>M) return;
     if(r.year===Y){ add(comY,r.sym,r.credit); if(r.month===M) comMonY+=r.credit; }
     else if(r.year===P){ add(comP,r.sym,r.credit); if(r.month===M) comMonP+=r.credit; }
@@ -19502,11 +20002,271 @@ function ebvImportsRefresh(){
 (function(){
   const _orig=window.switchMainTab;
   if(typeof _orig==='function'){
-    window.switchMainTab=function(name,el){ const r=_orig.apply(this,arguments); if(name==='import'){ ebvImportsRefresh(); ebvFitImports(); setTimeout(ebvFitImports,60); } return r; };
+    window.switchMainTab=function(name,el){
+      const r=_orig.apply(this,arguments);
+      // l'onglet IMPORTS est une page indépendante : on masque journal + panneaux de saisie, et les listes déroulantes de la saisie
+      const m=document.querySelector('.main'); if(m) m.classList.toggle('ebv-imp',name==='import');
+      ['ndcf-suggest','ndcf-fac-suggest'].forEach(id=>{ const d=document.getElementById(id); if(d) d.style.display='none'; });
+      if(name==='import'){ ebvImportsRefresh(); ebvFitImports(); setTimeout(ebvFitImports,60); }
+      return r;
+    };
   }
   // rafraîchissement léger du récapitulatif tant que l'onglet IMPORTS est ouvert + synchro statut NDC-F
   setInterval(()=>{ try{ if(ebvImportsActive()) ebvImportsRefresh(); else { const s=document.getElementById('ndcf-load-st'),m=document.getElementById('ndcf-load-mini'); if(s&&m){m.textContent=s.textContent;m.style.color=s.style.color||'var(--txt3)';} } }catch(e){} },1200);
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   v83 — NDC-F : affichage optimisé (rien de coupé, masqué ou décalé pendant la saisie)
+   ══════════════════════════════════════════════════════════════════════ */
+// Écritures : une ligne = [compte] [libellé tronqué proprement] [montant aligné à droite]
+function ndcfTidyLines(root){
+  if(!root) return;
+  root.querySelectorAll('div[style*="font-family:var(--font-mono)"] > div').forEach(row=>{
+    [...row.childNodes].forEach(n=>{ if(n.nodeType===3&&!n.textContent.replace(/[\s\u00a0]/g,'')) n.remove(); });
+    if(row.children.length===3) row.classList.add('ndcf-ln');
+  });
+}
+// Listes déroulantes : positionnées en "fixed" sous (ou au-dessus de) leur champ → jamais coupées par le panneau
+function ndcfPlaceDrop(inp,drop){
+  if(!inp||!drop||drop.style.display==='none'||!drop.style.display&&!drop.innerHTML) return;
+  const r=inp.getBoundingClientRect(), below=window.innerHeight-r.bottom-12, above=r.top-12;
+  const up=below<190&&above>below, mh=Math.max(120,Math.min(340,up?above:below));
+  const key=[Math.round(r.left),Math.round(r.top),Math.round(r.width),mh,up].join('|');
+  if(drop._pk===key) return; drop._pk=key;
+  drop.classList.add('ndcf-drop');
+  drop.style.left=r.left+'px'; drop.style.width=r.width+'px'; drop.style.right='auto'; drop.style.maxHeight=mh+'px';
+  if(up){ drop.style.top='auto'; drop.style.bottom=(window.innerHeight-r.top+3)+'px'; }
+  else  { drop.style.bottom='auto'; drop.style.top=(r.bottom+3)+'px'; }
+}
+(function(){
+  function init(){
+    ['ndcf-preview','ndcf-pieces-list','ndcf-right-list'].forEach(id=>{
+      const el=document.getElementById(id); if(!el) return;
+      new MutationObserver(()=>ndcfTidyLines(el)).observe(el,{childList:true,subtree:true});
+    });
+    [['ndcf-fac-num','ndcf-fac-suggest'],['ndcf-mt','ndcf-suggest']].forEach(([i,d])=>{
+      const inp=document.getElementById(i), drop=document.getElementById(d); if(!inp||!drop) return;
+      new MutationObserver(()=>ndcfPlaceDrop(inp,drop)).observe(drop,{attributes:true,attributeFilter:['style'],childList:true});
+      const re=()=>{ drop._pk=null; ndcfPlaceDrop(inp,drop); };
+      window.addEventListener('resize',re); window.addEventListener('scroll',re,true);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   v84 — NDC-F : les écritures s'affichent dans le JOURNAL (panneau de droite), comme la saisie EBV
+   (même tableau, même mise en page par pièce, mêmes boutons Export / Effacer ; plus de volet flottant)
+   ══════════════════════════════════════════════════════════════════════ */
+let _ndcfJrnOn=false;
+function renderNDCFJournal(){
+  const container=document.getElementById('entries-container'); if(!container) return;
+  const cb=document.getElementById('clear-btn'), eb=document.getElementById('export-btn');
+  const tt=document.getElementById('table-title'), ts=document.getElementById('table-sub');
+  if(!_ndcfJrnOn){
+    _ndcfJrnOn=true;
+    if(tt) tt.dataset.orig=tt.innerHTML; if(ts) ts.dataset.orig=ts.textContent; if(eb) eb.dataset.orig=eb.textContent;
+  }
+  const P=NDCF_PIECES||[];
+  if(tt) tt.innerHTML='Journal &nbsp;<span class="tag tag-NEW" style="font-size:10px;">NDC-F</span>';
+  if(ts) ts.textContent=P.length?(P.length+' pièce'+(P.length>1?'s':'')+' NDC-F saisie'+(P.length>1?'s':'')):'Aucune pièce NDC-F saisie';
+  if(cb){ cb.style.display=P.length?'':'none'; cb.onclick=function(){razNDCF();}; }
+  if(eb){ eb.textContent='📤 Export NDC-F'; eb.onclick=function(){exportNDCF();}; }
+  // statistiques de l'en-tête
+  const nL=P.reduce((s,p)=>s+(p.isFWT?2:4),0), tot=P.reduce((s,p)=>s+Math.abs(Math.round(p.total_reg)),0);
+  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  set('total-count',nL); set('total-pieces',P.length); set('total-amt',fmtAmt(tot));
+  if(!P.length){
+    container.innerHTML=`<div class="empty"><div class="empty-icon">📎</div><div style="font-size:12px">Aucune écriture NDC-F</div><div style="font-size:10px;color:var(--txt3);margin-top:4px">Saisissez le n° de facture ou le montant, puis validez la pièce</div></div>`;
+    return;
+  }
+  let html=`<table><thead><tr>
+    <th>Pièce</th><th>Cie</th><th>Client (comptabilité)</th><th>Facture</th><th>Compte</th><th>Réf.</th><th style="text-align:right">Débit DZD</th><th style="text-align:right">Crédit DZD</th><th></th>
+  </tr></thead><tbody>`;
+  const tag=`<span class="tag tag-NEW" style="font-size:9px;">NDC-F</span>`;
+  P.forEach((p,i)=>{
+    const tr=Math.round(p.total_reg), fr=Math.round(p.frais), tv=Math.round(p.tva), tt2=Math.round(p.ttc);
+    const num=p.piece||String(i+1).padStart(6,'0');
+    const lines=p.isFWT
+      ?[['D',p.aux,tr],['C','46741111',tr]]
+      :[['D','411 / '+p.aux,tr],['C','706012',fr],['C','44551',tv],['C','46741111',tt2]];
+    const sumD=lines.filter(l=>l[0]==='D').reduce((s,l)=>s+l[2],0), sumC=lines.filter(l=>l[0]==='C').reduce((s,l)=>s+l[2],0);
+    const ok=Math.abs(sumD-sumC)<1;
+    html+=`<tr class="piece-sep" style="background:${i%2===0?'var(--sky-pale)':'var(--bg2)'};"><td colspan="9" style="color:var(--sky-deep);font-weight:700;">📄 PIÈCE N° ${num}&nbsp;${tag}&nbsp;${p.date||''}${p.isFWT?' | 🏢 Unité FWT':''} | Total: ${fmtAmt(Math.abs(tr))} DA</td></tr>`;
+    lines.forEach((l,k)=>{
+      const first=k===0;
+      html+=`<tr>
+        <td style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">${k+1}</td>
+        <td>${first?tag:''}</td>
+        <td style="font-size:11px;font-weight:600;color:var(--txt)">${p.compta}${first&&p.agence&&p.agence!==p.compta?` <span style="font-size:9px;color:var(--txt3);font-weight:400;">(${p.agence})</span>`:''}</td>
+        <td style="font-family:var(--font-mono);font-size:10px;color:var(--amber);font-weight:700">${first?(p.facture||''):''}</td>
+        <td style="font-family:var(--font-mono);font-size:10px;color:${l[0]==='D'?(p.isFWT?'var(--amber)':'var(--txt3)'):'var(--sky-deep)'};font-weight:${l[0]==='C'?700:400}">${l[1]}</td>
+        <td style="font-size:10px;color:var(--txt3)">${first?(p.ref||''):''}</td>
+        <td class="amt pos">${l[0]==='D'?fmtAmt(l[2]):''}</td>
+        <td class="amt pos">${l[0]==='C'?fmtAmt(l[2]):''}</td>
+        <td>${first?`<button class="del-btn" onclick="delNDCFPiece(${i})">✕</button>`:''}</td>
+      </tr>`;
+    });
+    html+=`<tr class="total-row"><td colspan="6" style="text-align:right;padding-right:11px;font-size:10px;${ok?'':'color:var(--red);'}">
+        ${ok?'✅':'⚠'} Pièce ${num} — ${ok?'Débit = Crédit = '+fmtAmt(Math.abs(sumD))+' DA':'écart '+fmtAmt(Math.abs(sumD-sumC))+' DA'}
+      </td><td class="amt pos">${fmtAmt(Math.abs(sumD))}</td><td class="amt pos">${fmtAmt(Math.abs(sumC))}</td><td></td></tr>`;
+  });
+  container.innerHTML=html+'</tbody></table>';
+  setTimeout(()=>{ const w=document.querySelector('.table-wrap'); if(w) w.scrollTop=w.scrollHeight; container.scrollTop=container.scrollHeight; },50);
+}
+// Retour au journal EBV (titre, boutons, statistiques) quand on quitte le mode NDC-F
+function ebvRestoreJournalHeader(){
+  if(!_ndcfJrnOn) return;
+  _ndcfJrnOn=false;
+  const cb=document.getElementById('clear-btn'), eb=document.getElementById('export-btn');
+  const tt=document.getElementById('table-title'), ts=document.getElementById('table-sub');
+  if(tt&&tt.dataset.orig!==undefined) tt.innerHTML=tt.dataset.orig;
+  if(ts&&ts.dataset.orig!==undefined) ts.textContent=ts.dataset.orig;
+  if(eb){ eb.onclick=function(){exportXLS();}; if(eb.dataset.orig!==undefined) eb.textContent=eb.dataset.orig; }
+  if(cb){ cb.onclick=function(){clearAll();}; }
+  try{ updateStats(); }catch(e){}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v86 — EBV : CONSULTATION & RECHERCHE DANS LES BASES DE SAISIE (comme BAS RAP)
+   Bouton 🔎 Bases (ou F3) : la base proposée dépend de l'onglet de saisie sélectionné
+     Code IATA / Redressement → base IATA · Montant / Ancien → planning de la compagnie · NDC-F → fichier commercial
+   Les 4 bases restent consultables via les puces : Base IATA · Planning · Fichier commercial NDC-F · Base CLNDC
+   Un clic sur une ligne l'injecte dans la saisie quand le mode s'y prête (sinon : consultation seule).
+   ══════════════════════════════════════════════════════════════════════ */
+let _edbDS='iata', _edbList=[], _edbHi=0, _edbHide=false, _edbComp='cur';
+function edbMode(){
+  return ['iata','montant','ndcf','ancien','redressement'].find(m=>{const b=document.getElementById('tab-'+m+'-btn');return b&&b.classList.contains('active');})||'iata';
+}
+const _EDB_DEFAULT={iata:'iata',redressement:'iata',montant:'plan',ancien:'plan',ndcf:'fac'};
+const _EDB_LABEL={iata:'Base IATA',plan:'Planning',fac:'Fichier commercial NDC-F',cl:'Base CLNDC'};
+function _edbFmt(n){ return (n==null||isNaN(n))?'—':Math.round(n).toLocaleString('fr-DZ').replace(/\u202f|\u00a0/g,' '); }
+function _edbEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _edbNorm(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function edbOpen(ds){
+  const ov=document.getElementById('edb-ov'); if(!ov) return;
+  _edbDS=ds||_EDB_DEFAULT[edbMode()]||'iata'; _edbHi=0; _edbComp='cur';
+  ov.style.display='flex';
+  const q=document.getElementById('edb-q'); if(q){ q.value=''; q.focus(); }
+  edbRender();
+}
+function edbClose(){
+  const ov=document.getElementById('edb-ov'); if(ov) ov.style.display='none';
+}
+function edbSetDS(ds){ _edbDS=ds; _edbHi=0; _edbComp='cur'; edbRender(); const q=document.getElementById('edb-q'); if(q) q.focus(); }
+function edbToggleHide(){ _edbHide=!_edbHide; edbRender(); }
+function edbSetComp(v){ _edbComp=v; _edbHi=0; edbRender(); }
+// ── Construction des 4 jeux de données ──
+function _edbBuild(){
+  const ds=_edbDS, out=[];
+  const cm=(typeof CORR!=='undefined'&&CORR)?CORR:{}, idb=(typeof IATA_DB!=='undefined'&&IATA_DB)?IATA_DB:{};
+  if(ds==='iata'){
+    const names=new Set([...Object.keys(idb),...Object.keys(cm)]);
+    names.forEach(n=>{ const c=cm[n]||{}; out.push({ds,planning:n,iata:idb[n]||'',nom:c.nom||'',aux:String(c.aux||''),hay:_edbNorm(n+' '+(idb[n]||'')+' '+(c.nom||'')+' '+(c.aux||''))}); });
+  }else if(ds==='plan'){
+    const db=(typeof FAC_DB!=='undefined'&&FAC_DB)?FAC_DB:null; if(!db) return {rows:out,msg:'Aucun planning chargé — importez-le dans l\'onglet IMPORTS.'};
+    const comps=_edbComp==='all'?Object.keys(db):[_edbComp==='cur'?(selectedComp||Object.keys(db)[0]):_edbComp].filter(Boolean);
+    comps.forEach(cp=>(db[cp]||[]).forEach(r=>{
+      const c=cm[r.client]||{}, iata=idb[r.client]||'';
+      const saisi=entries.some(e=>e.comp===cp&&e.client===r.client&&Math.abs(e.montant-r.montant)<0.01);
+      out.push({ds,comp:cp,client:r.client,montant:r.montant,quinz:r.quinzaine||'',iata,nom:c.nom||'',aux:String(c.aux||''),saisi,raw:r,
+        hay:_edbNorm(cp+' '+r.client+' '+iata+' '+(c.nom||'')+' '+(c.aux||'')+' '+Math.round(r.montant)+' '+(r.quinzaine||''))});
+    }));
+  }else if(ds==='fac'){
+    if(!NDCF_DATA.length) return {rows:out,msg:'Aucun fichier commercial chargé — importez-le dans l\'onglet IMPORTS.'};
+    NDCF_DATA.forEach((d,i)=>{ out.push({ds,idx:i,facture:d.facture||'',agence:d.agence||'',client:d.client?d.client.compta:'',aux:d.client?d.client.aux:'',total:d.total_reg,ttc:d.ttc,saisi:!!d._saisi,raw:d,
+        hay:_edbNorm((d.facture||'')+' '+(d.agence||'')+' '+(d.client?d.client.compta+' '+d.client.aux:'')+' '+Math.round(d.total_reg||0)+' '+Math.round(d.ttc||0))}); });
+  }else if(ds==='cl'){
+    NDCF_CLIENTS.forEach(c=>{ out.push({ds,ndc:c.ndc,compta:c.compta,aux:String(c.aux||''),hay:_edbNorm(c.ndc+' '+c.compta+' '+(c.aux||''))}); });
+    if(!out.length) return {rows:out,msg:'Base CLNDC vide — importez-la dans l\'onglet IMPORTS.'};
+  }
+  return {rows:out};
+}
+function edbRender(){
+  const box=document.getElementById('edb-res'); if(!box) return;
+  const B=_edbBuild(), qv=(document.getElementById('edb-q')||{value:''}).value, qn=_edbNorm(qv), toks=qn.split(' ').filter(Boolean);
+  const cnt=document.getElementById('edb-cnt');
+  // puces des bases
+  ['iata','plan','fac','cl'].forEach(k=>{const b=document.getElementById('edb-ds-'+k); if(b){b.style.background=_edbDS===k?'#0c447c':'var(--bg2)';b.style.color=_edbDS===k?'#fff':'var(--txt2)';}});
+  // sélecteur de compagnie (planning)
+  const cs=document.getElementById('edb-comp-wrap');
+  if(cs){
+    if(_edbDS==='plan'&&FAC_DB){
+      cs.style.display='flex';
+      cs.querySelector('select').innerHTML='<option value="cur">'+(selectedComp?'Compagnie : '+selectedComp:'Première compagnie')+'</option><option value="all">Toutes les compagnies</option>'+Object.keys(FAC_DB).map(c=>`<option value="${c}">${c}</option>`).join('');
+      cs.querySelector('select').value=_edbComp;
+    } else cs.style.display='none';
+  }
+  const hb=document.getElementById('edb-hide');
+  if(hb){ hb.style.display=(_edbDS==='plan'||_edbDS==='fac')?'':'none'; hb.textContent=_edbHide?'👁 Afficher déjà saisis':'🙈 Masquer déjà saisis'; hb.style.background=_edbHide?'#d1fae5':'var(--bg2)'; }
+  if(B.msg){ if(cnt) cnt.textContent=''; box.innerHTML=`<div style="padding:26px;text-align:center;color:var(--amber,#d97706);font-size:12px">⚠️ ${B.msg}</div>`; _edbList=[]; return; }
+  let rows=B.rows.filter(r=>toks.every(t=>r.hay.includes(t))&&!(_edbHide&&r.saisi));
+  const sc=r=>{ const n=_edbNorm(r.client||r.planning||r.agence||r.ndc||''); return (qn&&(n.startsWith(qn)||r.iata===qv.trim()||r.aux===qv.trim()||r.facture===qv.trim()))?0:1; };
+  rows.sort((a,b)=>sc(a)-sc(b)||String(a.client||a.planning||a.agence||a.ndc||a.facture).localeCompare(String(b.client||b.planning||b.agence||b.ndc||b.facture),'fr',{numeric:true}));
+  const total=rows.length; _edbList=rows.slice(0,150); _edbHi=Math.min(_edbHi,Math.max(_edbList.length-1,0));
+  const nSaisi=B.rows.filter(r=>r.saisi).length;
+  if(cnt) cnt.textContent=total+' résultat'+(total>1?'s':'')+(total>150?' (150 affichés — affinez la recherche)':'')+' · '+_EDB_LABEL[_edbDS]+' : '+B.rows.length+' ligne'+(B.rows.length>1?'s':'')+((_edbDS==='plan'||_edbDS==='fac')?' · '+nSaisi+' déjà saisie'+(nSaisi>1?'s':''):'');
+  if(!_edbList.length){ box.innerHTML='<div style="padding:26px;text-align:center;color:var(--txt3);font-size:12px">Aucun résultat</div>'; return; }
+  const th=(t,a)=>`<th style="padding:6px 8px;text-align:${a||'left'}">${t}</th>`;
+  const td=(v,st)=>`<td style="padding:6px 8px;${st||''}">${v}</td>`;
+  const mono='font-family:var(--font-mono,monospace);';
+  let head='',body='';
+  if(_edbDS==='iata'){
+    head=th('CODE IATA')+th('NOM PLANNING')+th('NOM COMPTABLE')+th('AUXILIAIRE');
+    body=r=>td(r.iata||'—',mono+'font-weight:800;color:#0c447c')+td(_edbEsc(r.planning),'font-weight:700')+td(_edbEsc(r.nom)||'—','color:var(--txt2)')+td(_edbEsc(r.aux)||'—',mono);
+  }else if(_edbDS==='plan'){
+    head=th('CIE')+th('CLIENT (PLANNING)')+th('MONTANT','right')+th('QZ','center')+th('IATA')+th('NOM COMPTABLE / AUX')+th('ÉTAT','center');
+    body=r=>td(r.comp,'font-weight:800;color:#0c447c')+td(_edbEsc(r.client),'font-weight:700')+td(_edbFmt(r.montant),mono+'text-align:right;font-weight:800')+td(r.quinz,'text-align:center;color:var(--txt3)')+td(r.iata||'—',mono)+td(_edbEsc(r.nom)?_edbEsc(r.nom)+' <span style="'+mono+'color:var(--txt3)">'+_edbEsc(r.aux)+'</span>':'—','color:var(--txt2)')+td(r.saisi?'<span style="background:#059669;color:#fff;border-radius:4px;padding:1px 6px;font-size:8px;font-weight:800">✔ SAISI</span>':'<span style="color:#9ca3af;font-size:9px">à saisir</span>','text-align:center');
+  }else if(_edbDS==='fac'){
+    head=th('FACTURE')+th('AGENCE (COMMERCIAL)')+th('CLIENT COMPTABLE / AUX')+th('TOTAL RÈGLEMENT','right')+th('TTC','right')+th('ÉTAT','center');
+    body=r=>td(_edbEsc(r.facture),mono+'font-weight:800;color:#b45309')+td(_edbEsc(r.agence),'font-weight:700')+td(r.client?_edbEsc(r.client)+' <span style="'+mono+'color:var(--txt3)">'+_edbEsc(r.aux)+'</span>':'<span style="color:#dc2626;font-weight:700">non reconnu</span>')+td(_edbFmt(r.total),mono+'text-align:right;font-weight:800')+td(_edbFmt(r.ttc),mono+'text-align:right')+td(r.saisi?'<span style="background:#059669;color:#fff;border-radius:4px;padding:1px 6px;font-size:8px;font-weight:800">✔ SAISI</span>':'<span style="color:#9ca3af;font-size:9px">à saisir</span>','text-align:center');
+  }else{
+    head=th('NOM COMMERCIAL (NDC)')+th('NOM COMPTABLE')+th('AUXILIAIRE');
+    body=r=>td(_edbEsc(r.ndc),'font-weight:700')+td(_edbEsc(r.compta),'color:var(--txt2)')+td(_edbEsc(r.aux)||'—',mono+'font-weight:800');
+  }
+  const mode=edbMode(), canPick=(d)=>true;
+  box.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="position:sticky;top:0;background:#05101f;color:#fff;font-size:9px;letter-spacing:.8px">${head}</tr></thead><tbody>`+
+    _edbList.map((r,i)=>`<tr id="edr${i}" onmousedown="edbPick(${i})" onmouseover="_edbHi=${i};edbHL()" style="cursor:pointer;border-bottom:1px solid var(--bo);${r.saisi?'opacity:.6;':''}${i===_edbHi?'background:var(--sky-pale,#e0f2fe);':''}">${body(r)}</tr>`).join('')+'</tbody></table>';
+}
+function edbHL(){ _edbList.forEach((_,i)=>{const r=document.getElementById('edr'+i); if(r) r.style.background=i===_edbHi?'var(--sky-pale,#e0f2fe)':''; }); }
+function edbKey(e){
+  if(e.key==='Escape'){e.preventDefault();edbClose();}
+  else if(e.key==='ArrowDown'){e.preventDefault();_edbHi=Math.min(_edbHi+1,_edbList.length-1);edbHL();const r=document.getElementById('edr'+_edbHi);if(r)r.scrollIntoView({block:'nearest'});}
+  else if(e.key==='ArrowUp'){e.preventDefault();_edbHi=Math.max(_edbHi-1,0);edbHL();const r=document.getElementById('edr'+_edbHi);if(r)r.scrollIntoView({block:'nearest'});}
+  else if(e.key==='Enter'){e.preventDefault();edbPick(_edbHi);}
+}
+// ── Injection dans la saisie selon le mode et la base ──
+function edbPick(i){
+  const r=_edbList[i]; if(!r) return;
+  const mode=edbMode(), $=id=>document.getElementById(id);
+  const done=(msg)=>{ edbClose(); if(msg) try{showToast(msg,'success');}catch(e){} };
+  const only=()=>{ try{showToast('Consultation seule dans ce mode de saisie','warn');}catch(e){} };
+  try{
+    if(r.ds==='iata'){
+      if(mode==='iata'){ if(!selectedComp){showToast('Sélectionnez une compagnie','error');return;} $('iata-input').value=r.iata; onIataChange(); done(); setTimeout(()=>$('iata-input').focus(),50); }
+      else if(mode==='redressement'){ $('redr-client').value=r.iata||r.planning; onRedrClientChange(); done(); setTimeout(()=>$('redr-client').focus(),50); }
+      else if(mode==='ancien'){ const row=(FAC_DB&&selectedComp&&FAC_DB[selectedComp]||[]).find(x=>x.client===r.planning); if(!row){showToast('Client absent du planning '+(selectedComp||''),'warn');return;} selectAncienClient({...row,iata:r.iata,aux:r.aux}); done(); }
+      else only();
+    }else if(r.ds==='plan'){
+      if(mode==='montant'||mode==='iata'){
+        if(r.comp!==selectedComp) selectComp(r.comp);
+        if(mode==='montant'){ const mi=$('montant-input'); mi.value=String(r.montant); onMontantChange(); done(); setTimeout(()=>mi.focus(),50); }
+        else { if(!r.iata){showToast('Pas de code IATA pour ce client','warn');return;} $('iata-input').value=r.iata; onIataChange(); done(); }
+      }
+      else if(mode==='ancien'){ if(r.comp!==selectedComp) selectComp(r.comp); selectAncienClient({...r.raw,iata:r.iata,aux:r.aux}); done(); }
+      else if(mode==='redressement'){ $('redr-client').value=r.iata||r.client; onRedrClientChange(); done(); }
+      else only();
+    }else if(r.ds==='fac'){
+      if(mode==='ndcf'){
+        if(r.saisi){ showToast('Facture '+r.facture+' déjà saisie','warn'); return; }
+        ndcfFacSugList=[r.raw]; selectNDCFFac(0); done(); 
+      } else only();
+    }else only();
+  }catch(e){ console.error('edbPick',e); }
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='F3'){ const ts=document.getElementById('tab-saisie'); if(ts&&ts.offsetParent!==null&&document.getElementById('edb-ov')){ e.preventDefault(); edbOpen(); } }
+});
 
 /* ── v72 — En-têtes de tableaux FIXES au défilement (toutes les vues STAT) ── */
 function statFixStickyHeaders(){
@@ -19556,6 +20316,7 @@ function statSetView(v){
   document.querySelectorAll('.stat-vtab').forEach(el=>el.classList.toggle('on',el.dataset.view===v));
   const c=document.getElementById('stat-content');
   if(!c) return;c.innerHTML='';
+  if(v==='red'){ sRedView(c); return; }   // v89 — volet Redressements (indépendant du mode commission)
   // ── Si mode COMMISSION actif et vue ≠ commission → vue commission de la vue ──
   if(STAT.commissionMode&&v!=='commission'){
     if(v==='heat')    {sCommHeatmap(c);return;}
@@ -19598,7 +20359,7 @@ function sQuinzaineCommission(c){
   const depth=STAT.evolDepth||3;
   const SMOIS2=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
   const qmap=new Map();
-  (STAT.comRaw||[]).forEach(r=>{
+  _comRawRed().forEach(r=>{
     if(!sCompMatch(r.sym)) return;
     if(!r.date||!r.year||!r.month) return;
     const q=_dateQ(r.date);
@@ -21870,7 +22631,7 @@ function sMeilleursVendeurs(c){
     `<button class="stat-topmode-btn${limit===n?' on':''}" onclick="sSetMVLimit(${n})">TOP ${n}</button>`
   ).join('')+`<button class="stat-topmode-btn${limit>=all.length?' on':''}" onclick="sSetMVLimit(${all.length})">Tout (${SFN(all.length)})</button>`;
 
-  c.innerHTML=`<div style="height:100%;overflow-y:auto;padding:12px 16px">
+  c.innerHTML=`<div style="height:100%;overflow:auto;padding:12px 16px">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
       <span style="font-size:11px;font-weight:900;color:#e11d48;letter-spacing:.5px">🏅 MEILLEURS VENDEURS</span>
       <span style="font-size:9px;color:var(--txt4)">${periodHeaderLabel}</span>
@@ -21951,7 +22712,7 @@ function sMeilleursVendeurs(c){
       ${_mvSearchQ?`<button onclick="sSetMVSearch('')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;font-size:14px;color:#e11d48;padding:2px 4px" title="Effacer">✕</button>`:''}
       ${_mvSearchQ?`<div style="font-size:9px;color:#e11d48;margin-top:3px;font-weight:700">${filteredAll.length} résultat(s) pour « ${STAT.mvSearchQuery} »</div>`:''}
     </div>
-    <div style="overflow-x:auto">
+    <div>
       <table class="stat-mv-tbl">
         <thead><tr>
           <th>RANG</th>
@@ -22073,7 +22834,7 @@ function comRawFiltered(yearOverride,skipCompFilter){
   }
   const targetYear=yearOverride||(STAT.year||new Date().getFullYear());
   const useAllYears=!yearOverride&&STAT.allYears;
-  return (STAT.comRaw||[]).filter(r=>{
+  return _comRawRed().filter(r=>{
     // 🔧 FIX v88 — skipCompFilter : voir sRawFiltered plus haut, même principe.
     if(!skipCompFilter && !sCompMatch(r.sym)) return false; // chips compagnie partagées avec le CA
     if(STAT.periodMode==='folio'){
@@ -22306,7 +23067,7 @@ function _sCompCAForPeriod(sym,year,month,quinzaine){
 
 /* CA commissions pour une compagnie / période explicite (SUP COM) */
 function _sComCAForPeriod(sym,year,month,quinzaine){
-  return (STAT.comRaw||[]).filter(r=>{
+  return _comRawRed().filter(r=>{
     if(!sCompMatch(r.sym)) return false;
     if(sym&&r.sym!==sym) return false;
     if(year!==undefined&&r.year!==year) return false;
@@ -23373,7 +24134,7 @@ function sComCompanyAggForPeriod(period){
     filterDateTo.setHours(23,59,59,999);
   }
   const map = new Map();
-  (STAT.comRaw||[]).forEach(r=>{
+  _comRawRed().forEach(r=>{
     if(!sCompMatch(r.sym)) return;
     if(period.folios !== undefined){
       if(r.year && r.year !== targetYear) return;
@@ -27224,6 +27985,14 @@ ${rows.join('')}</w:tbl>`;
     // ════════════════════════════════════════════
     // SECTION 9 : INSIGHTS & RECOMMANDATIONS
     // ════════════════════════════════════════════
+    // 8.8 REDRESSEMENTS & ADM — taux vs CA général / CA client, évolution N-1 à période identique (v89)
+    if(SECT.red!==false){
+      try{
+        const _RD=redViewData();
+        _redWordBlock({heading:heading,p:(t,c,b,z)=>para(t,0,c,b,z),b:bullet,tc:tc,tr:tableRow,tbl:tableWrap},_RD,
+          {num:'8.8',kind:'global',W:9020,sz:17,hasRef:!!(STAT.selectedClients&&STAT.selectedClients.length),refName:'des clients filtrés'}).forEach(x=>bodyParts.push(x));
+      }catch(e){console.warn('Section redressements :',e);}
+    }
     if(SECT.insights){
     bodyParts.push(heading('9. INSIGHTS AUTOMATIQUES & RECOMMANDATIONS',1));
     bodyParts.push(separator());
@@ -30072,7 +30841,7 @@ function _ficheCompanyCATotal(symbol){
   return _ficheCompRows(symbol).reduce((s,r)=>s+r.debit,0);
 }
 function _ficheCompanyComTotal(symbol){
-  return (STAT.comRaw||[]).filter(r=>r.sym===symbol).reduce((s,r)=>s+(r.credit||0),0);
+  return _comRawRed().filter(r=>r.sym===symbol).reduce((s,r)=>s+(r.credit||0),0);
 }
 // 🆕 v80 — variantes scopées à UNE année, pour la comparaison N vs N-1 dans
 // le rapport Word (section "Participation à la commission par compagnie")
@@ -30080,7 +30849,7 @@ function _ficheCompanyCATotalYear(symbol,year,maxMonth){
   return _ficheCompRows(symbol).filter(r=>r.year===year&&(!maxMonth||(r.month&&r.month<=maxMonth))).reduce((s,r)=>s+r.debit,0);
 }
 function _ficheCompanyComTotalYear(symbol,year,maxMonth){
-  return (STAT.comRaw||[]).filter(r=>r.sym===symbol&&r.year===year&&(!maxMonth||(r.month&&r.month<=maxMonth))).reduce((s,r)=>s+(r.credit||0),0);
+  return _comRawRed().filter(r=>r.sym===symbol&&r.year===year&&(!maxMonth||(r.month&&r.month<=maxMonth))).reduce((s,r)=>s+(r.credit||0),0);
 }
 // Catégorisation métier (règle ACR) : source vs reversée vs frais de dossier
 const _ficheComTypeLabel={
@@ -30616,6 +31385,7 @@ td.r{text-align:right}td.ca{font-weight:800;color:#0369a1}
   </div>
 </div>
 
+${_redPrintBlock({aux:code},'client')}
 <div style="font-size:6pt;color:#9ca3af;text-align:right;margin-top:4px">FWT Comptabilité · Fiche Client · ${new Date().toLocaleString('fr-FR')}</div>
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
@@ -30693,6 +31463,7 @@ td.ca{font-weight:800;color:#0369a1}
 <tr class="total"><td colspan="3">TOTAL</td><td class="r">${FM(totCAAll)}</td><td class="r">100%</td><td class="r">${FN(clients.reduce((s,c)=>s+c.totOps,0))}</td><td colspan="3"></td></tr>
 </tbody></table>
 ${_cpMultiHTML(codes)}
+${_redMultiPrintBlock(codes.map(cd=>({name:_redClientName(cd),scope:{aux:cd}})),'client')}
 <div style="font-size:6pt;color:#9ca3af;text-align:right;margin-top:6px">FWT Comptabilité · Fiche Comparative · ${new Date().toLocaleString('fr-FR')}</div>
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
@@ -30948,6 +31719,7 @@ tr.total td{font-weight:800;background:#f9fafb}
   <div style="font-size:6.5pt;color:#9ca3af;margin-top:4px">${comKind==='reversee'?'Commission reversée (compte de reversement), et non une commission source directe. ':''}Comparaison ${latestYear} vs ${hasPrevYear?prevYear:'N-1'} plafonnée aux mêmes mois si ${latestYear} est une année en cours partielle — même principe que le rapport Word.</div>`}
 </div>
 
+${_redPrintBlock({syms:[symbol]},'comp')}
 <div style="font-size:6pt;color:#9ca3af;text-align:right;margin-top:4px">FWT Comptabilité · Fiche Compagnie · ${new Date().toLocaleString('fr-FR')}</div>
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
@@ -31021,6 +31793,7 @@ td.ca{font-weight:800;color:#0369a1}
 </tr></thead><tbody>${rows}
 <tr class="total"><td colspan="2">TOTAL</td><td class="r">${FM(totCAAll)}</td><td class="r">100%</td><td class="r">${FN(comps.reduce((s,c)=>s+c.totOps,0))}</td><td colspan="3"></td></tr>
 </tbody></table>
+${_redMultiPrintBlock(comps.map(c=>({name:(typeof c==='string'?c:c.sym),scope:{syms:[(typeof c==='string'?c:c.sym)]}})),'comp')}
 <div style="font-size:6pt;color:#9ca3af;text-align:right;margin-top:6px">FWT Comptabilité · Fiche Comparative · ${new Date().toLocaleString('fr-FR')}</div>
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
@@ -32138,6 +32911,7 @@ async function _wordFicheClientSingle(code){
     recs.push(`SUIVI RÉCURRENT : revoir cette fiche à échéance régulière (trimestrielle ou semestrielle) pour détecter toute variation significative de CA ou de régularité, positive ou négative, et ajuster le plan d'action commercial en conséquence.`);
     recs.forEach(r=>bp.push(_fwBullet(r,'1e40af')));
 
+    try{ bp.push(..._redWordBlock(_redHFw(),redScopeData({aux:code},latestYear),{num:'10.',kind:'client',W:9350,sz:14,hasRef:true,refName:'du client'})); }catch(e){console.warn('Redressements :',e);}
     bp.push(_fwSpacer(200));
     bp.push(_fwPara('FWT Comptabilité · Fiche Client (Word) · Rapport à vocation d\'analyse commerciale et comptable, réservé à l\'usage interne · '+new Date().toLocaleString('fr-FR'),'9ca3af',false,13));
 
@@ -32229,6 +33003,7 @@ async function _wordFicheClientMulti(codes){
     bp.push(_fwTable(qRowsX,9350));
 
     _cpMultiWord(codes,bp); // v76 — évolution / rang / couverture
+    try{ bp.push(..._redMultiWordBlock(_redHFw(),_redEntitiesClients(codes),{W:9350,sz:14,refName:'du client'})); }catch(e){console.warn('Redressements :',e);}
     bp.push(_fwSpacer(200));
     bp.push(_fwPara('FWT Comptabilité · Fiche Comparative Clients (Word) · '+new Date().toLocaleString('fr-FR'),'9ca3af',false,13));
 
@@ -32686,6 +33461,7 @@ async function _wordFicheCompagnieSingle(symbol){
     recsC.push(`SUIVI RÉCURRENT : revoir cette fiche à échéance régulière (trimestrielle ou semestrielle) pour détecter toute variation significative de CA, de commission ou de composition du portefeuille clients de cette compagnie, et ajuster le plan d'action en conséquence.`);
     recsC.forEach(r=>bp.push(_fwBullet(r,'1e40af')));
 
+    try{ bp.push(..._redWordBlock(_redHFw(),redScopeData({syms:[symbol]},latestYear),{num:'8.',kind:'comp',W:9350,sz:14,hasRef:true,refName:'de la compagnie'})); }catch(e){console.warn('Redressements :',e);}
     bp.push(_fwSpacer(200));
     bp.push(_fwPara('FWT Comptabilité · Fiche Compagnie (Word) · Rapport à vocation d\'analyse commerciale et comptable, réservé à l\'usage interne · '+new Date().toLocaleString('fr-FR'),'9ca3af',false,13));
 
@@ -33051,6 +33827,7 @@ async function _wordFicheCompagnieTKMerged(symbols){
       )));
     bp.push(_fwTable(monthRowsX,9350));
 
+    try{ bp.push(..._redWordBlock(_redHFw(),redScopeData({syms:symbols},null),{num:'8.',kind:'comp',W:9350,sz:14,hasRef:true,refName:'de la compagnie TK'})); }catch(e){console.warn('Redressements :',e);}
     bp.push(_fwSpacer(200));
     bp.push(_fwPara('FWT Comptabilité · Fiche Compagnie TK (Systèmes combinés) · Rapport à vocation d\'analyse commerciale et comptable, réservé à l\'usage interne · '+new Date().toLocaleString('fr-FR'),'9ca3af',false,13));
 
@@ -33131,6 +33908,7 @@ async function _wordFicheCompagnieMulti(symbols){
     bp.push(_fwSpacer(100));
     bp.push(_fwPara(`Total combiné : ${FM(totCAAll)} · ${FN(comps.reduce((s,c)=>s+c.totOps,0))} opérations.`,'6b7280',false,15));
 
+    try{ bp.push(..._redMultiWordBlock(_redHFw(),_redEntitiesComps(comps),{W:9350,sz:14,refName:'de la compagnie'})); }catch(e){console.warn('Redressements :',e);}
     bp.push(_fwSpacer(200));
     bp.push(_fwPara('FWT Comptabilité · Fiche Comparative Compagnies (Word) · '+new Date().toLocaleString('fr-FR'),'9ca3af',false,13));
 
@@ -34186,13 +34964,14 @@ function fluxCreateEcriture() {
         <div style="margin-top:8px">
           <div class="stat-sect-title">⚖ REDRESSEMENTS</div>
           <div class="stat-ndc-grp">
-            <button class="stat-red-btn on" onclick="sSetRedMode('all',this)">TOUT</button>
-            <button class="stat-red-btn" onclick="sSetRedMode('excl',this)" title="Exclut toute écriture dont le LIBELLÉ ou la RÉFÉRENCE contient le mot RED, quel que soit le montant">SANS RED.</button>
+            <button class="stat-red-btn" onclick="sSetRedMode('all',this)" title="Compte les redressements/ADM dans le CA et la commission (non recommandé)">TOUT</button>
+            <button class="stat-red-btn on" onclick="sSetRedMode('excl',this)" title="Exclut toute écriture dont le LIBELLÉ ou la RÉFÉRENCE contient le mot RED, quel que soit le montant">SANS RED.</button>
             <button class="stat-red-btn" onclick="sSetRedMode('only',this)" title="Ne garde que les écritures dont le LIBELLÉ ou la RÉFÉRENCE contient le mot RED, quel que soit le montant">RED. SEULS</button>
           </div>
           <div style="font-size:10px;color:var(--txt4);margin-top:5px;line-height:1.4;padding:4px 6px;background:var(--bg2);border-radius:5px;">
-            🔍 Critère : LIBELLE ou RÉFÉRENCE contient <strong>RED</strong> (insensible casse) — <strong>aucun seuil de montant</strong>, toute valeur (positive, négative, faible ou très élevée) est concernée.
+            🔍 Critère : LIBELLE ou RÉFÉRENCE contient <strong>RED</strong>, <strong>REDRESSEMENT</strong> ou <strong>ADM</strong> (insensible casse) — <strong>aucun seuil de montant</strong>, toute valeur (positive, négative, faible ou très élevée) est concernée.
           </div>
+          <div id="stat-red-impact" style="display:none;font-size:10px;color:#92400e;margin-top:5px;line-height:1.45;padding:5px 7px;background:#fff7ed;border-left:3px solid #f59e0b;border-radius:5px;"></div>
         </div>
 
         <!-- PROFONDEUR ÉVOLUTION N-x -->
@@ -34290,6 +35069,7 @@ function fluxCreateEcriture() {
         </div>
         <div class="stat-tabgrp"><span class="stat-tabgrp-l">Analyse</span>
           <button class="stat-vtab"    data-view="stats"   onclick="statSetView('stats')">🧮 Stats Desc.</button>
+          <button class="stat-vtab"    data-view="red" onclick="statSetView('red')" title="Redressements / ADM : anomalies de vente (taux vs CA, évolution N-1 à période identique)">⚠ Redressements</button>
           <button class="stat-vtab"    data-view="insights" onclick="statSetView('insights')">💡 Insights</button>
         </div>
         <div class="stat-tabxp">
@@ -34943,6 +35723,28 @@ if (wrap && canvas) {
     </div>
     <div id="sbas-res" style="overflow:auto;flex:1;"></div>
     <div style="padding:5px 12px;font-size:9px;color:var(--txt3);border-top:1px solid var(--bo);">↑↓ naviguer · ENTRÉE choisir (le client est injecté dans la saisie) · ÉCHAP fermer</div>
+  </div>
+</div>
+<!-- v86 — Consultation / recherche dans les bases de la saisie EBV -->
+<div id="edb-ov" style="display:none;position:fixed;inset:0;background:rgba(5,16,31,.65);z-index:100000;align-items:flex-start;justify-content:center;padding-top:5vh;" onmousedown="if(event.target===this)edbClose()">
+  <div style="background:var(--surface,#fff);color:var(--txt,#111);width:min(1000px,95vw);max-height:86vh;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+    <div style="padding:10px 14px;background:linear-gradient(120deg,#05101f,#042c53);color:#fff;display:flex;align-items:center;gap:10px;">
+      <b style="font-size:13px;">🔎 Consultation &amp; recherche — bases de saisie</b><span id="edb-cnt" style="font-size:10px;opacity:.75;flex:1;"></span>
+      <button onclick="edbClose()" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:9px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--bo);">
+      <button id="edb-ds-iata" onclick="edbSetDS('iata')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">🆔 Base IATA</button>
+      <button id="edb-ds-plan" onclick="edbSetDS('plan')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">📋 Planning</button>
+      <button id="edb-ds-fac" onclick="edbSetDS('fac')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">📎 Fichier commercial NDC-F</button>
+      <button id="edb-ds-cl" onclick="edbSetDS('cl')" style="padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">🗂 Base CLNDC</button>
+      <span id="edb-comp-wrap" style="display:none;align-items:center;gap:4px;"><select onchange="edbSetComp(this.value)" style="font-size:10px;padding:4px 6px;border:1px solid var(--bo);border-radius:5px;background:var(--bg2);color:var(--txt);"></select></span>
+      <button id="edb-hide" onclick="edbToggleHide()" style="margin-left:auto;padding:5px 10px;border:1px solid var(--bo);border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;">🙈 Masquer déjà saisis</button>
+    </div>
+    <div style="padding:8px 12px;border-bottom:1px solid var(--bo);">
+      <input id="edb-q" placeholder="Rechercher : nom client / agence, code IATA, auxiliaire, n° facture, montant, compagnie…" oninput="_edbHi=0;edbRender()" onkeydown="edbKey(event)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid var(--bo);border-radius:6px;background:var(--bg2);color:var(--txt);font-size:12px;outline:none;">
+    </div>
+    <div id="edb-res" style="overflow:auto;flex:1;"></div>
+    <div style="padding:5px 12px;font-size:9px;color:var(--txt3);border-top:1px solid var(--bo);">↑↓ naviguer · ENTRÉE / clic : injecter dans la saisie du mode actif (sinon consultation seule) · ÉCHAP fermer · F3 ouvrir</div>
   </div>
 </div>
 </body>
